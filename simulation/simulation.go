@@ -6,8 +6,8 @@ import (
 
 type Simulation struct {
 	env     *env.Environment
-	agents  []env.Agent
-	objects []env.Object
+	agents  []env.IAgent
+	objects []env.IObject
 }
 
 func (simu *Simulation) Run()

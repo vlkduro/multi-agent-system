@@ -1,5 +1,5 @@
 package environment
 
-type Object interface {
+type IObject interface {
 	Interact()
 }

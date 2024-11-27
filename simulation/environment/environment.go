@@ -6,6 +6,6 @@ import (
 
 type Environment struct {
 	sync.RWMutex
-	agts    []Agent
-	objects []Object
+	agts    []IAgent
+	objects []IObject
 }
