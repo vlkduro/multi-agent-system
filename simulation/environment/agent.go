@@ -2,10 +2,11 @@ package environment
 
 type AgentID string
 
-type IAgent interface {
+type Agent interface {
 	Start()
-	Percept(*Environment)
+	Percept()
 	Deliberate()
-	Act(*Environment)
+	Act()
 	ID() AgentID
+	GetSyncChan() chan bool
 }

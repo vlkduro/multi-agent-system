@@ -1,5 +1,7 @@
 package environment
 
-type IObject interface {
+type Object interface {
 	Interact()
+	Copy() Object
+	ChangeTo(Object)
 }
