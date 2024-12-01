@@ -58,15 +58,14 @@ func (server *WebSocketServer) connectToSimulation(w http.ResponseWriter, r *htt
 	defer conn.Close()
 
 	for server.running {
+		time.Sleep(time.Second / 60) // 60 tps
 		if server.simulation == nil {
-			time.Sleep(time.Second / 60) // 60 tps
 			continue
 		}
 		if err := conn.WriteJSON(server.simulation.ToJsonObj()); err != nil {
 			log.Println(err)
 			break
 		}
-		time.Sleep(time.Second / 60) // 60 tps
 	}
 	log.Println("WebSocket server stopped")
 }
