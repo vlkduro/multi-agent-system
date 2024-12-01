@@ -10,9 +10,10 @@ import (
 )
 
 type Simulation struct {
-	env  *envpkg.Environment
-	agts []envpkg.Agent
-	objs []envpkg.Object
+	env     *envpkg.Environment
+	agts    []envpkg.Agent
+	objs    []envpkg.Object
+	running bool
 }
 
 type SimulationJson struct {
@@ -42,7 +43,8 @@ func NewSimulation(nagt int, nobj int) *Simulation {
 }
 
 func (simu *Simulation) Run() {
-	log.Printf("Démarrage de la simulation")
+	simu.running = true
+	log.Printf("Simulation started")
 
 	// Démarrage du micro-service de Log
 	go simu.log()
@@ -59,16 +61,16 @@ func (simu *Simulation) Run() {
 		go func(agt envpkg.Agent) {
 			for {
 				c := agt.GetSyncChan()
-				c <- false
+				c <- simu.running
 				time.Sleep(1 * time.Millisecond) // attente avant de relancer l'agent
 				<-c
 			}
 		}(agt)
 	}
+}
 
-	time.Sleep(time.Second / 120) // 120 tps
-
-	log.Printf("Fin de la simulation")
+func (simu *Simulation) Stop() {
+	simu.running = false
 }
 
 // Intention d'en faire un microservice
@@ -79,13 +81,14 @@ func (simu *Simulation) log() {
 // Intention d'en faire un microservice
 func (simu *Simulation) print() {
 	startTime := time.Now()
-	for {
-		fmt.Printf("\rRunning simulation for %vms...", time.Since(startTime).Milliseconds())
+	for simu.running {
+		fmt.Printf("\rRunning simulation for %vms...  - ", time.Since(startTime).Milliseconds())
 		time.Sleep(time.Second / 60) // 60 fps
 	}
+	log.Printf("Simulation stopped")
 }
 
-func (simu *Simulation) ToJsonObj() SimulationJson {
+func (simu Simulation) ToJsonObj() SimulationJson {
 	agents := []interface{}{}
 	objects := []interface{}{}
 

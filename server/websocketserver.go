@@ -1,7 +1,6 @@
 package server
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -14,26 +13,43 @@ import (
 type WebSocketServer struct {
 	port       int
 	simulation *simulation.Simulation
+	running    bool
 }
 
 func MakeWebSocketServer(port int) *WebSocketServer {
-	return &WebSocketServer{port: port, simulation: nil}
+	return &WebSocketServer{port: port, simulation: nil, running: false}
+}
+
+func (server *WebSocketServer) newSimulation(w http.ResponseWriter, _ *http.Request) {
+	server.simulation = simulation.NewSimulation(10, 10)
+	w.WriteHeader(http.StatusOK)
 }
 
 func (server *WebSocketServer) launchSimulation(w http.ResponseWriter, _ *http.Request) {
-	if server.simulation != nil {
+	if server.simulation == nil {
+		server.simulation = simulation.NewSimulation(10, 10)
+	}
+
+	go server.simulation.Run()
+	server.running = true
+	w.WriteHeader(http.StatusOK)
+}
+
+func (server *WebSocketServer) stopSimulation(w http.ResponseWriter, _ *http.Request) {
+	if server.simulation == nil {
 		w.WriteHeader(http.StatusConflict)
 		return
 	}
 
-	server.simulation = simulation.NewSimulation(10, 10)
-	go server.simulation.Run()
+	server.simulation.Stop()
 	w.WriteHeader(http.StatusOK)
 }
 
 func (server *WebSocketServer) connectToSimulation(w http.ResponseWriter, r *http.Request) {
 	// Setting up the websocket with default parameters
 	upgrader := websocket.Upgrader{}
+	// Accept all origins
+	upgrader.CheckOrigin = func(r *http.Request) bool { return true }
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)
@@ -41,29 +57,24 @@ func (server *WebSocketServer) connectToSimulation(w http.ResponseWriter, r *htt
 	}
 	defer conn.Close()
 
-	for {
-		messageType, _, err := conn.ReadMessage()
-		if err != nil {
-			log.Println(err)
-			break
+	for server.running {
+		if server.simulation == nil {
+			time.Sleep(time.Second / 60) // 60 tps
+			continue
 		}
-		w.WriteHeader(http.StatusOK)
-		serial, err := json.Marshal(server.simulation.ToJsonObj())
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			fmt.Fprint(w, err.Error())
-			return
-		}
-		if err := conn.WriteMessage(messageType, serial); err != nil {
+		if err := conn.WriteJSON(server.simulation.ToJsonObj()); err != nil {
 			log.Println(err)
 			break
 		}
 		time.Sleep(time.Second / 60) // 60 tps
 	}
+	log.Println("WebSocket server stopped")
 }
 
 func (server *WebSocketServer) setupRoutes() int {
+	http.HandleFunc("/new", server.newSimulation)
 	http.HandleFunc("/start", server.launchSimulation)
+	http.HandleFunc("/stop", server.stopSimulation)
 
 	http.HandleFunc("/connect", server.connectToSimulation)
 
@@ -72,6 +83,7 @@ func (server *WebSocketServer) setupRoutes() int {
 
 func (server *WebSocketServer) LaunchServer() {
 	server.setupRoutes()
+	server.running = true
 
 	log.Printf("WebSocket server starting on port %d", server.port)
 	err := http.ListenAndServe(fmt.Sprintf(":%d", server.port), nil)
@@ -79,4 +91,9 @@ func (server *WebSocketServer) LaunchServer() {
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
+}
+
+func (server *WebSocketServer) StopServer() {
+	log.Printf("WebSocket server stopping")
+	server.running = false
 }

@@ -29,12 +29,16 @@ func (agt *ExAgent) Start() {
 	fmt.Printf("[%s] Starting agent\n", agt.ID())
 	go func() {
 		for {
-			<-agt.syncChan
+			run := <-agt.syncChan
+			if !run {
+				break
+			}
 			agt.Percept()
 			agt.Deliberate()
 			agt.Act()
-			agt.syncChan <- true
+			agt.syncChan <- run
 		}
+		fmt.Printf("[%s] Stopping agent\n", agt.ID())
 	}()
 }
 
