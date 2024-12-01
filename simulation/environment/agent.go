@@ -9,4 +9,5 @@ type Agent interface {
 	Act()
 	ID() AgentID
 	GetSyncChan() chan bool
+	ToJsonObj() interface{}
 }

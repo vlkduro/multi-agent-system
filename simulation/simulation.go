@@ -5,14 +5,19 @@ import (
 	"log"
 	"time"
 
-	agt "./agent"
-	envpkg "./environment"
+	agt "gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/simulation/agent"
+	envpkg "gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/simulation/environment"
 )
 
 type Simulation struct {
 	env  *envpkg.Environment
 	agts []envpkg.Agent
 	objs []envpkg.Object
+}
+
+type SimulationJson struct {
+	Agents  []interface{} `json:"agents"`
+	Objects []interface{} `json:"objects"`
 }
 
 func NewSimulation(nagt int, nobj int) *Simulation {
@@ -67,13 +72,30 @@ func (simu *Simulation) Run() {
 }
 
 // Intention d'en faire un microservice
-func (simu *Simulation) log()
+func (simu *Simulation) log() {
+	// TODO
+}
 
 // Intention d'en faire un microservice
 func (simu *Simulation) print() {
+	startTime := time.Now()
 	for {
-		fmt.Printf("TODO")
+		fmt.Printf("\rRunning simulation for %vms...", time.Since(startTime).Milliseconds())
 		time.Sleep(time.Second / 60) // 60 fps
 	}
+}
 
+func (simu *Simulation) ToJsonObj() SimulationJson {
+	agents := []interface{}{}
+	objects := []interface{}{}
+
+	for _, agt := range simu.agts {
+		agents = append(agents, agt.ToJsonObj())
+	}
+
+	for _, obj := range simu.objs {
+		objects = append(objects, obj.ToJsonObj())
+	}
+
+	return SimulationJson{Agents: agents, Objects: objects}
 }

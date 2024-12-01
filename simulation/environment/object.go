@@ -4,4 +4,5 @@ type Object interface {
 	Interact()
 	Copy() Object
 	ChangeTo(Object)
+	ToJsonObj() interface{}
 }
