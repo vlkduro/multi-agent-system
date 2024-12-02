@@ -1,8 +1,9 @@
 package agent
 
 import (
-	envpkg "gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/simulation/environment"
 	"time"
+
+	envpkg "gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/simulation/environment"
 )
 
 // HornetAgent hérite de /simulation/agent/agent.go "struct Agent"
