@@ -1,7 +1,6 @@
 package agent
 
 import (
-	"fmt"
 	"math/rand/v2"
 
 	envpkg "gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/simulation/environment"
@@ -9,38 +8,27 @@ import (
 
 // ExAgent est un exemple d'agent
 type ExAgent struct {
-	id       envpkg.AgentID
-	env      *envpkg.Environment
+	agent
 	value    int
-	syncChan chan bool
+	decision int
 }
 
 type ExAgentJson struct {
-	ID    string `json:"id"`
-	Value int    `json:"value"`
+	ID       string `json:"id"`
+	Value    int    `json:"value"`
+	Decision int    `json:"decision"`
 }
 
 func NewExAgent(id string, env *envpkg.Environment, syncChan chan bool) *ExAgent {
-	return &ExAgent{id: envpkg.AgentID(id), env: env, syncChan: syncChan}
-}
+	exagt := &ExAgent{}
+	exagt.agent = agent{
+		iagt:     exagt,
+		id:       envpkg.AgentID(id),
+		env:      env,
+		syncChan: syncChan,
+	}
 
-// L'agent est lancé en tant que microservice
-func (agt *ExAgent) Start() {
-	fmt.Printf("[%s] Starting agent\n", agt.ID())
-	go func() {
-		for {
-			run := <-agt.syncChan
-			if !run {
-				agt.syncChan <- run
-				break
-			}
-			agt.Percept()
-			agt.Deliberate()
-			agt.Act()
-			agt.syncChan <- run
-		}
-		fmt.Printf("[%s] Stopping agent\n", agt.ID())
-	}()
+	return exagt
 }
 
 func (*ExAgent) Percept() {
@@ -52,21 +40,13 @@ func (agt *ExAgent) Deliberate() {
 	if rand.IntN(2) == 0 {
 		factor = -1
 	}
-	agt.value += factor * rand.IntN(100)
+	agt.decision = factor * rand.IntN(100)
 }
 
-func (*ExAgent) Act() {
-	//TODO
+func (agt *ExAgent) Act() {
+	agt.value += agt.decision
 }
 
-func (agt *ExAgent) ID() envpkg.AgentID {
-	return agt.id
-}
-
-func (agt *ExAgent) GetSyncChan() chan bool {
-	return agt.syncChan
-}
-
-func (agt *ExAgent) ToJsonObj() interface{} {
-	return ExAgentJson{ID: string(agt.id), Value: agt.value}
+func (agt ExAgent) ToJsonObj() interface{} {
+	return ExAgentJson{ID: string(agt.id), Value: agt.value, Decision: agt.decision}
 }
