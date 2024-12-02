@@ -3,7 +3,7 @@ package agent
 import (
 	"fmt"
 
-	envpkg "gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/simulation/environment"
+	envpkg "gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/simulation/environment"
 )
 
 // Abstract class used with a template pattern
@@ -14,6 +14,7 @@ import (
 type agent struct {
 	iagt     envpkg.IAgent
 	id       envpkg.AgentID
+	pos      *envpkg.Position
 	env      *envpkg.Environment
 	syncChan chan bool
 }
@@ -43,4 +44,11 @@ func (agt agent) ID() envpkg.AgentID {
 
 func (agt agent) GetSyncChan() chan bool {
 	return agt.syncChan
+}
+
+func (agt agent) Position() *envpkg.Position {
+	if agt.pos == nil {
+		return nil
+	}
+	return agt.pos.Copy()
 }

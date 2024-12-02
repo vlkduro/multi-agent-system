@@ -1,29 +1,36 @@
 package agent
 
 import (
+	"fmt"
 	"math/rand/v2"
 
-	envpkg "gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/simulation/environment"
+	envpkg "gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/simulation/environment"
 )
+
+const VisionRange = 6
 
 // ExAgent est un exemple d'agent
 type ExAgent struct {
 	agent
 	value    int
 	decision int
+	vision   string
 }
 
 type ExAgentJson struct {
-	ID       string `json:"id"`
-	Value    int    `json:"value"`
-	Decision int    `json:"decision"`
+	ID       string          `json:"id"`
+	Value    int             `json:"value"`
+	Decision int             `json:"decision"`
+	Position envpkg.Position `json:"position"`
+	Vision   string          `json:"vision"`
 }
 
-func NewExAgent(id string, env *envpkg.Environment, syncChan chan bool) *ExAgent {
+func NewExAgent(id string, pos *envpkg.Position, env *envpkg.Environment, syncChan chan bool) *ExAgent {
 	exagt := &ExAgent{}
 	exagt.agent = agent{
 		iagt:     exagt,
 		id:       envpkg.AgentID(id),
+		pos:      pos.Copy(),
 		env:      env,
 		syncChan: syncChan,
 	}
@@ -31,8 +38,23 @@ func NewExAgent(id string, env *envpkg.Environment, syncChan chan bool) *ExAgent
 	return exagt
 }
 
-func (*ExAgent) Percept() {
-	//TODO
+func (agt *ExAgent) Percept() {
+	agt.vision = ""
+	for x := -int(VisionRange / 2); x < int(VisionRange/2); x++ {
+		for y := -int(VisionRange / 2); y < int(VisionRange/2); y++ {
+			if seen := agt.env.GetAt(agt.pos.X+x, agt.pos.Y+y); seen != nil {
+				switch v := seen.(type) {
+				case envpkg.IObject:
+					agt.vision += fmt.Sprintf("%s[%d;%d] ", string(v.ID()), v.Position().X, v.Position().Y)
+				case envpkg.IAgent:
+					agt.vision += fmt.Sprintf("%s[%d;%d] ", string(v.ID()), v.Position().X, v.Position().Y)
+				}
+			} else {
+				agt.vision += "."
+			}
+		}
+		agt.vision += "\n"
+	}
 }
 
 func (agt *ExAgent) Deliberate() {
@@ -48,5 +70,5 @@ func (agt *ExAgent) Act() {
 }
 
 func (agt ExAgent) ToJsonObj() interface{} {
-	return ExAgentJson{ID: string(agt.id), Value: agt.value, Decision: agt.decision}
+	return ExAgentJson{ID: string(agt.id), Value: agt.value, Decision: agt.decision, Position: *agt.pos, Vision: agt.vision}
 }

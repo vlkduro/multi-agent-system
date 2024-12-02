@@ -106,7 +106,11 @@
                     // Generalization of value insertion
                     agtkeys.forEach((key) => {
                         const valueCell = document.createElement('td');
-                        valueCell.textContent = agent[key] ?? 'N/A';
+                        if (typeof agent[key] === 'object') {
+                            valueCell.textContent = JSON.stringify(agent[key]);
+                        } else {
+                            valueCell.textContent = agent[key] ?? 'N/A';
+                        }
                         row.appendChild(valueCell);
                     });
                     

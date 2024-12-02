@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	"gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/simulation"
+	"gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/simulation"
 )
 
 type WebSocketServer struct {

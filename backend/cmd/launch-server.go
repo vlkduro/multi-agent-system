@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/server"
+	"gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/server"
 )
 
 func main() {
