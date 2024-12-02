@@ -19,6 +19,10 @@
 > Remarque : mettre `Agent` (i.e `Object`) dans le package `agent` (i.e `object`) crée une boucle de dépendance :
 > `Agent` appelle le package `environment` et `Environment` appelle le package `agent`, par défaut le compilateur interdit les dépendances cycliques
 
+### Architecture logicielle en langage UML 
+
+![Première version](/architecture/projet_uml.png "Architecture du projet en UML")
+
 ## Conception
 
 ### Problématique
