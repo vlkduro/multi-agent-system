@@ -59,14 +59,14 @@ func (*ExAgent) Act() {
 	//TODO
 }
 
-func (agt ExAgent) ID() envpkg.AgentID {
+func (agt *ExAgent) ID() envpkg.AgentID {
 	return agt.id
 }
 
-func (agt ExAgent) GetSyncChan() chan bool {
+func (agt *ExAgent) GetSyncChan() chan bool {
 	return agt.syncChan
 }
 
-func (agt ExAgent) ToJsonObj() interface{} {
+func (agt *ExAgent) ToJsonObj() interface{} {
 	return ExAgentJson{ID: string(agt.id), Value: agt.value}
 }

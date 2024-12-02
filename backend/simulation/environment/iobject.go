@@ -1,8 +1,8 @@
 package environment
 
-type Object interface {
+type IObject interface {
 	Interact()
-	Copy() Object
-	ChangeTo(Object)
+	Copy() IObject
+	ChangeTo(IObject)
 	ToJsonObj() interface{}
 }
