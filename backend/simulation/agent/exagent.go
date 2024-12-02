@@ -47,6 +47,6 @@ func (agt *ExAgent) Act() {
 	agt.value += agt.decision
 }
 
-func (agt ExAgent) ToJsonObj() interface{} {
+func (agt *ExAgent) ToJsonObj() interface{} {
 	return ExAgentJson{ID: string(agt.id), Value: agt.value, Decision: agt.decision}
 }
