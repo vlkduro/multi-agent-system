@@ -16,6 +16,7 @@ type agent struct {
 	id       envpkg.AgentID
 	env      *envpkg.Environment
 	syncChan chan bool
+	speed    int
 }
 
 // Agent is launched as a microservice

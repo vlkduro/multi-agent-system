@@ -1,7 +1,7 @@
 package agent
 
 import (
-	env "gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/simulation/environment"
+	envpkg "gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/simulation/environment"
 	"time"
 )
 
@@ -13,21 +13,54 @@ const (
 	Forager
 )
 
+// BeeAgent hérite de /simulation/agent/agent.go "struct Agent"
+// Interface IAgent
 type BeeAgent struct {
+	agent
 	ruche     Ruche
 	birthDate time.Time
 	maxNectar int
 	job       int
 }
 
-func NewBeeAgent(r Ruche, bd time.Time, maxnectar int, job int) *BeeAgent {
-	return &BeeAgent{r, bd, maxnectar, job}
+type BeeAgentJson struct {
+	ID        string `json:"id"`
+	MaxNectar int    `json:"maxNectar"`
+	Job       int    `json:"job"`
 }
 
-func (agt *BeeAgent) Start() env.IAgent {
+func NewBeeAgent(id string, env *envpkg.Environment, syncChan chan bool, s int, r Ruche, bd time.Time, maxnectar int, job int) *BeeAgent {
+	beeAgent := &BeeAgent{}
+	beeAgent.agent = agent{
+		iagt:     beeAgent,
+		id:       envpkg.AgentID(id),
+		env:      env,
+		syncChan: syncChan,
+		speed:    s,
+	}
+	beeAgent.ruche = r
+	beeAgent.birthDate = bd
+	beeAgent.maxNectar = maxnectar
+	beeAgent.job = job
+	return beeAgent
+}
 
+func (agt *BeeAgent) Start() {
 }
 
 func (agt *BeeAgent) Stop() {
 
+}
+
+func (agt *BeeAgent) Percept() {
+}
+
+func (agt *BeeAgent) Deliberate() {
+}
+
+func (agt *BeeAgent) Act() {
+}
+
+func (agt *BeeAgent) ToJsonObj() interface{} {
+	return BeeAgentJson{ID: string(agt.id), MaxNectar: agt.maxNectar, Job: agt.job}
 }
