@@ -2,7 +2,7 @@ package environment
 
 type AgentID string
 
-type Agent interface {
+type IAgent interface {
 	Start()
 	Percept()
 	Deliberate()

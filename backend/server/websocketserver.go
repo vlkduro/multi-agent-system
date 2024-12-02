@@ -29,11 +29,13 @@ func (server *WebSocketServer) newSimulation(w http.ResponseWriter, _ *http.Requ
 }
 
 func (server *WebSocketServer) launchSimulation(w http.ResponseWriter, _ *http.Request) {
-	if server.simulation != nil {
+	if server.simulation == nil {
+		server.simulation = simulation.NewSimulation(10, 10)
+	}
+
+	if server.simulation.IsRunning() {
 		w.WriteHeader(http.StatusConflict)
 		return
-	} else {
-		server.simulation = simulation.NewSimulation(10, 10)
 	}
 
 	go server.simulation.Run()
@@ -64,7 +66,7 @@ func (server *WebSocketServer) connectToSimulation(w http.ResponseWriter, r *htt
 	defer conn.Close()
 
 	for server.running {
-		time.Sleep(time.Second / 2) // 60 tps
+		time.Sleep(time.Second / 10) // 60 tps
 		if server.simulation == nil {
 			continue
 		}

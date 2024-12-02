@@ -11,7 +11,7 @@ import (
 
 type Simulation struct {
 	env     *envpkg.Environment
-	agts    []envpkg.Agent
+	agts    []envpkg.IAgent
 	objs    []envpkg.Object
 	running bool
 }
@@ -23,7 +23,7 @@ type SimulationJson struct {
 
 func NewSimulation(nagt int, nobj int) *Simulation {
 	simu := &Simulation{}
-	env := envpkg.NewEnvironment([]envpkg.Agent{}, []envpkg.Object{})
+	env := envpkg.NewEnvironment([]envpkg.IAgent{}, []envpkg.Object{})
 
 	simu.env = env
 
@@ -42,6 +42,10 @@ func NewSimulation(nagt int, nobj int) *Simulation {
 	return simu
 }
 
+func (simu Simulation) IsRunning() bool {
+	return simu.running
+}
+
 func (simu *Simulation) Run() {
 	simu.running = true
 	log.Printf("Simulation started")
@@ -58,7 +62,7 @@ func (simu *Simulation) Run() {
 
 	// Boucle de simulation
 	for _, agt := range simu.agts {
-		go func(agt envpkg.Agent) {
+		go func(agt envpkg.IAgent) {
 			for {
 				c := agt.GetSyncChan()
 				simu.env.Lock()
