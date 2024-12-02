@@ -31,6 +31,7 @@ func (agt *ExAgent) Start() {
 		for {
 			run := <-agt.syncChan
 			if !run {
+				agt.syncChan <- run
 				break
 			}
 			agt.Percept()

@@ -61,16 +61,20 @@ func (simu *Simulation) Run() {
 		go func(agt envpkg.Agent) {
 			for {
 				c := agt.GetSyncChan()
+				simu.env.Lock()
 				c <- simu.running
 				time.Sleep(1 * time.Millisecond) // attente avant de relancer l'agent
 				<-c
+				simu.env.Unlock()
 			}
 		}(agt)
 	}
 }
 
 func (simu *Simulation) Stop() {
+	simu.env.Lock()
 	simu.running = false
+	simu.env.Unlock()
 }
 
 // Intention d'en faire un microservice
