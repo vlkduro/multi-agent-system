@@ -27,9 +27,40 @@
 
 ### Problématique
 
-Quelles proportions d’abeilles faut-il à une colonie pour prospérer face au danger des frelons ? (_Apis Mellifera_ (abeille européenne à miel) vs _Vespa crabo_ (frelons européeens) ou _Vespa velutina_ (frelons asiatiques) apparemment les abeilles françaises ne savent pas encore s'En défendre, à vérifier) (tentative)
+Quelles proportions d’abeilles faut-il à une colonie pour prospérer face au danger des frelons ? (_Apis Mellifera_ (abeille européenne à miel) vs _Vespa crabo_ (frelons européeens) ou _Vespa velutina_ (frelons asiatiques) apparemment les abeilles françaises ne savent pas encore s'en défendre, à vérifier) (tentative)
 
 ### Courte description
+
+#### _Apis Mellifera_
+
+Objectif des abeilles ouvrières : protéger la colonie.
+Objectif de la reine : pondre des oeufs.
+Objectif du faux bourdon : féconder la reine. (il meurt après, s'il ne féconde pas avant l'hiver il est tué car ne sert plus à rien)
+
+Se décline en 3 types :
+
+- Ouvrières (40 jours de vie) => oeuf fécondé
+- Reine (jusqu'à 7 ans) : seul métier reine => oeuf fécondé
+- Faux bourdon (jusqu'à 3 mois) => oeufs non fécondés
+
+Métiers des abeilles :
+
+- Nettoyeuse
+- Nourice (nourrit larves et produit Gelée royale)
+- Dame d'honneur (10-15) (nourrir la reine à la gelée royale, nettoyer la reine)
+- Ventileuse (maintenir température dans la ruche et assécher le miel)
+- Architectes/cirières (au 12e jour) (produit de la cire à partir de leur corps et construire la ruche, les alvéoles)
+- Intendante (organise le rangement dans la ruche, miel au bon endroit, pollen au bon endroit, ponte de la reine)
+- Faiseuses de miel (reçoit nectar des butineuses et se transmettent le nectar de bouche à bouche pour créer le miel)
+- Gardienne (garde la ruche, le miel contre les papillons, bourdons, frelons, guèpes, ours, humains, souris, oiseau)
+- Butineuse (sort de la ruche, dernier métier, récupère nectar et pollen)
+- Éclaireuses (les meilleures butineuses)
+
+Il faut 25kg de miel à une colonie pour passer un hiver normal
+
+Une abeille ramène à la ruche nectar et pollen. C'est le nectar qui sert à faire le miel.
+
+Quelle capacité de pollen par abeille ?
 
 ### Règles
 
@@ -38,7 +69,7 @@ Quelles proportions d’abeilles faut-il à une colonie pour prospérer face au 
 - Une abeille avec sa capacité de pollen au maximum rentre déposer le pollen à la ruche
 - Une abeille qui rencontre une fleur pendant son retour retiens sa position
 - Une abeille connaissant la position d’au moins une fleur partage ses connaissances aux autres abeilles
-- Les abeilles fuient les frelons
+- Les abeilles fuient les frelons (mais défendent la colonie au prix de leur vie)
 - La ruche contient une reine qui produit des abeilles en consommant du miel
 - La ruche contient des abeilles productrices qui transforment le pollen en miel
 - La ruche meurt si elle n’a pas suffisamment de miel
