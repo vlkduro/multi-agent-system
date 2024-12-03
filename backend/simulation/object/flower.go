@@ -11,7 +11,7 @@ type FlowerGender string
 
 const (
 	Male   FlowerGender = "male"
-	Female              = "female"
+	Female FlowerGender = "female"
 )
 
 type Flower struct {

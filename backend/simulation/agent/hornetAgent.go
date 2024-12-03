@@ -10,7 +10,6 @@ import (
 // Interface IAgent
 type HornetAgent struct {
 	agent
-	ruche     Ruche
 	birthDate time.Time
 	maxNectar int
 	job       int

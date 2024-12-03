@@ -42,6 +42,10 @@ func (agt *ExAgent) Percept() {
 	agt.vision = ""
 	for x := -int(VisionRange / 2); x < int(VisionRange/2); x++ {
 		for y := -int(VisionRange / 2); y < int(VisionRange/2); y++ {
+			if x == 0 && y == 0 {
+				agt.vision += "ME"
+				continue
+			}
 			if seen := agt.env.GetAt(agt.pos.X+x, agt.pos.Y+y); seen != nil {
 				switch v := seen.(type) {
 				case envpkg.IObject:

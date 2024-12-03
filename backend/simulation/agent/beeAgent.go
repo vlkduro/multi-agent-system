@@ -30,30 +30,24 @@ type BeeAgentJson struct {
 	Job       int    `json:"job"`
 }
 
-func NewBeeAgent(id string, env *envpkg.Environment, syncChan chan bool, s int, r Ruche, bd time.Time, maxnectar int, job int) *BeeAgent {
+func NewBeeAgent(id string, env *envpkg.Environment, syncChan chan bool, speed int, r Ruche, dob time.Time, maxnectar int, job int) *BeeAgent {
 	beeAgent := &BeeAgent{}
 	beeAgent.agent = agent{
 		iagt:     beeAgent,
 		id:       envpkg.AgentID(id),
 		env:      env,
 		syncChan: syncChan,
-		speed:    s,
+		speed:    speed,
 	}
 	beeAgent.ruche = r
-	beeAgent.birthDate = bd
+	beeAgent.birthDate = dob
 	beeAgent.maxNectar = maxnectar
 	beeAgent.job = job
 	return beeAgent
 }
 
-func (agt *BeeAgent) Start() {
-}
-
-func (agt *BeeAgent) Stop() {
-
-}
-
 func (agt *BeeAgent) Percept() {
+
 }
 
 func (agt *BeeAgent) Deliberate() {
