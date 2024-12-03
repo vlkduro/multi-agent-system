@@ -4,6 +4,7 @@ import (
 	"time"
 
 	envpkg "gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/simulation/environment"
+	obj "gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/simulation/object"
 )
 
 type job int
@@ -18,7 +19,7 @@ const (
 // Interface IAgent
 type BeeAgent struct {
 	agent
-	ruche     Ruche
+	hive      obj.Hive
 	birthDate time.Time
 	maxNectar int
 	job       int
@@ -30,7 +31,7 @@ type BeeAgentJson struct {
 	Job       int    `json:"job"`
 }
 
-func NewBeeAgent(id string, env *envpkg.Environment, syncChan chan bool, speed int, r Ruche, dob time.Time, maxnectar int, job int) *BeeAgent {
+func NewBeeAgent(id string, env *envpkg.Environment, syncChan chan bool, speed int, r obj.Hive, dob time.Time, maxnectar int, job int) *BeeAgent {
 	beeAgent := &BeeAgent{}
 	beeAgent.agent = agent{
 		iagt:     beeAgent,
@@ -39,7 +40,7 @@ func NewBeeAgent(id string, env *envpkg.Environment, syncChan chan bool, speed i
 		syncChan: syncChan,
 		speed:    speed,
 	}
-	beeAgent.ruche = r
+	beeAgent.hive = r
 	beeAgent.birthDate = dob
 	beeAgent.maxNectar = maxnectar
 	beeAgent.job = job
