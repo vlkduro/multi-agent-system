@@ -82,19 +82,33 @@ Améliorations possibles :
 - [« The Waggle Dance of the Honeybee »](https://www.youtube.com/watch?v=bFDGPgXtK-U), Georgia Tech College of Computing, 03/02/2011 (visionnée le 28/11/2024).
 - [« Bee Dance Language - the linguistics behind animal language »](https://www.youtube.com/watch?v=pb1lRI-YePU), NativLang, 20/12/2014 (visionnée le 28/11/2024)
 - [« Les moyens de communication impressionnants des abeilles »](https://www.nationalgeographic.fr/video/animaux/les-moyens-de-communication-impressionnants-des-abeilles), National Geographic, 14/09/2023 (visionnée le 28/11/2024)
+- https://www.youtube.com/watch?v=Cylim87fFgU (pas encore visionnée)
 
 ### Généralités et apiculture
 
 - Podcast Le bruit de la ruche (Saison 1, épisodes 1 à 5 écoutés le 28/11/2024)
 - Documentaire « Des abeilles et des hommes - Et si les abeilles disparaissaient », Markus Imhoof, 2012 (visionné le 28/11/2024)
+- http://rucherecole68.thann.free.fr/Calendrier%20apicole/des_abeilles_des_chiffres.pdf (consulté le 02/12/2024)
+- https://bee2bee.com.au/the-different-job-titles-of-a-worker-bee/ (consulté le 02/12/2024)
+- https://www.miel-direct.fr/bilan-annuel-colonie/ (consulté le 02/12/2024)
+- https://www.theguardian.com/environment/2023/apr/02/bees-intelligence-minds-pollination (consulté le 28/11/2024)
+- https://www.theguardian.com/environment/2020/jan/07/honeybees-deaths-almonds-hives-aoe (consulté le 28/11/2024)
+- https://fr.wikipedia.org/wiki/Apis_mellifera (consulté le 29/11/2024)
 
 ### Prédateurs des abeilles
 
 - https://www.apiculteurs-occitanie.fr/informations/predateurs/ (consulté le 28/11/2024) : prédateurs des abeilles
+- https://www.theguardian.com/environment/article/2024/aug/30/colony-invasive-red-dwarf-honeybee-first-time-europe (consulté le 28/11/2024)
+- https://www.theguardian.com/environment/article/2024/jun/03/asian-hornets-overwintered-uk-first-time-dna-testing (consulté le 28/11/2024)
+- https://www.apiculture.net/blog/savoir-differencier-le-frelon-asiatique-de-l-europeen-n181 (consulté le 29/11/2024)
+- https://www.apiculture.net/blog/frelon-europeen-n104 (consulté le 29/11/2024)
+- https://www.pollinis.org/publications/le-frelon-asiatique-un-fleau-redoutable-pour-nos-colonies-d-abeilles-locales/ (consulté le 29/11/2024)
+- https://neature.fr/especes/frelon-europeen/ (consulté le 02/12/2024)
+- https://fr.wikipedia.org/wiki/Vespa_(insecte)#Ph%C3%A9romone_de_reconnaissance_et_de_d%C3%A9fense_group%C3%A9e (consulté le 29/11/2024)
 
 ### Défense contre les prédateurs
 
-- [« Le redoutable système de défense de l'abeille japonaise face à un frelon »](https://www.youtube.com/watch?v=bDHWv8_-f4U), National Geographic Wild France, 21/11/2020(visionnée le 28/11/2024)
+- [« Le redoutable système de défense de l'abeille japonaise face à un frelon »](https://www.youtube.com/watch?v=bDHWv8_-f4U), National Geographic Wild France, 21/11/2020 (visionnée le 28/11/2024)
   - les abeilles japonaises sont capables de tuer un frelon, dès sa première victime les abeilles se mettent sur le frelon et agitent leur dard toutes ensemble pour créer de la chaleur. Les abeilles japonaises supportent jusqu’à 48 degré celsius alors que le frelon ne survit pas à plus de 46 degré (quel type de frelon ?)
 - [« Ce frelon n'aurait pas dû se frotter à ces abeilles »](https://www.youtube.com/watch?v=N_AO8XvAZgQ), National Geographic Wild France, 28/04/2021 (visionnée le 28/11/2024)
   - les gardiennes se jettent sur le frelon. Les abeilles sont programmées pour défendre la colonie même si elles doivent y laisser la vie. Piqûres d’abeilles ne tuent pas les frelons mais les affaiblissent. Les frelons fuient mais le dernier est cuit de la même manière que dans la précédente vidéo. Pas d’info sur les espèces exactes.
