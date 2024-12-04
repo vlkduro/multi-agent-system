@@ -56,21 +56,48 @@ func (h Hive) Copy() interface{} {
 	}
 }
 
-/*func (h Hive) Become(interface{}) {
+func (h Hive) Become(h_alt interface{}) {
+	if h_alt == nil {
+		return
+	}
 
+	altered_hive, ok := h_alt.(*Hive)
+
+	if ok {
+		h.id = altered_hive.id
+		h.pos = altered_hive.pos.Copy()
+		h.qHoney = altered_hive.qHoney
+		h.qNectar = altered_hive.qNectar
+		h.qPollen = altered_hive.qPollen
+		h.queen = altered_hive.queen
+		h.minHoney = altered_hive.minHoney
+	}
 }
 
-func (h Hive) ToJsonObj() interface{}
-func (h Hive) Interact()
+func (h Hive) ToJsonObj() interface{} {
+	return HiveJson{
+		ID:             string(h.id),
+		Position:       *h.pos.Copy(),
+		QuantityHoney:  h.qHoney,
+		QuantityNectar: h.qNectar,
+		QuantityPollen: h.qPollen,
+		Quenn:          h.queen,
+		MinHoney:       h.minHoney,
+	}
+}
+
+func (h Hive) Interact() {
+	return
+}
 
 func (h Hive) checkResourcesAndBees() {
-
+	return
 }
 
 func (h Hive) growColony() {
-
+	return
 }
 
 func (h Hive) Die() {
-
-}*/
+	return
+}

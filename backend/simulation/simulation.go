@@ -55,6 +55,21 @@ func NewSimulation(nagt int, nobj int) *Simulation {
 		simu.env.AddObject(obj)
 	}
 
+	// Création d'une ruche
+	nhive := 1
+	for i := 0; i < nhive; i++ {
+		// création de l'objet
+		id := fmt.Sprintf("Hive #%d", i)
+		pos := envpkg.NewPosition(9, 8, 12, 12)
+		obj := obj.NewHive(id, pos, 0, 0, 0, 10)
+
+		// ajout de l'objet à la simulation
+		simu.objs = append(simu.objs, obj)
+
+		// ajout de l'objet à l'environnement
+		simu.env.AddObject(obj)
+	}
+
 	return simu
 }
 
