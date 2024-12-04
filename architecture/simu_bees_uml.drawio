@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram name="Page-1" id="HGpFZIgrX5HXIKhn64qT">
-        <mxGraphModel dx="494" dy="264" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+        <mxGraphModel dx="1330" dy="532" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -95,16 +95,16 @@
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="73OWAqlcFQXWZOg_Nexa-39" value="Hive" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="690" y="490" width="195" height="180" as="geometry"/>
+                    <mxGeometry x="682.5" y="490" width="210" height="180" as="geometry"/>
                 </mxCell>
                 <mxCell id="73OWAqlcFQXWZOg_Nexa-40" value="- quantityHoney : int&lt;br&gt;- quantityNectar : int&lt;br&gt;- quantityPollen : int&lt;br&gt;- queen : boolean&lt;br&gt;- minHoney : int" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="73OWAqlcFQXWZOg_Nexa-39" vertex="1">
-                    <mxGeometry y="26" width="195" height="84" as="geometry"/>
+                    <mxGeometry y="26" width="210" height="84" as="geometry"/>
                 </mxCell>
                 <mxCell id="73OWAqlcFQXWZOg_Nexa-41" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="73OWAqlcFQXWZOg_Nexa-39" vertex="1">
-                    <mxGeometry y="110" width="195" height="8" as="geometry"/>
+                    <mxGeometry y="110" width="210" height="8" as="geometry"/>
                 </mxCell>
-                <mxCell id="73OWAqlcFQXWZOg_Nexa-42" value="+ CheckResourcesAndBees()&lt;br&gt;- growColony()&lt;br&gt;+ Die()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="73OWAqlcFQXWZOg_Nexa-39" vertex="1">
-                    <mxGeometry y="118" width="195" height="62" as="geometry"/>
+                <mxCell id="73OWAqlcFQXWZOg_Nexa-42" value="+ IsAlive(): bool&lt;br&gt;+ Die()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="73OWAqlcFQXWZOg_Nexa-39" vertex="1">
+                    <mxGeometry y="118" width="210" height="62" as="geometry"/>
                 </mxCell>
                 <mxCell id="73OWAqlcFQXWZOg_Nexa-52" value="«interface»&lt;br&gt;&lt;b&gt;BeeBehavior&lt;/b&gt;" style="html=1;whiteSpace=wrap;" parent="1" vertex="1">
                     <mxGeometry x="455" y="950" width="110" height="50" as="geometry"/>
@@ -117,7 +117,7 @@
                 <mxCell id="73OWAqlcFQXWZOg_Nexa-55" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;endArrow=block;endFill=0;" parent="1" source="20" target="73OWAqlcFQXWZOg_Nexa-52" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="73OWAqlcFQXWZOg_Nexa-57" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;endArrow=block;endFill=0;" parent="1" source="22" edge="1" target="73OWAqlcFQXWZOg_Nexa-52">
+                <mxCell id="73OWAqlcFQXWZOg_Nexa-57" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;endArrow=block;endFill=0;" parent="1" source="22" target="73OWAqlcFQXWZOg_Nexa-52" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="510" y="1000" as="targetPoint"/>
                     </mxGeometry>
@@ -134,7 +134,7 @@
                 <mxCell id="11" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="9" vertex="1">
                     <mxGeometry y="26" width="160" height="38" as="geometry"/>
                 </mxCell>
-                <mxCell id="41" value="- growColony()&lt;br&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="9">
+                <mxCell id="41" value="- growColony()&lt;br&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="9" vertex="1">
                     <mxGeometry y="64" width="160" height="36" as="geometry"/>
                 </mxCell>
                 <mxCell id="14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;endArrow=block;endFill=0;" parent="1" source="24" target="73OWAqlcFQXWZOg_Nexa-52" edge="1">
@@ -146,7 +146,7 @@
                 <mxCell id="20" value="&lt;i style=&quot;font-weight: 400;&quot;&gt;ConcreteBehavior&lt;/i&gt;&lt;div style=&quot;&quot;&gt;workerBee&lt;/div&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="170" y="1060" width="190" height="148" as="geometry"/>
                 </mxCell>
-                <mxCell id="43" value="- gender : female" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="20">
+                <mxCell id="43" value="- gender : female" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="20" vertex="1">
                     <mxGeometry y="40" width="190" height="70" as="geometry"/>
                 </mxCell>
                 <mxCell id="21" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="20" vertex="1">
@@ -155,46 +155,46 @@
                 <mxCell id="22" value="&lt;i style=&quot;font-weight: 400;&quot;&gt;ConcreteBehavior&lt;/i&gt;&lt;div style=&quot;&quot;&gt;guardianBee&lt;/div&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="430" y="1060" width="160" height="190" as="geometry"/>
                 </mxCell>
-                <mxCell id="42" value="- gender : female" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="22">
+                <mxCell id="42" value="- gender : female" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="22" vertex="1">
                     <mxGeometry y="40" width="160" height="70" as="geometry"/>
                 </mxCell>
                 <mxCell id="23" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="22" vertex="1">
                     <mxGeometry y="110" width="160" height="38" as="geometry"/>
                 </mxCell>
-                <mxCell id="38" value="- alert&lt;span style=&quot;background-color: initial;&quot;&gt;()&lt;br&gt;- checkForPredators()&lt;br&gt;&lt;/span&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="22">
+                <mxCell id="38" value="- alert&lt;span style=&quot;background-color: initial;&quot;&gt;()&lt;br&gt;- checkForPredators()&lt;br&gt;&lt;/span&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="22" vertex="1">
                     <mxGeometry y="148" width="160" height="42" as="geometry"/>
                 </mxCell>
                 <mxCell id="24" value="&lt;i style=&quot;font-weight: 400;&quot;&gt;ConcreteBehavior&lt;/i&gt;&lt;div style=&quot;&quot;&gt;foragerBee&lt;/div&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="650" y="1060" width="200" height="250" as="geometry"/>
                 </mxCell>
-                <mxCell id="34" value="- visitedFlowers: []Coordinate&lt;br&gt;&lt;div&gt;- maxNectar : int&lt;/div&gt;&lt;div&gt;- nectarQuantity : int&lt;/div&gt;&lt;div&gt;- pollenQuantity : int&lt;/div&gt;&lt;div&gt;- gender : female&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="24">
+                <mxCell id="34" value="- visitedFlowers: []Coordinate&lt;br&gt;&lt;div&gt;- maxNectar : int&lt;/div&gt;&lt;div&gt;- nectarQuantity : int&lt;/div&gt;&lt;div&gt;- pollenQuantity : int&lt;/div&gt;&lt;div&gt;- gender : female&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="24" vertex="1">
                     <mxGeometry y="40" width="200" height="80" as="geometry"/>
                 </mxCell>
                 <mxCell id="25" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="24" vertex="1">
                     <mxGeometry y="120" width="200" height="38" as="geometry"/>
                 </mxCell>
-                <mxCell id="32" value="- gatherFlower()&lt;div&gt;- findFlower()&lt;/div&gt;&lt;div&gt;- comeBackToHive()&lt;/div&gt;&lt;div&gt;- saveFlowerLocation()&lt;/div&gt;&lt;div&gt;- shareFlowerLocation()&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="24">
+                <mxCell id="32" value="- gatherFlower()&lt;div&gt;- findFlower()&lt;/div&gt;&lt;div&gt;- comeBackToHive()&lt;/div&gt;&lt;div&gt;- saveFlowerLocation()&lt;/div&gt;&lt;div&gt;- shareFlowerLocation()&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="24" vertex="1">
                     <mxGeometry y="158" width="200" height="92" as="geometry"/>
                 </mxCell>
-                <mxCell id="26" value="Bee" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="26" value="Bee" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="430" y="654" width="160" height="230" as="geometry"/>
                 </mxCell>
-                <mxCell id="29" value="&lt;div&gt;- hive : Hive&lt;br&gt;&lt;/div&gt;&lt;div&gt;- birthDate: Time&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;- job : [worker, guardian, forager]&lt;/span&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;- gender : [male, female]&lt;/span&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="26">
+                <mxCell id="29" value="&lt;div&gt;- hive : Hive&lt;br&gt;&lt;/div&gt;&lt;div&gt;- birthDate: Time&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;- job : [worker, guardian, forager]&lt;/span&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;- gender : [male, female]&lt;/span&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="26" vertex="1">
                     <mxGeometry y="26" width="160" height="86" as="geometry"/>
                 </mxCell>
-                <mxCell id="27" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="26">
+                <mxCell id="27" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="26" vertex="1">
                     <mxGeometry y="112" width="160" height="8" as="geometry"/>
                 </mxCell>
-                <mxCell id="28" value="&lt;span style=&quot;background-color: initial;&quot;&gt;- runAwayFromPredator()&lt;/span&gt;&lt;br&gt;&lt;div&gt;- shareLocation()&lt;/div&gt;&lt;div&gt;- findAJob()&lt;/div&gt;&lt;div&gt;- becomeForager()&lt;/div&gt;&lt;div&gt;+ Die()&lt;/div&gt;&lt;div&gt;- fightPredator()&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="26">
+                <mxCell id="28" value="&lt;span style=&quot;background-color: initial;&quot;&gt;- runAwayFromPredator()&lt;/span&gt;&lt;br&gt;&lt;div&gt;- shareLocation()&lt;/div&gt;&lt;div&gt;- findAJob()&lt;/div&gt;&lt;div&gt;- becomeForager()&lt;/div&gt;&lt;div&gt;+ Die()&lt;/div&gt;&lt;div&gt;- fightPredator()&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="26" vertex="1">
                     <mxGeometry y="120" width="160" height="110" as="geometry"/>
                 </mxCell>
-                <mxCell id="35" value="CoordinateType" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="35" value="CoordinateType" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="990" y="996" width="210" height="94" as="geometry"/>
                 </mxCell>
-                <mxCell id="37" value="+ x : int&lt;br&gt;+ y : int" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="35">
+                <mxCell id="37" value="+ x : int&lt;br&gt;+ y : int" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="35" vertex="1">
                     <mxGeometry y="26" width="210" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="36" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="35">
+                <mxCell id="36" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="35" vertex="1">
                     <mxGeometry y="56" width="210" height="38" as="geometry"/>
                 </mxCell>
             </root>

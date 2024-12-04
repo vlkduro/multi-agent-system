@@ -90,14 +90,13 @@ func (h Hive) Interact() {
 	return
 }
 
-func (h Hive) checkResourcesAndBees() {
+func (h Hive) IsAlive() (isAlive bool) {
+	if h.qHoney >= h.minHoney && h.queen {
+		isAlive = true
+	}
 	return
 }
 
-func (h Hive) growColony() {
-	return
-}
-
-func (h Hive) Die() {
-	return
+func (h *Hive) Die() {
+	h.queen = false
 }
