@@ -11,7 +11,7 @@ const VisionRange = 6
 
 // ExAgent est un exemple d'agent
 type ExAgent struct {
-	agent
+	Agent
 	value    int
 	decision int
 	vision   string
@@ -27,7 +27,7 @@ type ExAgentJson struct {
 
 func NewExAgent(id string, pos *envpkg.Position, env *envpkg.Environment, syncChan chan bool) *ExAgent {
 	exagt := &ExAgent{}
-	exagt.agent = agent{
+	exagt.Agent = Agent{
 		iagt:     exagt,
 		id:       envpkg.AgentID(id),
 		pos:      pos.Copy(),

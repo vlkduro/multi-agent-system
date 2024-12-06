@@ -11,18 +11,18 @@ import (
 // - id: An identifier for the agent
 // - env: A pointer to the environment in which the agent operates
 // - syncChan: A channel used for synchronization purposes
-type agent struct {
+type Agent struct {
 	iagt     envpkg.IAgent
 	id       envpkg.AgentID
 	pos      *envpkg.Position
 	env      *envpkg.Environment
 	syncChan chan bool
-	speed    int
+	Speed    int
 }
 
 // Agent is launched as a microservice
-func (agt *agent) Start() {
-	fmt.Printf("[%s] Starting agent\n", agt.ID())
+func (agt *Agent) Start() {
+	fmt.Printf("[%s] Starting Agent\n", agt.ID())
 	go func() {
 		for {
 			run := <-agt.syncChan
@@ -35,19 +35,19 @@ func (agt *agent) Start() {
 			agt.iagt.Act()
 			agt.syncChan <- run
 		}
-		fmt.Printf("[%s] Stopping agent\n", agt.ID())
+		fmt.Printf("[%s] Stopping Agent\n", agt.ID())
 	}()
 }
 
-func (agt agent) ID() envpkg.AgentID {
+func (agt Agent) ID() envpkg.AgentID {
 	return agt.id
 }
 
-func (agt agent) GetSyncChan() chan bool {
+func (agt Agent) GetSyncChan() chan bool {
 	return agt.syncChan
 }
 
-func (agt agent) Position() *envpkg.Position {
+func (agt Agent) Position() *envpkg.Position {
 	if agt.pos == nil {
 		return nil
 	}
