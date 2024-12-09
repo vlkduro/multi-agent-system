@@ -8,6 +8,7 @@ import (
 	agt "gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/simulation/agent"
 	envpkg "gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/simulation/environment"
 	obj "gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/simulation/object"
+	"gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/utils"
 )
 
 type Simulation struct {
@@ -18,8 +19,9 @@ type Simulation struct {
 }
 
 type SimulationJson struct {
-	Agents  []interface{} `json:"agents"`
-	Objects []interface{} `json:"objects"`
+	Agents      []interface{} `json:"agents"`
+	Objects     []interface{} `json:"objects"`
+	Environment interface{}   `json:"environment"`
 }
 
 func NewSimulation(nagt int, nobj int) *Simulation {
@@ -28,11 +30,13 @@ func NewSimulation(nagt int, nobj int) *Simulation {
 
 	simu.env = env
 
+	mapDimension := utils.GetMapDimension()
+
 	for i := 0; i < nagt; i++ {
 		// création de l'agent
 		id := fmt.Sprintf("Agent #%d", i)
 		syncChan := make(chan bool)
-		pos := envpkg.NewPosition(i, i, 12, 12)
+		pos := envpkg.NewPosition(i, i, mapDimension, mapDimension)
 		agt := agt.NewExAgent(id, pos, simu.env, syncChan)
 
 		// ajout de l'agent à la simulation
@@ -45,7 +49,7 @@ func NewSimulation(nagt int, nobj int) *Simulation {
 	for i := 0; i < nobj; i++ {
 		// création de l'objet
 		id := fmt.Sprintf("Object #%d", i)
-		pos := envpkg.NewPosition(nobj-i, i, 12, 12)
+		pos := envpkg.NewPosition(nobj-i, i, mapDimension, mapDimension)
 		obj := obj.NewFlower(id, pos)
 
 		// ajout de l'objet à la simulation
@@ -60,7 +64,7 @@ func NewSimulation(nagt int, nobj int) *Simulation {
 	for i := 0; i < nhive; i++ {
 		// création de l'objet
 		id := fmt.Sprintf("Hive #%d", i)
-		pos := envpkg.NewPosition(9, 8, 12, 12)
+		pos := envpkg.NewPosition(9, 8, mapDimension, mapDimension)
 		obj := obj.NewHive(id, pos, 0, 0, 0, 10)
 
 		// ajout de l'objet à la simulation
@@ -139,5 +143,5 @@ func (simu Simulation) ToJsonObj() SimulationJson {
 		objects = append(objects, obj.ToJsonObj())
 	}
 
-	return SimulationJson{Agents: agents, Objects: objects}
+	return SimulationJson{Agents: agents, Objects: objects, Environment: simu.env.ToJsonObj()}
 }

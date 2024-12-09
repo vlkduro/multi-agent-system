@@ -2,7 +2,11 @@ package environment
 
 import (
 	"sync"
+
+	"gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/utils"
 )
+
+var mapDimension int
 
 type Environment struct {
 	sync.Mutex
@@ -11,19 +15,29 @@ type Environment struct {
 	grid [][]interface{}
 }
 
+type EnvironmentJson struct {
+	MapDimension int             `json:"mapDimension"`
+	Grid         [][]interface{} `json:"grid"`
+}
+
 func NewEnvironment(agts []IAgent, objs []IObject) *Environment {
-	grid := make([][]interface{}, 12)
+	mapDimension = utils.GetMapDimension()
+	grid := make([][]interface{}, mapDimension)
 	for i := range grid {
-		grid[i] = make([]interface{}, 12)
+		grid[i] = make([]interface{}, mapDimension)
 	}
 	return &Environment{agts: agts, objs: objs, grid: grid}
 }
 
 func (env *Environment) GetAt(x int, y int) interface{} {
-	if x < 0 || y < 0 {
+	if x < 0 || y < 0 || x >= mapDimension || y >= mapDimension {
 		return nil
 	}
 	return env.grid[x][y]
+}
+
+func (env *Environment) GetMap() [][]interface{} {
+	return env.grid
 }
 
 func (env *Environment) AddAgent(agt IAgent) bool {
@@ -44,4 +58,27 @@ func (env *Environment) AddObject(obj IObject) bool {
 	env.objs = append(env.objs, obj)
 	env.grid[pos.X][pos.Y] = obj
 	return true
+}
+
+func (env *Environment) ToJsonObj() interface{} {
+	grid := make([][]interface{}, mapDimension)
+	for i := range grid {
+		grid[i] = make([]interface{}, mapDimension)
+	}
+
+	for x := range env.grid {
+		for y := range env.grid[x] {
+			gridObj := env.grid[x][y]
+			if gridObj != nil {
+				switch obj := gridObj.(type) {
+				case IAgent:
+					grid[x][y] = obj.ToJsonObj()
+				case IObject:
+					grid[x][y] = obj.ToJsonObj()
+				}
+			}
+		}
+	}
+
+	return EnvironmentJson{MapDimension: mapDimension, Grid: grid}
 }

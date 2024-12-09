@@ -71,6 +71,12 @@ func (agt *ExAgent) Deliberate() {
 
 func (agt *ExAgent) Act() {
 	agt.value += agt.decision
+	// Stupid movement
+	if agt.decision < 0 {
+		agt.pos.GoLeft(agt.env.GetMap())
+	} else {
+		agt.pos.GoRight(agt.env.GetMap())
+	}
 }
 
 func (agt ExAgent) ToJsonObj() interface{} {
