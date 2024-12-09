@@ -1,8 +1,10 @@
 package agent
 
 import (
-	envpkg "gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/simulation/environment"
 	"time"
+
+	envpkg "gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/simulation/environment"
+	obj "gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/simulation/object"
 )
 
 type job int
@@ -17,7 +19,7 @@ const (
 // Interface IAgent
 type BeeAgent struct {
 	agent
-	ruche     Ruche
+	hive      obj.Hive
 	birthDate time.Time
 	maxNectar int
 	job       int
@@ -29,30 +31,24 @@ type BeeAgentJson struct {
 	Job       int    `json:"job"`
 }
 
-func NewBeeAgent(id string, env *envpkg.Environment, syncChan chan bool, s int, r Ruche, bd time.Time, maxnectar int, job int) *BeeAgent {
+func NewBeeAgent(id string, env *envpkg.Environment, syncChan chan bool, speed int, r obj.Hive, dob time.Time, maxnectar int, job int) *BeeAgent {
 	beeAgent := &BeeAgent{}
 	beeAgent.agent = agent{
 		iagt:     beeAgent,
 		id:       envpkg.AgentID(id),
 		env:      env,
 		syncChan: syncChan,
-		speed:    s,
+		speed:    speed,
 	}
-	beeAgent.ruche = r
-	beeAgent.birthDate = bd
+	beeAgent.hive = r
+	beeAgent.birthDate = dob
 	beeAgent.maxNectar = maxnectar
 	beeAgent.job = job
 	return beeAgent
 }
 
-func (agt *BeeAgent) Start() {
-}
-
-func (agt *BeeAgent) Stop() {
-
-}
-
 func (agt *BeeAgent) Percept() {
+
 }
 
 func (agt *BeeAgent) Deliberate() {

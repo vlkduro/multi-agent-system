@@ -1,4 +1,4 @@
-module gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux
+module gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend
 
 go 1.23.1
 

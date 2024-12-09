@@ -5,14 +5,15 @@ import (
 	"log"
 	"time"
 
-	agt "gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/simulation/agent"
-	envpkg "gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/simulation/environment"
+	agt "gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/simulation/agent"
+	envpkg "gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/simulation/environment"
+	obj "gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/simulation/object"
 )
 
 type Simulation struct {
 	env     *envpkg.Environment
 	agts    []envpkg.IAgent
-	objs    []envpkg.Object
+	objs    []envpkg.IObject
 	running bool
 }
 
@@ -23,7 +24,7 @@ type SimulationJson struct {
 
 func NewSimulation(nagt int, nobj int) *Simulation {
 	simu := &Simulation{}
-	env := envpkg.NewEnvironment([]envpkg.IAgent{}, []envpkg.Object{})
+	env := envpkg.NewEnvironment([]envpkg.IAgent{}, []envpkg.IObject{})
 
 	simu.env = env
 
@@ -31,7 +32,8 @@ func NewSimulation(nagt int, nobj int) *Simulation {
 		// création de l'agent
 		id := fmt.Sprintf("Agent #%d", i)
 		syncChan := make(chan bool)
-		agt := agt.NewExAgent(id, simu.env, syncChan)
+		pos := envpkg.NewPosition(i, i, 12, 12)
+		agt := agt.NewExAgent(id, pos, simu.env, syncChan)
 
 		// ajout de l'agent à la simulation
 		simu.agts = append(simu.agts, agt)
@@ -39,6 +41,35 @@ func NewSimulation(nagt int, nobj int) *Simulation {
 		// ajout de l'agent à l'environnement
 		simu.env.AddAgent(agt)
 	}
+
+	for i := 0; i < nobj; i++ {
+		// création de l'objet
+		id := fmt.Sprintf("Object #%d", i)
+		pos := envpkg.NewPosition(nobj-i, i, 12, 12)
+		obj := obj.NewFlower(id, pos)
+
+		// ajout de l'objet à la simulation
+		simu.objs = append(simu.objs, obj)
+
+		// ajout de l'objet à l'environnement
+		simu.env.AddObject(obj)
+	}
+
+	// Création d'une ruche
+	nhive := 1
+	for i := 0; i < nhive; i++ {
+		// création de l'objet
+		id := fmt.Sprintf("Hive #%d", i)
+		pos := envpkg.NewPosition(9, 8, 12, 12)
+		obj := obj.NewHive(id, pos, 0, 0, 0, 10)
+
+		// ajout de l'objet à la simulation
+		simu.objs = append(simu.objs, obj)
+
+		// ajout de l'objet à l'environnement
+		simu.env.AddObject(obj)
+	}
+
 	return simu
 }
 
