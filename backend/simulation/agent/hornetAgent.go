@@ -9,7 +9,7 @@ import (
 // HornetAgent hérite de /simulation/agent/agent.go "struct Agent"
 // Interface IAgent
 type HornetAgent struct {
-	agent
+	Agent
 	birthDate time.Time
 	maxNectar int
 	job       int
@@ -21,12 +21,12 @@ type HornetAgentJson struct {
 
 func NewHornetAgent(id string, env *envpkg.Environment, syncChan chan bool, s int) *HornetAgent {
 	hAgent := &HornetAgent{}
-	hAgent.agent = agent{
+	hAgent.Agent = Agent{
 		iagt:     hAgent,
 		id:       envpkg.AgentID(id),
 		env:      env,
 		syncChan: syncChan,
-		speed:    s,
+		Speed:    s,
 	}
 
 	return hAgent
