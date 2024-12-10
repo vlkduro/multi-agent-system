@@ -38,6 +38,14 @@ func getStringAttributeFromConfigFile(attribute string) string {
 	return result[attribute]
 }
 
+func GetNumberAgents() int {
+	return getIntAttributeFromConfigFile("NumberAgents")
+}
+
+func GetNumberObjects() int {
+	return getIntAttributeFromConfigFile("NumberObjects")
+}
+
 func GetMapDimension() int {
 	return getIntAttributeFromConfigFile("MapDimension")
 }

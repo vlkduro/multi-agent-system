@@ -1,5 +1,11 @@
+# Simulation
+NumberAgents: 10
+NumberObjects: 10
+
 # Environment 
 MapDimension: 25
+
+
 
 # Agents
 ExAgentVisionRange: 6
