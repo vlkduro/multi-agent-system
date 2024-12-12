@@ -143,6 +143,18 @@
                         const td = document.createElement('td');
                         td.className = "map-cell";
                         td.textContent = row[i] ? row[i].id : " " ;
+                        if (row[i] && row[i].orientation === 'N') {
+                            td.style.borderTop = 'red solid 2px';
+                        }
+                        if (row[i] && row[i].orientation === 'S') {
+                            td.style.borderBottom = 'red solid 2px';
+                        }
+                        if (row[i] && row[i].orientation === 'E') {
+                            td.style.borderRight = 'red solid 2px';
+                        }
+                        if (row[i] && row[i].orientation === 'W') {
+                            td.style.borderLeft = 'red solid 2px';
+                        }
                         tr.appendChild(td);
                     });
                     mapTable.appendChild(tr);

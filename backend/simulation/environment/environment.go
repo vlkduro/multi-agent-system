@@ -40,6 +40,10 @@ func (env *Environment) GetMap() [][]interface{} {
 	return env.grid
 }
 
+func (env *Environment) IsValidPosition(x int, y int) bool {
+	return x >= 0 && y >= 0 && x < mapDimension && y < mapDimension
+}
+
 func (env *Environment) AddAgent(agt IAgent) bool {
 	pos := agt.Position()
 	if env.GetAt(pos.X, pos.Y) != nil {

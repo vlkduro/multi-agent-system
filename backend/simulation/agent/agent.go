@@ -3,6 +3,7 @@ package agent
 import (
 	"fmt"
 
+	"gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/simulation/agent/vision"
 	envpkg "gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/simulation/environment"
 )
 
@@ -12,12 +13,14 @@ import (
 // - env: A pointer to the environment in which the agent operates
 // - syncChan: A channel used for synchronization purposes
 type Agent struct {
-	iagt     envpkg.IAgent
-	id       envpkg.AgentID
-	pos      *envpkg.Position
-	env      *envpkg.Environment
-	syncChan chan bool
-	Speed    int
+	iagt        envpkg.IAgent
+	id          envpkg.AgentID
+	pos         *envpkg.Position
+	orientation envpkg.Orientation
+	env         *envpkg.Environment
+	visionFunc  vision.VisionFunc
+	syncChan    chan bool
+	Speed       int
 }
 
 // Agent is launched as a microservice
@@ -52,4 +55,12 @@ func (agt Agent) Position() *envpkg.Position {
 		return nil
 	}
 	return agt.pos.Copy()
+}
+
+func (agt Agent) see() []vision.SeenElem {
+	return agt.visionFunc(agt.iagt, agt.env)
+}
+
+func (agt Agent) Orientation() envpkg.Orientation {
+	return agt.orientation
 }
