@@ -17,6 +17,8 @@ type ExAgent struct {
 	toAdd    int
 	movement envpkg.Orientation
 	vision   string
+	// for debug
+	seenElems []vision.SeenElem
 }
 
 type ExAgentJson struct {
@@ -27,6 +29,7 @@ type ExAgentJson struct {
 	Position    envpkg.Position    `json:"position"`
 	Orientation envpkg.Orientation `json:"orientation"`
 	Vision      string             `json:"vision"`
+	SeenElems   []vision.SeenElem  `json:"seenElems"`
 }
 
 func NewExAgent(id string, pos *envpkg.Position, env *envpkg.Environment, syncChan chan bool) *ExAgent {
@@ -50,8 +53,8 @@ func (agt *ExAgent) Percept() {
 		agt.vision += fmt.Sprintf("%s[%d;%d] ", item, x, y)
 	}
 	logPos("ME", agt.pos.X, agt.pos.Y)
-	seenElems := agt.see()
-	for _, seen := range seenElems {
+	agt.seenElems = agt.see()
+	for _, seen := range agt.seenElems {
 		if seen.Elem != nil {
 			switch v := seen.Elem.(type) {
 			case envpkg.IObject:
@@ -111,5 +114,6 @@ func (agt ExAgent) ToJsonObj() interface{} {
 		Movement:    agt.movement,
 		Position:    *agt.pos,
 		Orientation: agt.orientation,
-		Vision:      agt.vision}
+		Vision:      agt.vision,
+		SeenElems:   agt.seenElems}
 }

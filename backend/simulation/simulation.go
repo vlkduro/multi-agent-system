@@ -34,7 +34,7 @@ func NewSimulation(nagt int, nobj int) *Simulation {
 
 	for i := 0; i < nagt; i++ {
 		// création de l'agent
-		id := fmt.Sprintf("Agent #%d", i)
+		id := fmt.Sprintf("ExAgent #%d", i)
 		syncChan := make(chan bool)
 		pos := envpkg.NewPosition(i, i, mapDimension, mapDimension)
 		agt := agt.NewExAgent(id, pos, simu.env, syncChan)
@@ -48,7 +48,7 @@ func NewSimulation(nagt int, nobj int) *Simulation {
 
 	for i := 0; i < nobj; i++ {
 		// création de l'objet
-		id := fmt.Sprintf("Object #%d", i)
+		id := fmt.Sprintf("Flower #%d", i)
 		pos := envpkg.NewPosition(nobj-i, i, mapDimension, mapDimension)
 		obj := obj.NewFlower(id, pos)
 
@@ -102,7 +102,7 @@ func (simu *Simulation) Run() {
 				c := agt.GetSyncChan()
 				simu.env.Lock()
 				c <- simu.running
-				time.Sleep(1 * time.Millisecond) // attente avant de relancer l'agent
+				time.Sleep(100 * time.Millisecond) // attente avant de relancer l'agent
 				<-c
 				simu.env.Unlock()
 			}

@@ -7,8 +7,8 @@ import (
 )
 
 type SeenElem struct {
-	Pos  envpkg.Position
-	Elem interface{}
+	Pos  envpkg.Position `json:"position"`
+	Elem interface{}     `json:"elem"`
 }
 
 func NewSeenElem(pos envpkg.Position, elem interface{}) *SeenElem {
