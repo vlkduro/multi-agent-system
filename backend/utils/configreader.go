@@ -23,6 +23,21 @@ func getIntAttributeFromConfigFile(attribute string) int {
 	return result[attribute]
 }
 
+func getFloat64AttributeFromConfigFile(attribute string) float64 {
+	file, err := os.Open("../config.yaml")
+	if err != nil {
+		log.Fatalf("failed to open config file: %v", err)
+	}
+	defer file.Close()
+
+	byteValue, _ := io.ReadAll(file)
+
+	var result map[string]float64
+	yaml.Unmarshal([]byte(byteValue), &result)
+
+	return result[attribute]
+}
+
 func getStringAttributeFromConfigFile(attribute string) string {
 	file, err := os.Open("../config.yaml")
 	if err != nil {
@@ -50,8 +65,8 @@ func GetMapDimension() int {
 	return getIntAttributeFromConfigFile("MapDimension")
 }
 
-func GetExAgentVisionRange() int {
-	return getIntAttributeFromConfigFile("ExAgentVisionRange")
+func GetBeeAgentVisionRange() float64 {
+	return getFloat64AttributeFromConfigFile("BeeAgentVisionRange")
 }
 
 func GetExName() string {

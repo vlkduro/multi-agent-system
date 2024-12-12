@@ -5,8 +5,5 @@ NumberObjects: 10
 # Environment 
 MapDimension: 25
 
-
-
 # Agents
-ExAgentVisionRange: 6
-ExName: Jesephien
+BeeAgentVisionRange: 6.0
