@@ -18,7 +18,7 @@ const (
 // BeeAgent hérite de /simulation/agent/agent.go "struct Agent"
 // Interface IAgent
 type BeeAgent struct {
-	agent
+	Agent
 	hive      obj.Hive
 	birthDate time.Time
 	maxNectar int
@@ -33,12 +33,12 @@ type BeeAgentJson struct {
 
 func NewBeeAgent(id string, env *envpkg.Environment, syncChan chan bool, speed int, r obj.Hive, dob time.Time, maxnectar int, job int) *BeeAgent {
 	beeAgent := &BeeAgent{}
-	beeAgent.agent = agent{
+	beeAgent.Agent = Agent{
 		iagt:     beeAgent,
 		id:       envpkg.AgentID(id),
 		env:      env,
 		syncChan: syncChan,
-		speed:    speed,
+		Speed:    speed,
 	}
 	beeAgent.hive = r
 	beeAgent.birthDate = dob

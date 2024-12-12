@@ -14,6 +14,11 @@
         <button id="connect">Connect to simulation</button>
     </div>
     <h2 id="connection-state">Connection closed</h2>
+    <div>
+        <table id="map">
+
+        </table>
+    </div>
     <div id="agents">
     </div>
     <div id="errors"></div>
@@ -118,6 +123,43 @@
                 });
 
                 agentsDiv.appendChild(table);
+            
+
+
+                
+
+                const mapTable = document.getElementById('map');
+                
+                while (mapTable.firstChild) {
+                    mapTable.removeChild(mapTable.firstChild);
+                }
+
+                let ySize = data.environment.grid.length;
+                // Create the map table
+                for(let i = 0; i < ySize; i++) {
+                    const tr = document.createElement('tr');
+                    tr.className = "map-row";
+                    data.environment.grid.forEach((row) => {
+                        const td = document.createElement('td');
+                        td.className = "map-cell";
+                        td.textContent = row[i] ? row[i].id : " " ;
+                        if (row[i] && row[i].orientation === 'N') {
+                            td.style.borderTop = 'red solid 2px';
+                        }
+                        if (row[i] && row[i].orientation === 'S') {
+                            td.style.borderBottom = 'red solid 2px';
+                        }
+                        if (row[i] && row[i].orientation === 'E') {
+                            td.style.borderRight = 'red solid 2px';
+                        }
+                        if (row[i] && row[i].orientation === 'W') {
+                            td.style.borderLeft = 'red solid 2px';
+                        }
+                        tr.appendChild(td);
+                    });
+                    mapTable.appendChild(tr);
+                }
+                
             };
 
             ws.onerror = function(event) {
@@ -150,6 +192,18 @@
 
         tr:nth-child(even) {
             background-color: lightyellow;
+        }
+
+        /* .map-row {
+            display: block; 
+            float: left;
+        } */
+
+        .map-cell {
+            width: 12px;
+            height: 12px;
+            text-align: center;
+            font-size: 0.25em;
         }
 
         

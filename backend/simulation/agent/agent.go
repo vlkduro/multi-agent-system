@@ -3,6 +3,7 @@ package agent
 import (
 	"fmt"
 
+	"gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/simulation/agent/vision"
 	envpkg "gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/simulation/environment"
 )
 
@@ -11,18 +12,20 @@ import (
 // - id: An identifier for the agent
 // - env: A pointer to the environment in which the agent operates
 // - syncChan: A channel used for synchronization purposes
-type agent struct {
-	iagt     envpkg.IAgent
-	id       envpkg.AgentID
-	pos      *envpkg.Position
-	env      *envpkg.Environment
-	syncChan chan bool
-	speed    int
+type Agent struct {
+	iagt        envpkg.IAgent
+	id          envpkg.AgentID
+	pos         *envpkg.Position
+	orientation envpkg.Orientation
+	env         *envpkg.Environment
+	visionFunc  vision.VisionFunc
+	syncChan    chan bool
+	Speed       int
 }
 
 // Agent is launched as a microservice
-func (agt *agent) Start() {
-	fmt.Printf("[%s] Starting agent\n", agt.ID())
+func (agt *Agent) Start() {
+	fmt.Printf("[%s] Starting Agent\n", agt.ID())
 	go func() {
 		for {
 			run := <-agt.syncChan
@@ -35,21 +38,29 @@ func (agt *agent) Start() {
 			agt.iagt.Act()
 			agt.syncChan <- run
 		}
-		fmt.Printf("[%s] Stopping agent\n", agt.ID())
+		fmt.Printf("[%s] Stopping Agent\n", agt.ID())
 	}()
 }
 
-func (agt agent) ID() envpkg.AgentID {
+func (agt Agent) ID() envpkg.AgentID {
 	return agt.id
 }
 
-func (agt agent) GetSyncChan() chan bool {
+func (agt Agent) GetSyncChan() chan bool {
 	return agt.syncChan
 }
 
-func (agt agent) Position() *envpkg.Position {
+func (agt Agent) Position() *envpkg.Position {
 	if agt.pos == nil {
 		return nil
 	}
 	return agt.pos.Copy()
+}
+
+func (agt Agent) see() []vision.SeenElem {
+	return agt.visionFunc(agt.iagt, agt.env)
+}
+
+func (agt Agent) Orientation() envpkg.Orientation {
+	return agt.orientation
 }

@@ -8,6 +8,7 @@ import (
 
 	"github.com/gorilla/websocket"
 	"gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/simulation"
+	"gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/utils"
 )
 
 type WebSocketServer struct {
@@ -30,7 +31,9 @@ func (server *WebSocketServer) newSimulation(w http.ResponseWriter, _ *http.Requ
 
 func (server *WebSocketServer) launchSimulation(w http.ResponseWriter, _ *http.Request) {
 	if server.simulation == nil {
-		server.simulation = simulation.NewSimulation(10, 10)
+		nAgts := utils.GetNumberAgents()
+		nObjs := utils.GetNumberAgents()
+		server.simulation = simulation.NewSimulation(nAgts, nObjs)
 	}
 
 	if server.simulation.IsRunning() {
