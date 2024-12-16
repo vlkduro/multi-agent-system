@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI30 WebSocket</title>
+    <script src="./utils/pixi.min.js"></script>
+    <link rel="stylesheet" href="css/main_style.css">
 </head>
 <body>
     <h1>AI30 WebSocket Debug App</h1>
@@ -11,7 +13,6 @@
         <button id="start-simulation">Start simulation</button>
         <button id="stop-simulation">Stop simulation</button>
         <button id="new-simulation">New simulation</button>
-        <button id="connect">Connect to simulation</button>
     </div>
     <h2 id="connection-state">Connection closed</h2>
     <div>
@@ -24,60 +25,14 @@
     <div id="errors"></div>
     <script>
         const URL = 'http://localhost:8080/';
-        
+        const ws = new WebSocket('ws://localhost:8080/');
         const agentsDiv = document.getElementById('agents');
         const connectionState = document.getElementById('connection-state');
         const errorsDiv = document.getElementById('errors');
 
-        document.getElementById('start-simulation').onclick = () => {
-            fetch(URL + "start")
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Simulation started:', data);
-                    window.location.reload();
-                })
-                .catch(error => {
-                    console.error('Error starting simulation:', error);
-                });
-        }
 
-        document.getElementById('stop-simulation').onclick = () => {
-            fetch(URL + "stop")
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Simulation stopped:', data);
-                    window.location.reload();
-                })
-                .catch(error => {
-                    console.error('Error stopping simulation:', error);
-                });
-        }
-
-        document.getElementById('new-simulation').onclick = () => {
-            fetch(URL + "new")
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Simulation created:', data);
-                    window.location.reload();
-                })
-                .catch(error => {
-                    console.error('Error creating simulation:', error);
-                });
-        }
-
-        let ws 
-
-        document.getElementById('connect').onclick = () => {
-            if (ws) {
-                ws.close();
-            }
-            ws = new WebSocket('ws://localhost:8080/connect');
-
-            ws.onopen = function(event) {
-                connectionState.textContent = 'Connection opened';
-            };
-
-            ws.onmessage = function(event) {
+        //Function trigered when data are reiceve from websocket
+        ws.onmessage = function(event) {
                 while (agentsDiv.firstChild) {
                     agentsDiv.removeChild(agentsDiv.firstChild);
                 }
@@ -167,46 +122,27 @@
             };
 
             ws.onclose = function(event) {
-                dconnectionState.textContent = 'Connection closed';
+                connectionState.textContent = 'Connection closed';
+                ws.close(1, "bye")
             };
+
+            ws.onopen = function(event) {
+                connectionState.textContent = 'Connected'
+            }
+
+
+
+        document.getElementById('start-simulation').onclick = () => {
+            ws.send('start');
+        }
+
+        document.getElementById('stop-simulation').onclick = () => {
+            ws.send('stop');
+        }
+
+        document.getElementById('new-simulation').onclick = () => {
+            ws.send('new');
         }
     </script>
-    <style>
-        table {
-            border-collapse: collapse
-        }
-
-        td, th {
-            margin: 0;
-            border: 1px solid black;
-            padding: 5px;
-        }
-
-        th {
-            background-color: rgb(248, 211, 0);
-        }
-
-        tr:nth-child(odd) {
-            background-color: darkgrey;
-        }
-
-        tr:nth-child(even) {
-            background-color: lightyellow;
-        }
-
-        /* .map-row {
-            display: block; 
-            float: left;
-        } */
-
-        .map-cell {
-            width: 12px;
-            height: 12px;
-            text-align: center;
-            font-size: 0.25em;
-        }
-
-        
-    </style>
 </body>
 </html>
