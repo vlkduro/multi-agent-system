@@ -3,8 +3,10 @@ package simulation
 import (
 	"fmt"
 	"log"
+	"sync"
 	"time"
 
+	"github.com/gorilla/websocket"
 	agt "gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/simulation/agent"
 	envpkg "gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/simulation/environment"
 	obj "gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/simulation/object"
@@ -16,6 +18,8 @@ type Simulation struct {
 	agts    []envpkg.IAgent
 	objs    []envpkg.IObject
 	running bool
+	ws      *websocket.Conn
+	sync.Mutex
 }
 
 type SimulationJson struct {
@@ -24,12 +28,12 @@ type SimulationJson struct {
 	Environment interface{}   `json:"environment"`
 }
 
-func NewSimulation(nagt int, nobj int) *Simulation {
+func NewSimulation(nagt int, nobj int, maWs *websocket.Conn) *Simulation {
 	simu := &Simulation{}
+	simu.ws = maWs
 	env := envpkg.NewEnvironment([]envpkg.IAgent{}, []envpkg.IObject{})
-
 	simu.env = env
-
+	//On récupère la webSocket
 	mapDimension := utils.GetMapDimension()
 
 	for i := 0; i < nagt; i++ {
@@ -73,17 +77,24 @@ func NewSimulation(nagt int, nobj int) *Simulation {
 		// ajout de l'objet à l'environnement
 		simu.env.AddObject(obj)
 	}
-
+	simu.sendState()
 	return simu
 }
 
-func (simu Simulation) IsRunning() bool {
+func (simu *Simulation) IsRunning() bool {
+	simu.Lock()
+	defer simu.Unlock()
 	return simu.running
 }
 
-func (simu *Simulation) Run() {
+func (simu *Simulation) Run(maWs *websocket.Conn) {
+	simu.Lock()
 	simu.running = true
+	if maWs != simu.ws {
+		simu.ws = maWs
+	}
 	log.Printf("Simulation started")
+	simu.Unlock()
 
 	// Démarrage du micro-service de Log
 	go simu.log()
@@ -98,40 +109,57 @@ func (simu *Simulation) Run() {
 	// Boucle de simulation
 	for _, agt := range simu.agts {
 		go func(agt envpkg.IAgent) {
+			c := agt.GetSyncChan()
 			for {
-				c := agt.GetSyncChan()
 				simu.env.Lock()
-				c <- simu.running
-				time.Sleep(100 * time.Millisecond) // attente avant de relancer l'agent
-				<-c
+				c <- simu.IsRunning()
+				time.Sleep(1 * time.Millisecond) // attente avant de relancer l'agent
+				r := <-c
 				simu.env.Unlock()
+				if !r {
+					break
+				}
 			}
 		}(agt)
 	}
 }
 
 func (simu *Simulation) Stop() {
-	simu.env.Lock()
+	simu.Lock()
+	defer simu.Unlock()
 	simu.running = false
-	simu.env.Unlock()
+	simu.ws = nil
+	log.Printf("\nSimulation stopped\n")
 }
 
 // Intention d'en faire un microservice
 func (simu *Simulation) log() {
-	// TODO
+	if (simu.ws) == nil {
+		return
+	}
+	for simu.IsRunning() {
+		simu.sendState()
+		time.Sleep(time.Second / 60) // 60 fps
+	}
+}
+
+func (simu *Simulation) sendState() {
+	err := (*simu.ws).WriteJSON(simu.ToJsonObj())
+	if err != nil {
+		log.Fatal("Log micro service: ", err)
+	}
 }
 
 // Intention d'en faire un microservice
 func (simu *Simulation) print() {
 	startTime := time.Now()
-	for simu.running {
+	for simu.IsRunning() {
 		fmt.Printf("\rRunning simulation for %vms...  - ", time.Since(startTime).Milliseconds())
 		time.Sleep(time.Second / 60) // 60 fps
 	}
-	log.Printf("Simulation stopped")
 }
 
-func (simu Simulation) ToJsonObj() SimulationJson {
+func (simu *Simulation) ToJsonObj() SimulationJson {
 	agents := []interface{}{}
 	objects := []interface{}{}
 

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/gorilla/websocket"
 	"gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/simulation"
@@ -21,42 +20,39 @@ func MakeWebSocketServer(port int) *WebSocketServer {
 	return &WebSocketServer{port: port, simulation: nil, running: false}
 }
 
-func (server *WebSocketServer) newSimulation(w http.ResponseWriter, _ *http.Request) {
+func (server *WebSocketServer) newSimulation(conn *websocket.Conn) {
 	if server.simulation != nil {
+		fmt.Print("old running")
 		server.simulation.Stop()
 	}
-	server.simulation = simulation.NewSimulation(10, 10)
-	w.WriteHeader(http.StatusOK)
+	server.simulation = simulation.NewSimulation(10, 10, conn)
 }
 
-func (server *WebSocketServer) launchSimulation(w http.ResponseWriter, _ *http.Request) {
+func (server *WebSocketServer) launchSimulation(
+	conn *websocket.Conn,
+) {
 	if server.simulation == nil {
 		nAgts := utils.GetNumberAgents()
 		nObjs := utils.GetNumberAgents()
-		server.simulation = simulation.NewSimulation(nAgts, nObjs)
+		server.simulation = simulation.NewSimulation(nAgts, nObjs, conn)
 	}
 
 	if server.simulation.IsRunning() {
-		w.WriteHeader(http.StatusConflict)
+		fmt.Print("Allready running")
 		return
 	}
 
-	go server.simulation.Run()
-	server.running = true
-	w.WriteHeader(http.StatusOK)
+	go server.simulation.Run(conn)
 }
 
-func (server *WebSocketServer) stopSimulation(w http.ResponseWriter, _ *http.Request) {
+func (server *WebSocketServer) stopSimulation() {
 	if server.simulation == nil {
-		w.WriteHeader(http.StatusConflict)
 		return
 	}
-
 	server.simulation.Stop()
-	w.WriteHeader(http.StatusOK)
 }
 
-func (server *WebSocketServer) connectToSimulation(w http.ResponseWriter, r *http.Request) {
+func (server *WebSocketServer) startSimulation(w http.ResponseWriter, r *http.Request) {
 	// Setting up the websocket with default parameters
 	upgrader := websocket.Upgrader{}
 	// Accept all origins
@@ -67,33 +63,45 @@ func (server *WebSocketServer) connectToSimulation(w http.ResponseWriter, r *htt
 		return
 	}
 	defer conn.Close()
-
-	for server.running {
-		time.Sleep(time.Second / 10) // 60 tps
-		if server.simulation == nil {
-			continue
+	for {
+		var message string = ""
+		if conn == nil {
+			conn, err = upgrader.Upgrade(w, r, nil)
+			if err != nil {
+				log.Println(err)
+				return
+			}
+		} else {
+			// Lire un message du client
+			_, text, err := conn.ReadMessage()
+			message = string(text)
+			if err != nil {
+				log.Println("Conn lost error:", err)
+				server.stopSimulation()
+				conn.Close()
+				conn = nil
+			}
 		}
-		if err := conn.WriteJSON(server.simulation.ToJsonObj()); err != nil {
-			log.Println(err)
-			break
+		switch message {
+		case "start":
+			server.launchSimulation(conn)
+		case "stop":
+			server.stopSimulation()
+		case "new":
+			if err != nil {
+				log.Println(err)
+				return
+			}
+			server.newSimulation(conn)
+		case "bye":
+			conn.Close()
+			conn = nil
 		}
 	}
-	log.Println("WebSocket server stopped")
-}
-
-func (server *WebSocketServer) setupRoutes() int {
-	http.HandleFunc("/new", server.newSimulation)
-	http.HandleFunc("/start", server.launchSimulation)
-	http.HandleFunc("/stop", server.stopSimulation)
-
-	http.HandleFunc("/connect", server.connectToSimulation)
-
-	return http.StatusOK
 }
 
 func (server *WebSocketServer) LaunchServer() {
-	server.setupRoutes()
-	server.running = true
+	http.HandleFunc("/", server.startSimulation)
 
 	log.Printf("WebSocket server starting on port %d", server.port)
 	err := http.ListenAndServe(fmt.Sprintf(":%d", server.port), nil)
@@ -105,5 +113,4 @@ func (server *WebSocketServer) LaunchServer() {
 
 func (server *WebSocketServer) StopServer() {
 	log.Printf("WebSocket server stopping")
-	server.running = false
 }
