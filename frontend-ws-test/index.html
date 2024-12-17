@@ -29,43 +29,6 @@
 
         let selectedAgt = undefined;
 
-        document.getElementById('start-simulation').onclick = () => {
-            fetch(URL + "start")
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Simulation started:', data);
-                    window.location.reload();
-                })
-                .catch(error => {
-                    console.error('Error starting simulation:', error);
-                });
-        }
-
-        document.getElementById('stop-simulation').onclick = () => {
-            fetch(URL + "stop")
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Simulation stopped:', data);
-                    window.location.reload();
-                })
-                .catch(error => {
-                    console.error('Error stopping simulation:', error);
-                });
-        }
-
-        document.getElementById('new-simulation').onclick = () => {
-            fetch(URL + "new")
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Simulation created:', data);
-                    window.location.reload();
-                })
-                .catch(error => {
-                    console.error('Error creating simulation:', error);
-                });
-        }
-
-
         function clearCanvas(canvas) {
             const context = canvas.getContext('2d');
             context.clearRect(0, 0, canvas.width, canvas.height);
@@ -202,107 +165,87 @@
             ctx.fillText(text, objX, objY + cellSize / 2);
         }
 
-        // Websocket connection
-        let ws 
-
-        document.getElementById('connect').onclick = () => {
-            if (ws) {
-                ws.close();
+        //Function trigered when data are reiceve from websocket
+        ws.onmessage = function(event) {
+            while (agentsDiv.firstChild) {
+                agentsDiv.removeChild(agentsDiv.firstChild);
             }
-            ws = new WebSocket('ws://localhost:8080/connect');
+        
+            const data = JSON.parse(event.data);
 
-            ws.onopen = function(event) {
-                connectionState.textContent = 'Connection opened';
-            };
+            const table = document.createElement('table');
+            const headerRow = document.createElement('tr');
 
-            ws.onmessage = function(event) {
-                while (agentsDiv.firstChild) {
-                    agentsDiv.removeChild(agentsDiv.firstChild);
-                }
+            // We get all different keys from the agents
+            let agtkeys = [];
+            data.agents.forEach(agent => {
+                Object.keys(agent).forEach((key) => {
+                    if (!agtkeys.includes(key)) {
+                        agtkeys.push(key)
+                    }
+                });
+            });
             
-                const data = JSON.parse(event.data);
+            // Generalization for header insertion
+            agtkeys.forEach((key) => {
+                const valueHeader = document.createElement('th');
+                // Capitalize first letter
+                valueHeader.textContent = key.charAt(0).toUpperCase() + key.slice(1);;
+                headerRow.appendChild(valueHeader);
+            })
+            table.appendChild(headerRow);
 
-                const table = document.createElement('table');
-                const headerRow = document.createElement('tr');
-
-                // We get all different keys from the agents
-                let agtkeys = [];
-                data.agents.forEach(agent => {
-                    Object.keys(agent).forEach((key) => {
-                        if (!agtkeys.includes(key)) {
-                            agtkeys.push(key)
-                        }
-                    });
+            data.agents.forEach(agent => {
+                const row = document.createElement('tr');
+                // Generalization of value insertion
+                agtkeys.forEach((key) => {
+                    const valueCell = document.createElement('td');
+                    if (typeof agent[key] === 'object') {
+                        valueCell.textContent = JSON.stringify(agent[key]);
+                    } else {
+                        valueCell.textContent = agent[key] ?? 'N/A';
+                    }
+                    row.appendChild(valueCell);
                 });
                 
-                // Generalization for header insertion
-                agtkeys.forEach((key) => {
-                    const valueHeader = document.createElement('th');
-                    // Capitalize first letter
-                    valueHeader.textContent = key.charAt(0).toUpperCase() + key.slice(1);;
-                    headerRow.appendChild(valueHeader);
-                })
-                table.appendChild(headerRow);
+                table.appendChild(row);
+            });
 
-                data.agents.forEach(agent => {
-                    const row = document.createElement('tr');
-                    row.onclick = () => {
-                        console.log('Selected agent:', agent.id);
-                        selectedAgt = agent.id;
-                    }
-                    console.log('Selected agent:', selectedAgt);
-                    if (selectedAgt === agent.id) {
-                        row.classList.add('selected');
-                    }
-                    // Generalization of value insertion
-                    agtkeys.forEach((key) => {
-                        const valueCell = document.createElement('td');
-                        if (typeof agent[key] === 'object') {
-                            valueCell.textContent = JSON.stringify(agent[key]);
-                        } else {
-                            valueCell.textContent = agent[key] ?? 'N/A';
-                        }
-                        row.appendChild(valueCell);
-                    });
-                    
-                    table.appendChild(row);
-                });
+            agentsDiv.appendChild(table);
 
-                agentsDiv.appendChild(table);
+            // Map rendering
+            const mapCanvas = document.getElementById('map');
+            const ctx = mapCanvas.getContext('2d');
+            const cellSize = 25;
+            const size = data.environment.mapDimension;
+            mapCanvas.style.width = (cellSize * size) + "px";
+            mapCanvas.style.height = (cellSize * size) + "px";
+            mapCanvas.width = cellSize * size;
+            mapCanvas.height = cellSize * size;
+            clearCanvas(mapCanvas);
 
-                // Map rendering
-                const mapCanvas = document.getElementById('map');
-                const ctx = mapCanvas.getContext('2d');
-                const cellSize = 25;
-                const size = data.environment.mapDimension;
-                mapCanvas.style.width = (cellSize * size) + "px";
-                mapCanvas.style.height = (cellSize * size) + "px";
-                mapCanvas.width = cellSize * size;
-                mapCanvas.height = cellSize * size;
-                clearCanvas(mapCanvas);
+            data.agents.forEach(agent => {
+                drawAgent(ctx, agent, cellSize);
+            });
 
-                data.agents.forEach(agent => {
-                    drawAgent(ctx, agent, cellSize);
-                });
+            data.objects.forEach(object => {
+                drawObject(ctx, object, cellSize);
+            });
+        }
 
-                data.objects.forEach(object => {
-                    drawObject(ctx, object, cellSize);
-                });
-            };
+        ws.onerror = function(event) {
+            errorsDiv.innerHTML += '<p>Error: ' + event.message + '</p>';
+        };
 
-            ws.onerror = function(event) {
-                errorsDiv.innerHTML += '<p>Error: ' + event.message + '</p>';
-            };
+        ws.onclose = function(event) {
+            connectionState.textContent = 'Connection closed';
+            ws.close(1, "bye")
+        };
 
-            ws.onclose = function(event) {
-                connectionState.textContent = 'Connection closed';
-                ws.close(1, "bye")
-            };
-
-            ws.onopen = function(event) {
-                connectionState.textContent = 'Connected'
-            }
-
+        ws.onopen = function(event) {
+            connectionState.textContent = 'Connected'
+        }
+        
 
 
         document.getElementById('start-simulation').onclick = () => {
@@ -315,13 +258,7 @@
 
         document.getElementById('new-simulation').onclick = () => {
             ws.send('new');
-        tr:hover {
-            background-color: lightblue;
         }
-
-        tr.selected {
-            background-color: lightgreen;
-        }
-    </script>
+    </script> 
 </body>
 </html>
