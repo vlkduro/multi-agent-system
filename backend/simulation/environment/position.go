@@ -1,5 +1,7 @@
 package environment
 
+import "math"
+
 // Coordinate system based on the top left corner
 type Position struct {
 	maxX int
@@ -48,6 +50,14 @@ func (p *Position) GoRight(grid [][]interface{}) *Position {
 		return p
 	}
 	return p.move(grid, p.X+1, p.Y)
+}
+
+func (p Position) DistanceFrom(p2 Position) float64 {
+	return math.Sqrt(float64((p.X-p2.X)*(p.X-p2.X) + (p.Y-p2.Y)*(p.Y-p2.Y)))
+}
+
+func (p Position) Near(p2 Position, distance int) bool {
+	return p.DistanceFrom(p2) <= float64(distance)
 }
 
 func (p Position) Copy() *Position {

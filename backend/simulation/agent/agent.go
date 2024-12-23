@@ -64,3 +64,25 @@ func (agt Agent) see() []vision.SeenElem {
 func (agt Agent) Orientation() envpkg.Orientation {
 	return agt.orientation
 }
+
+func (agt Agent) gotoNextStepTowards(pos *envpkg.Position) {
+	for i := 0; i < agt.Speed; i++ {
+		if agt.pos.X < pos.X {
+			agt.pos.GoDown(agt.env.GetMap())
+			agt.orientation = envpkg.South
+		}
+		if agt.pos.X > pos.X {
+			agt.pos.GoUp(agt.env.GetMap())
+			agt.orientation = envpkg.North
+		}
+		if agt.pos.Y < pos.Y {
+			agt.pos.GoRight(agt.env.GetMap())
+			agt.orientation = envpkg.East
+		}
+		if agt.pos.Y > pos.Y {
+			agt.pos.GoLeft(agt.env.GetMap())
+			agt.orientation = envpkg.West
+		}
+	}
+
+}
