@@ -114,7 +114,7 @@ func (simu *Simulation) Run(maWs *websocket.Conn) {
 			c <- true
 			<-c
 			simu.env.Unlock()
-			time.Sleep(1 * time.Millisecond) // attente avant de lancer l'agent suivant
+			time.Sleep(time.Second / 100) // 100 Tour / Sec
 		}
 	}
 
