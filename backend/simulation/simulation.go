@@ -107,20 +107,22 @@ func (simu *Simulation) Run(maWs *websocket.Conn) {
 	}
 
 	// Boucle de simulation
-	for _, agt := range simu.agts {
-		go func(agt envpkg.IAgent) {
+	for simu.IsRunning() {
+		for _, agt := range simu.agts {
 			c := agt.GetSyncChan()
-			for {
-				simu.env.Lock()
-				c <- simu.IsRunning()
-				time.Sleep(1 * time.Millisecond) // attente avant de relancer l'agent
-				r := <-c
-				simu.env.Unlock()
-				if !r {
-					break
-				}
-			}
-		}(agt)
+			simu.env.Lock()
+			c <- true
+			<-c
+			simu.env.Unlock()
+			time.Sleep(1 * time.Millisecond) // attente avant de lancer l'agent suivant
+		}
+	}
+
+	// Arrêt des agents
+	for _, agt := range simu.agts {
+		c := agt.GetSyncChan()
+		c <- false
+		<-c
 	}
 }
 
