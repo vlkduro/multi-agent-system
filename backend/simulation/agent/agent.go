@@ -65,23 +65,45 @@ func (agt Agent) Orientation() envpkg.Orientation {
 	return agt.orientation
 }
 
-func (agt Agent) gotoNextStepTowards(pos *envpkg.Position) {
+func (agt *Agent) gotoNextStepTowards(pos *envpkg.Position) {
+	// Not optimized,in some cases the agent will go in a direction that is not the best
+	// But it is a simple way to make the agent move
+	//  | a | o | a os agent and o is object
+	//  |   | X | X is destination
+	//  Best scenario   Worst scenario
+	//  | a | o | SE   | a>| o | ES
+	//  | v | > |      | v |   |
 	for i := 0; i < agt.Speed; i++ {
 		if agt.pos.X < pos.X {
 			agt.pos.GoDown(agt.env.GetMap())
-			agt.orientation = envpkg.South
-		}
-		if agt.pos.X > pos.X {
+			if agt.pos.Y < pos.Y {
+				agt.pos.GoRight(agt.env.GetMap())
+				agt.orientation = envpkg.SouthEast
+			} else if agt.pos.Y > pos.Y {
+				agt.pos.GoLeft(agt.env.GetMap())
+				agt.orientation = envpkg.SouthWest
+			} else {
+				agt.orientation = envpkg.South
+			}
+		} else if agt.pos.X > pos.X {
 			agt.pos.GoUp(agt.env.GetMap())
-			agt.orientation = envpkg.North
-		}
-		if agt.pos.Y < pos.Y {
-			agt.pos.GoRight(agt.env.GetMap())
-			agt.orientation = envpkg.East
-		}
-		if agt.pos.Y > pos.Y {
-			agt.pos.GoLeft(agt.env.GetMap())
-			agt.orientation = envpkg.West
+			if agt.pos.Y < pos.Y {
+				agt.pos.GoRight(agt.env.GetMap())
+				agt.orientation = envpkg.NorthEast
+			} else if agt.pos.Y > pos.Y {
+				agt.pos.GoLeft(agt.env.GetMap())
+				agt.orientation = envpkg.NorthWest
+			} else {
+				agt.orientation = envpkg.North
+			}
+		} else {
+			if agt.pos.Y < pos.Y {
+				agt.pos.GoRight(agt.env.GetMap())
+				agt.orientation = envpkg.East
+			} else if agt.pos.Y > pos.Y {
+				agt.pos.GoLeft(agt.env.GetMap())
+				agt.orientation = envpkg.West
+			}
 		}
 	}
 

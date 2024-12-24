@@ -127,13 +127,13 @@
             ctx.fillRect(agtX, agtY, cellSize, cellSize);
             // drawing movement
             ctx.strokeStyle = 'red';
-            if (agent.movement === "N") {
+            if (agent.orientation === "N") {
                 canvas_arrow(ctx, agtX + cellSize / 2, agtY + cellSize, agtX + cellSize / 2, agtY);
-            } else if (agent.movement === "E") {
+            } else if (agent.orientation === "E") {
                 canvas_arrow(ctx, agtX, agtY + cellSize / 2, agtX + cellSize, agtY + cellSize/2);
-            } else if (agent.movement === "S") {
+            } else if (agent.orientation === "S") {
                 canvas_arrow(ctx, agtX + cellSize / 2, agtY, agtX + cellSize / 2, agtY + cellSize);
-            } else if (agent.movement === "W") {
+            } else if (agent.orientation === "W") {
                 canvas_arrow(ctx, agtX + cellSize, agtY + cellSize / 2, agtX, agtY + cellSize/2);
             }
             // drawing text

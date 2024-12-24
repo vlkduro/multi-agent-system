@@ -17,24 +17,90 @@ func NewSeenElem(pos envpkg.Position, elem interface{}) *SeenElem {
 
 type VisionFunc func(agt envpkg.IAgent, env *envpkg.Environment) []SeenElem
 
-// To understanc the startPt, leftCorner, rightCorner, and orientation parameters, we need to look at the triangle from the base up, startPt being the top of the triangle
+// To understand the startPt, leftCorner, rightCorner, and orientation parameters, we need to look at the triangle from the base up, startPt being the top of the triangle
 // Source : Alexandre (donc pas sur que ca soit optimal mais en vrai la complexite est O(1) donc ca va)
+// https://www.youtube.com/watch?v=PSlWb90JJx4 - Je suis désolé mais j'ai pas trouvé beaucoup plus simple
 func getTriangleCoordinates(startPt envpkg.Position, height int, oppositeBaseSize int, orientation envpkg.Orientation) (topCorner, leftCorner, rightCorner envpkg.Position) {
 	topCorner = *startPt.Copy()
+	// We imagine two circles, with the following radiuses :
+	// - C1 : The first circle has a radius of height and is centered on the topCorner
+	// - C2 : The second circle has a diameter(i.e radius) of oppositeBaseSize(i.e oppositeBaseSize/2) and is centered on the projection
+	//        of topCorner on C1
+	// Combining the two circles gives us the leftCorner and rightCorner points
+	// First circle : C1 = (x - a)² + (y - b)² = height²
+	// Second circle : C2 = (x - p)² + (y - q)² = oppositeBaseSize²
+	// We get the tangent of the center of C2 (point on C1)
+	// The points of intersection between C2 and the tangent of C1 are the leftCorner and rightCorner
+	// This allows for maintining precision over the height of the triangle and the opposite base size
+	c2radius := oppositeBaseSize / 2
+	c2x := startPt.X
+	c2y := startPt.Y
+	var rcxCoef, rcyCoef, lcxCoef, lcyCoef float64
 	switch orientation {
 	case envpkg.North:
-		rightCorner = envpkg.Position{X: startPt.X - oppositeBaseSize/2, Y: startPt.Y - height}
-		leftCorner = envpkg.Position{X: startPt.X + oppositeBaseSize/2, Y: startPt.Y - height}
+		c2x += height * int(math.Cos(math.Pi/2))
+		c2y += height * int(math.Sin(math.Pi/2))
+		rcxCoef = math.Cos(math.Pi)
+		rcyCoef = math.Sin(0)
+		lcxCoef = math.Cos(0)
+		lcyCoef = math.Sin(0)
 	case envpkg.South:
-		leftCorner = envpkg.Position{X: startPt.X - oppositeBaseSize/2, Y: startPt.Y + height}
-		rightCorner = envpkg.Position{X: startPt.X + oppositeBaseSize/2, Y: startPt.Y + height}
+		c2x += height * int(math.Cos(math.Pi/2))
+		c2y += height * int(math.Sin((3*math.Pi)/2))
+		rcxCoef = math.Cos(0)
+		rcyCoef = math.Sin(0)
+		lcxCoef = math.Cos(math.Pi)
+		lcyCoef = math.Sin(0)
 	case envpkg.East:
-		rightCorner = envpkg.Position{X: startPt.X + height, Y: startPt.Y - oppositeBaseSize/2}
-		leftCorner = envpkg.Position{X: startPt.X + height, Y: startPt.Y + oppositeBaseSize/2}
+		c2x += height * int(math.Cos(0))
+		c2y += height * int(math.Sin(0))
+		rcxCoef = math.Cos(math.Pi / 2)
+		rcyCoef = math.Sin(math.Pi / 2)
+		lcxCoef = math.Cos(math.Pi / 2)
+		lcyCoef = math.Sin((3 * math.Pi) / 2)
 	case envpkg.West:
-		leftCorner = envpkg.Position{X: startPt.X - height, Y: startPt.Y - oppositeBaseSize/2}
-		rightCorner = envpkg.Position{X: startPt.X - height, Y: startPt.Y + oppositeBaseSize/2}
+		c2x += height * int(math.Cos(math.Pi))
+		c2y += height * int(math.Sin(0))
+		rcxCoef = math.Cos(math.Pi / 2)
+		rcyCoef = math.Sin((3 * math.Pi) / 2)
+		lcxCoef = math.Cos(math.Pi / 2)
+		lcyCoef = math.Sin(math.Pi / 2)
+	case envpkg.NorthEast:
+		c2x += height * int(math.Cos(math.Pi/4))
+		c2y += height * int(math.Sin(math.Pi/4))
+		rcxCoef = math.Cos((5 * math.Pi) / 4)
+		rcyCoef = math.Sin(math.Pi / 4)
+		lcxCoef = math.Cos(math.Pi / 4)
+		lcyCoef = math.Sin((5 * math.Pi) / 4)
+	case envpkg.NorthWest:
+		c2x += height * int(math.Cos((5*math.Pi)/4))
+		c2y += height * int(math.Sin(math.Pi/4))
+		rcxCoef = math.Cos((5 * math.Pi) / 4)
+		rcyCoef = math.Sin((5 * math.Pi) / 4)
+		lcxCoef = math.Cos(math.Pi / 4)
+		lcyCoef = math.Sin(math.Pi / 4)
+	case envpkg.SouthEast:
+		c2x += height * int(math.Cos((5*math.Pi)/4))
+		c2y += height * int(math.Sin(math.Pi/4))
+		rcxCoef = math.Cos(math.Pi / 4)
+		rcyCoef = math.Sin(math.Pi / 4)
+		lcxCoef = math.Cos((5 * math.Pi) / 4)
+		lcyCoef = math.Sin((5 * math.Pi) / 4)
+	case envpkg.SouthWest:
+		c2x += height * int(math.Cos((5*math.Pi)/4))
+		c2y += height * int(math.Sin((5*math.Pi)/4))
+		rcxCoef = math.Cos(math.Pi / 4)
+		rcyCoef = math.Sin((5 * math.Pi) / 4)
+		lcxCoef = math.Cos((5 * math.Pi) / 4)
+		lcyCoef = math.Sin(math.Pi / 4)
 	}
+
+	rightCorner = envpkg.Position{
+		X: int(rcxCoef)*c2radius + c2x,
+		Y: int(rcyCoef)*c2radius + c2y}
+	leftCorner = envpkg.Position{
+		X: int(lcxCoef)*c2radius + c2x,
+		Y: int(lcyCoef)*c2radius + c2y}
 	return
 }
 
