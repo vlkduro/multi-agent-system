@@ -153,7 +153,7 @@ func (simu *Simulation) Run(maWs *websocket.Conn) {
 			c <- true
 			<-c
 			simu.env.Unlock()
-			time.Sleep(time.Second / 100) // 100 Tour / Sec
+			time.Sleep(time.Second / 20) // 100 Tour / Sec
 		}
 	}
 

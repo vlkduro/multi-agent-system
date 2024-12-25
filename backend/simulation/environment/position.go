@@ -14,38 +14,45 @@ func NewPosition(x int, y int, maxX int, maxY int) *Position {
 	return &Position{maxX: maxX, maxY: maxY, X: x, Y: y}
 }
 
+// Movement can be simulated with by passing a nil grid
 func (p *Position) move(grid [][]interface{}, newX int, newY int) *Position {
-	if grid[newX][newY] != nil {
+	if grid != nil && grid[newX][newY] != nil {
 		return p
 	}
-	grid[p.X][p.Y], grid[newX][newY] = nil, grid[p.X][p.Y]
+	if grid != nil {
+		grid[p.X][p.Y], grid[newX][newY] = nil, grid[p.X][p.Y]
+	}
 	p.X = newX
 	p.Y = newY
 	return p
 }
 
-func (p *Position) GoUp(grid [][]interface{}) *Position {
+// Movement can be simulated with by passing a nil grid
+func (p *Position) GoNorth(grid [][]interface{}) *Position {
 	if p.Y == 0 {
 		return p
 	}
 	return p.move(grid, p.X, p.Y-1)
 }
 
-func (p *Position) GoDown(grid [][]interface{}) *Position {
+// Movement can be simulated with by passing a nil grid
+func (p *Position) GoSouth(grid [][]interface{}) *Position {
 	if p.Y == p.maxY-1 {
 		return p
 	}
 	return p.move(grid, p.X, p.Y+1)
 }
 
-func (p *Position) GoLeft(grid [][]interface{}) *Position {
+// Movement can be simulated with by passing a nil grid
+func (p *Position) GoWest(grid [][]interface{}) *Position {
 	if p.X == 0 {
 		return p
 	}
 	return p.move(grid, p.X-1, p.Y)
 }
 
-func (p *Position) GoRight(grid [][]interface{}) *Position {
+// Movement can be simulated with by passing a nil grid
+func (p *Position) GoEast(grid [][]interface{}) *Position {
 	if p.X == p.maxX-1 {
 		return p
 	}
@@ -58,6 +65,13 @@ func (p Position) DistanceFrom(p2 Position) float64 {
 
 func (p Position) Near(p2 Position, distance int) bool {
 	return p.DistanceFrom(p2) <= float64(distance)
+}
+
+// Returns the mirrored position of the point according to this point
+func (p Position) GetSymmetricOfPoint(origin Position) *Position {
+	symX := 2*origin.X - p.X
+	symY := 2*origin.Y - p.Y
+	return &Position{X: symX, Y: symY, maxX: p.maxX, maxY: p.maxY}
 }
 
 func (p Position) Copy() *Position {

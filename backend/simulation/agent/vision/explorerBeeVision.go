@@ -1,6 +1,7 @@
 package vision
 
 import (
+	"fmt"
 	"math"
 	"sort"
 
@@ -10,30 +11,35 @@ import (
 
 // For now we decide that the vision of a bee is an equilateral triangle
 // We decide that the returned list is sorted by proximity to the agent
-func ExplorerBeeVision(agt envpkg.IAgent, env *envpkg.Environment) []SeenElem {
+func ExplorerBeeVision(agt envpkg.IAgent, env *envpkg.Environment) []*SeenElem {
 	// Height of the triangle
 	distance := utils.GetBeeAgentVisionRange()
 	// Side of the triangle - formula for an equilateral triangle
-	sideSize := int((2*(distance))/math.Sqrt(3)) + 1
+	sideSize := (2*(distance))/math.Sqrt(3) + 1
 	// Vision triangle coordinates
-	topCorner, leftCorner, rightCorner := getTriangleCoordinates(*agt.Position(), int(distance), sideSize, agt.Orientation())
-
-	// To avoid stringy code
-	agtX, agtY := agt.Position().X, agt.Position().Y
+	topCornerX, topCornerY, leftCornerX, leftCornerY, rightCornerX, rightCornerY := getTriangleCoordinates(*agt.Position(), distance, sideSize, agt.Orientation())
+	// Getting the bounding box of the triangle
+	minX := utils.Min(topCornerX, utils.Min(leftCornerX, rightCornerX))
+	maxX := utils.Max(topCornerX, utils.Max(leftCornerX, rightCornerX))
+	minY := utils.Min(topCornerY, utils.Min(leftCornerY, rightCornerY))
+	maxY := utils.Max(topCornerY, utils.Max(leftCornerY, rightCornerY))
 
 	// Contains all the elements seen by the agent
-	seenElems := make([]SeenElem, 0)
+	seenElems := make([]*SeenElem, 0)
 
 	addElemToList := func(x, y int) {
 		if env.IsValidPosition(x, y) {
-			if pointIsInTriangle(x, y, topCorner, leftCorner, rightCorner) {
-				seenElems = append(seenElems, *NewSeenElem(envpkg.Position{X: x, Y: y}, env.GetAt(x, y)))
+			if pointIsInTriangle(float64(x), float64(y), topCornerX, topCornerY, leftCornerX, leftCornerY, rightCornerX, rightCornerY) {
+				seenElems = append(seenElems, NewSeenElem(envpkg.Position{X: x, Y: y}, env.GetAt(x, y)))
+				if env.GetAt(x, y) != nil {
+					fmt.Printf("[%s] Found something at (%d %d) : %v\n", agt.ID(), x, y, env.GetAt(x, y))
+				}
 			}
 		}
 	}
 
-	for x := agtX - int(distance/2) + 1; x <= agtX+int(distance/2)+1; x++ {
-		for y := agtY - int(distance/2) + 1; y >= agtY+int(distance/2)+1; y++ {
+	for x := utils.Round(minX) + 1; x <= utils.Round(maxX)+1; x++ {
+		for y := utils.Round(minY); y <= utils.Round(maxY)+1; y++ {
 			addElemToList(x, y)
 		}
 	}

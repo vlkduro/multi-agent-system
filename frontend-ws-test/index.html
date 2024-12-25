@@ -135,7 +135,15 @@
                 canvas_arrow(ctx, agtX + cellSize / 2, agtY, agtX + cellSize / 2, agtY + cellSize);
             } else if (agent.orientation === "W") {
                 canvas_arrow(ctx, agtX + cellSize, agtY + cellSize / 2, agtX, agtY + cellSize/2);
-            }
+            } else if (agent.orientation == "NE") {
+                canvas_arrow(ctx, agtX, agtY + cellSize, agtX + cellSize, agtY);
+            } else if (agent.orientation == "NW") {
+                canvas_arrow(ctx, agtX + cellSize, agtY + cellSize, agtX, agtY);
+            } else if (agent.orientation == "SE") {
+                canvas_arrow(ctx, agtX, agtY, agtX + cellSize, agtY + cellSize);
+            } else if (agent.orientation == "SW") {
+                canvas_arrow(ctx, agtX + cellSize, agtY, agtX, agtY + cellSize);
+            } 
             // drawing text
             font = findRightFont(ctx, 10, text, cellSize, cellSize);
             ctx.fillStyle = 'black';
