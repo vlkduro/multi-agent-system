@@ -18,12 +18,17 @@
     <div>
         <canvas id="map"></canvas>
     </div>
+    <div>
+        <table id="hives">
+        </table>
+    </div> 
     <div id="agents"></div>
     <div id="errors"></div>
     <script>
         const URL = 'http://localhost:8080/';
         const ws = new WebSocket('ws://localhost:8080/');
         const agentsDiv = document.getElementById('agents');
+        const hivesDiv = document.getElementById('hives');
         const connectionState = document.getElementById('connection-state');
         const errorsDiv = document.getElementById('errors');
 
@@ -178,6 +183,9 @@
             while (agentsDiv.firstChild) {
                 agentsDiv.removeChild(agentsDiv.firstChild);
             }
+            while (hivesDiv.firstChild) {
+                hivesDiv.removeChild(hivesDiv.firstChild);
+            }
         
             const data = JSON.parse(event.data);
 
@@ -238,6 +246,30 @@
 
             data.objects.forEach(object => {
                 drawObject(ctx, object, cellSize);
+                if (object.id.includes('Hive')) {
+                    if (!hivesDiv.firstChild) {
+                        const row = document.createElement('tr');
+                        Object.keys(object).forEach((key) => {
+                            const valueCell = document.createElement('th');
+                            valueCell.textContent = key;
+                            row.appendChild(valueCell);
+                        });
+                        hivesDiv.appendChild(row);
+                    }
+                    const row = document.createElement('tr');
+                    // Generalization of value insertion
+                    Object.keys(object).forEach((key) => {
+                        const valueCell = document.createElement('td');
+                        if (typeof object[key] === 'object') {
+                            valueCell.textContent = JSON.stringify(object[key]);
+                        } else {
+                            valueCell.textContent = object[key] ?? 'N/A';
+                        }
+                        row.appendChild(valueCell);
+                    });
+                    
+                    hivesDiv.appendChild(row);
+                }
             });
         }
 

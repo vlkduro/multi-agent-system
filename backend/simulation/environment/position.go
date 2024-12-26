@@ -1,6 +1,10 @@
 package environment
 
-import "math"
+import (
+	"math"
+
+	"gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/utils"
+)
 
 // Coordinate system based on the top left corner
 type Position struct {
@@ -64,7 +68,7 @@ func (p Position) DistanceFrom(p2 Position) float64 {
 }
 
 func (p Position) Near(p2 Position, distance int) bool {
-	return p.DistanceFrom(p2) <= float64(distance)
+	return utils.Round(p.DistanceFrom(p2)) <= distance
 }
 
 // Returns the mirrored position of the point according to this point

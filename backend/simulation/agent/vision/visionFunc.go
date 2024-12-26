@@ -42,17 +42,17 @@ func getTriangleCoordinates(startPt envpkg.Position, height float64, oppositeBas
 	switch orientation {
 	case envpkg.North:
 		c2x += height * math.Cos(math.Pi/2)
-		c2y += height * math.Sin(math.Pi/2)
-		rcxCoef = math.Cos(math.Pi)
-		rcyCoef = math.Sin(0)
-		lcxCoef = math.Cos(0)
-		lcyCoef = math.Sin(0)
-	case envpkg.South:
-		c2x += height * math.Cos(math.Pi/2)
 		c2y += height * math.Sin((3*math.Pi)/2)
 		rcxCoef = math.Cos(0)
 		rcyCoef = math.Sin(0)
 		lcxCoef = math.Cos(math.Pi)
+		lcyCoef = math.Sin(0)
+	case envpkg.South:
+		c2x += height * math.Cos(math.Pi/2)
+		c2y += height * math.Sin(math.Pi/2)
+		rcxCoef = math.Cos(math.Pi)
+		rcyCoef = math.Sin(0)
+		lcxCoef = math.Cos(0)
 		lcyCoef = math.Sin(0)
 	case envpkg.East:
 		c2x += height * math.Cos(0)
@@ -69,32 +69,32 @@ func getTriangleCoordinates(startPt envpkg.Position, height float64, oppositeBas
 		lcxCoef = math.Cos(math.Pi / 2)
 		lcyCoef = math.Sin(math.Pi / 2)
 	case envpkg.NorthEast:
+		c2x += height * math.Cos((5*math.Pi)/4)
+		c2y += height * math.Sin(math.Pi/4)
+		rcxCoef = math.Cos(math.Pi / 4)
+		rcyCoef = math.Sin(math.Pi / 4)
+		lcxCoef = math.Cos((5 * math.Pi) / 4)
+		lcyCoef = math.Sin((5 * math.Pi) / 4)
+	case envpkg.NorthWest:
+		c2x += height * math.Cos((5*math.Pi)/4)
+		c2y += height * math.Sin((5*math.Pi)/4)
+		rcxCoef = math.Cos(math.Pi / 4)
+		rcyCoef = math.Sin((5 * math.Pi) / 4)
+		lcxCoef = math.Cos((5 * math.Pi) / 4)
+		lcyCoef = math.Sin(math.Pi / 4)
+	case envpkg.SouthEast:
 		c2x += height * math.Cos(math.Pi/4)
 		c2y += height * math.Sin(math.Pi/4)
 		rcxCoef = math.Cos((5 * math.Pi) / 4)
 		rcyCoef = math.Sin(math.Pi / 4)
 		lcxCoef = math.Cos(math.Pi / 4)
 		lcyCoef = math.Sin((5 * math.Pi) / 4)
-	case envpkg.NorthWest:
+	case envpkg.SouthWest:
 		c2x += height * math.Cos((5*math.Pi)/4)
 		c2y += height * math.Sin(math.Pi/4)
 		rcxCoef = math.Cos((5 * math.Pi) / 4)
 		rcyCoef = math.Sin((5 * math.Pi) / 4)
 		lcxCoef = math.Cos(math.Pi / 4)
-		lcyCoef = math.Sin(math.Pi / 4)
-	case envpkg.SouthEast:
-		c2x += height * math.Cos((5*math.Pi)/4)
-		c2y += height * math.Sin(math.Pi/4)
-		rcxCoef = math.Cos(math.Pi / 4)
-		rcyCoef = math.Sin(math.Pi / 4)
-		lcxCoef = math.Cos((5 * math.Pi) / 4)
-		lcyCoef = math.Sin((5 * math.Pi) / 4)
-	case envpkg.SouthWest:
-		c2x += height * math.Cos((5*math.Pi)/4)
-		c2y += height * math.Sin((5*math.Pi)/4)
-		rcxCoef = math.Cos(math.Pi / 4)
-		rcyCoef = math.Sin((5 * math.Pi) / 4)
-		lcxCoef = math.Cos((5 * math.Pi) / 4)
 		lcyCoef = math.Sin(math.Pi / 4)
 	}
 

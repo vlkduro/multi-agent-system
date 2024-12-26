@@ -3,7 +3,7 @@ MapDimension: 25
 
 # Bees
 NumberBees: 10
-BeeAgentVisionRange: 6.0
+BeeAgentVisionRange: 4.0
 MaxNectar: 70 # in mg -> https://wildflowermeadows.com/2024/01/how-far-do-honeybees-fly/
 
 # Flowers

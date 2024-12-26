@@ -1,7 +1,6 @@
 package vision
 
 import (
-	"fmt"
 	"math"
 	"sort"
 
@@ -31,9 +30,6 @@ func ExplorerBeeVision(agt envpkg.IAgent, env *envpkg.Environment) []*SeenElem {
 		if env.IsValidPosition(x, y) {
 			if pointIsInTriangle(float64(x), float64(y), topCornerX, topCornerY, leftCornerX, leftCornerY, rightCornerX, rightCornerY) {
 				seenElems = append(seenElems, NewSeenElem(envpkg.Position{X: x, Y: y}, env.GetAt(x, y)))
-				if env.GetAt(x, y) != nil {
-					fmt.Printf("[%s] Found something at (%d %d) : %v\n", agt.ID(), x, y, env.GetAt(x, y))
-				}
 			}
 		}
 	}
