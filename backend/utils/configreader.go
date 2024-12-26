@@ -53,8 +53,20 @@ func getStringAttributeFromConfigFile(attribute string) string {
 	return result[attribute]
 }
 
-func GetNumberAgents() int {
-	return getIntAttributeFromConfigFile("NumberAgents")
+func GetNumberBees() int {
+	return getIntAttributeFromConfigFile("NumberBees")
+}
+
+func GetMaxNectar() int {
+	return getIntAttributeFromConfigFile("MaxNectar")
+}
+
+func GetNumberFlowers() int {
+	return getIntAttributeFromConfigFile("NumberFlowers")
+}
+
+func GetNumberFlowerPatches() int {
+	return getIntAttributeFromConfigFile("NumberFlowerPatches")
 }
 
 func GetNumberObjects() int {

@@ -105,6 +105,10 @@ func (f *Flower) Pollinate() {
 	f.pollinated = true
 }
 
-func (f *Flower) Interact() {
-	f.nectar -= 10
+func (f *Flower) RetreiveNectar(nectar int) int {
+	if f.nectar < nectar {
+		nectar = f.nectar
+	}
+	f.nectar -= nectar
+	return nectar
 }

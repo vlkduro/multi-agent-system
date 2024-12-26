@@ -17,6 +17,8 @@ type ExAgent struct {
 	toAdd    int
 	movement envpkg.Orientation
 	vision   string
+	// for debug
+	seenElems []*vision.SeenElem
 }
 
 type ExAgentJson struct {
@@ -27,6 +29,7 @@ type ExAgentJson struct {
 	Position    envpkg.Position    `json:"position"`
 	Orientation envpkg.Orientation `json:"orientation"`
 	Vision      string             `json:"vision"`
+	SeenElems   []*vision.SeenElem `json:"seenElems"`
 }
 
 func NewExAgent(id string, pos *envpkg.Position, env *envpkg.Environment, syncChan chan bool) *ExAgent {
@@ -50,10 +53,10 @@ func (agt *ExAgent) Percept() {
 		agt.vision += fmt.Sprintf("%s[%d;%d] ", item, x, y)
 	}
 	logPos("ME", agt.pos.X, agt.pos.Y)
-	seenElems := agt.see()
-	for _, seen := range seenElems {
+	agt.seenElems = agt.see()
+	for _, seen := range agt.seenElems {
 		if seen.Elem != nil {
-			switch v := seen.Elem.(type) {
+			switch v := (seen.Elem).(type) {
 			case envpkg.IObject:
 				logPos(string(v.ID()), seen.Pos.X, seen.Pos.Y)
 			case envpkg.IAgent:
@@ -93,13 +96,13 @@ func (agt *ExAgent) Act() {
 	agt.value += agt.toAdd
 	switch agt.movement {
 	case envpkg.North:
-		agt.pos.GoUp(agt.env.GetMap())
+		agt.pos.GoNorth(agt.env.GetMap())
 	case envpkg.East:
-		agt.pos.GoRight(agt.env.GetMap())
+		agt.pos.GoEast(agt.env.GetMap())
 	case envpkg.South:
-		agt.pos.GoDown(agt.env.GetMap())
+		agt.pos.GoSouth(agt.env.GetMap())
 	case envpkg.West:
-		agt.pos.GoLeft(agt.env.GetMap())
+		agt.pos.GoWest(agt.env.GetMap())
 	}
 	agt.orientation = agt.movement
 }
@@ -111,5 +114,6 @@ func (agt ExAgent) ToJsonObj() interface{} {
 		Movement:    agt.movement,
 		Position:    *agt.pos,
 		Orientation: agt.orientation,
-		Vision:      agt.vision}
+		Vision:      agt.vision,
+		SeenElems:   agt.seenElems}
 }

@@ -25,15 +25,17 @@ func (server *WebSocketServer) newSimulation(conn *websocket.Conn) {
 		fmt.Print("old running")
 		server.simulation.Stop()
 	}
-	server.simulation = simulation.NewSimulation(10, 10, conn)
+	nAgts := utils.GetNumberBees()
+	nObjs := utils.GetNumberBees()
+	server.simulation = simulation.NewSimulation(nAgts, nObjs, conn)
 }
 
 func (server *WebSocketServer) launchSimulation(
 	conn *websocket.Conn,
 ) {
 	if server.simulation == nil {
-		nAgts := utils.GetNumberAgents()
-		nObjs := utils.GetNumberAgents()
+		nAgts := utils.GetNumberBees()
+		nObjs := utils.GetNumberBees()
 		server.simulation = simulation.NewSimulation(nAgts, nObjs, conn)
 	}
 

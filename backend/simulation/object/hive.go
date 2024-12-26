@@ -86,8 +86,8 @@ func (h Hive) ToJsonObj() interface{} {
 	}
 }
 
-func (h Hive) Interact() {
-	return
+func (h Hive) StoreNectar(nectar int) {
+	h.qNectar += nectar
 }
 
 func (h Hive) IsAlive() (isAlive bool) {

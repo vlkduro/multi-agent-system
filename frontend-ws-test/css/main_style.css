@@ -20,6 +20,15 @@ tr:nth-child(even) {
     background-color: lightyellow;
 }
 
+
+tr:hover {
+    background-color: lightblue;
+}
+
+tr.selected {
+    background-color: lightgreen;
+}
+
 /* .map-row {
     display: block; 
     float: left;
