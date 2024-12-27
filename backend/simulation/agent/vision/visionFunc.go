@@ -8,12 +8,12 @@ import (
 )
 
 type SeenElem struct {
-	Pos  envpkg.Position `json:"position"`
-	Elem interface{}     `json:"elem"`
+	Pos  *envpkg.Position `json:"position"`
+	Elem interface{}      `json:"elem"`
 }
 
-func NewSeenElem(pos envpkg.Position, elem interface{}) *SeenElem {
-	return &SeenElem{Pos: pos, Elem: elem}
+func NewSeenElem(pos *envpkg.Position, elem interface{}) *SeenElem {
+	return &SeenElem{Pos: pos.Copy(), Elem: elem}
 }
 
 type VisionFunc func(agt envpkg.IAgent, env *envpkg.Environment) []*SeenElem

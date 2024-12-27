@@ -45,8 +45,8 @@ const (
 // BeeAgent structure to be marshalled in json
 type objective struct {
 	TargetedElem envpkg.IObject
-	Position     envpkg.Position `json:"position"`
-	Type         objectiveType   `json:"type"`
+	Position     *envpkg.Position `json:"position"`
+	Type         objectiveType    `json:"type"`
 }
 
 type BeeAgentJson struct {
@@ -75,7 +75,7 @@ func NewBeeAgent(id string, env *envpkg.Environment, syncChan chan bool, speed i
 	beeAgent.maxNectar = maxnectar
 	beeAgent.job = job
 	beeAgent.nectar = 0
-	beeAgent.objective = objective{Type: None}
+	beeAgent.objective = objective{Position: nil, Type: None}
 	beeAgent.availablePositions = []envpkg.Position{}
 	beeAgent.seenElems = []*vision.SeenElem{}
 	beeAgent.pos = hive.Position().Copy()
@@ -109,12 +109,16 @@ func (agt *BeeAgent) foragerPerception() {
 }
 
 func (agt *BeeAgent) foragerDeliberation() {
-	if agt.nectar == agt.maxNectar {
-		fmt.Printf("[%s] Nectar full, going back to the hive\n", agt.id)
-		agt.objective.TargetedElem = agt.hive
-		agt.objective.Position = *agt.hive.Position().Copy()
-		agt.objective.Type = Hive
-		return
+	if agt.nectar > 0 {
+		decision := rand.Intn(101)
+		chancesToGoToHive := agt.nectar / agt.maxNectar * 100
+		if decision < chancesToGoToHive {
+			fmt.Printf("[%s] Nectar full, going back to the hive\n", agt.id)
+			agt.objective.TargetedElem = agt.hive
+			agt.objective.Position = agt.hive.Position().Copy()
+			agt.objective.Type = Hive
+			return
+		}
 	}
 	var closestHornet *HornetAgent = nil
 	hasAlreadySeenCloserFlower := false
@@ -125,9 +129,13 @@ func (agt *BeeAgent) foragerDeliberation() {
 				closestHornet = elem
 			case *obj.Flower:
 				if !hasAlreadySeenCloserFlower {
+					if elem.GetNectar() == 0 {
+						fmt.Printf("[%s] Flower seen with no nectar, ignoring it !\n", agt.id)
+						continue
+					}
 					fmt.Printf("[%s] Flower seen, going to it !\n", agt.id)
 					agt.objective.TargetedElem = elem
-					agt.objective.Position = *elem.Position().Copy()
+					agt.objective.Position = elem.Position().Copy()
 					agt.objective.Type = Flower
 					hasAlreadySeenCloserFlower = true
 				}
@@ -142,15 +150,14 @@ func (agt *BeeAgent) foragerDeliberation() {
 	// Fleeing from the hornet
 	if closestHornet != nil {
 		fmt.Printf("[%s] Hornet seen, fleeing in opposite direction\n", agt.id)
-		agt.objective.Position = *agt.pos.GetSymmetricOfPoint(*closestHornet.pos.Copy())
+		agt.objective.Position = agt.pos.GetSymmetricOfPoint(*closestHornet.pos.Copy())
 		agt.objective.Type = Position
 	}
 	// If has no objective, wander
 	if agt.objective.Type == None {
 		var closestBorder *envpkg.Position = nil
-		minBorderDistance := agt.pos.DistanceFrom(envpkg.Position{X: 0, Y: 0})
+		minBorderDistance := agt.pos.DistanceFrom(&envpkg.Position{X: 0, Y: 0})
 		isCloseToBorder := false
-		var nextWanderingOrientation envpkg.Orientation
 		// If we are close to the border, we go in the opposite direction
 		// We put -1 in the list to test the flat border cases
 		for _, x := range []int{-1, 0, agt.env.GetMapDimension() - 1} {
@@ -170,7 +177,7 @@ func (agt *BeeAgent) foragerDeliberation() {
 					isCorner = false
 				}
 				// Corner case
-				distance := agt.pos.DistanceFrom(envpkg.Position{X: x, Y: y})
+				distance := agt.pos.DistanceFrom(&envpkg.Position{X: x, Y: y})
 				isCloseToBorder = distance < float64(agt.Speed)
 				// We allow some leeway to border cases to avoid getting stuck
 				if (isCloseToBorder && distance < minBorderDistance) || (isCloseToBorder && isCorner && distance <= minBorderDistance) {
@@ -192,96 +199,21 @@ func (agt *BeeAgent) foragerDeliberation() {
 			} else if closestBorder.Y == agt.env.GetMapDimension()-1 {
 				keepAwayFromBorderPos.GoNorth(nil)
 			}
-			agt.objective.Position = *keepAwayFromBorderPos
+			agt.objective.Position = keepAwayFromBorderPos.Copy()
 			agt.objective.Type = Position
 			fmt.Printf("[%s] Too close to border (%d %d), going to (%d %d)\n", agt.id, closestBorder.X, closestBorder.Y, agt.objective.Position.X, agt.objective.Position.Y)
 		} else {
-			// Chances : 3/4 th keeping the same orientation, 1/8th changing to the left, 1/8th changing to the right
-			chancesToChangeOrientation := rand.Intn(8)
-			// To the left
-			if chancesToChangeOrientation < 2 {
-				switch agt.orientation {
-				case envpkg.North:
-					if chancesToChangeOrientation == 0 {
-						nextWanderingOrientation = envpkg.NorthWest
-					} else {
-						nextWanderingOrientation = envpkg.NorthEast
-					}
-				case envpkg.South:
-					if chancesToChangeOrientation == 0 {
-						nextWanderingOrientation = envpkg.SouthWest
-					} else {
-						nextWanderingOrientation = envpkg.SouthEast
-					}
-				case envpkg.East:
-					if chancesToChangeOrientation == 0 {
-						nextWanderingOrientation = envpkg.NorthEast
-					} else {
-						nextWanderingOrientation = envpkg.SouthEast
-					}
-				case envpkg.West:
-					if chancesToChangeOrientation == 0 {
-						nextWanderingOrientation = envpkg.NorthWest
-					} else {
-						nextWanderingOrientation = envpkg.SouthWest
-					}
-				case envpkg.NorthEast:
-					if chancesToChangeOrientation == 0 {
-						nextWanderingOrientation = envpkg.North
-					} else {
-						nextWanderingOrientation = envpkg.East
-					}
-				case envpkg.NorthWest:
-					if chancesToChangeOrientation == 0 {
-						nextWanderingOrientation = envpkg.North
-					} else {
-						nextWanderingOrientation = envpkg.West
-					}
-				case envpkg.SouthEast:
-					if chancesToChangeOrientation == 0 {
-						nextWanderingOrientation = envpkg.South
-					} else {
-						nextWanderingOrientation = envpkg.East
-					}
-				case envpkg.SouthWest:
-					if chancesToChangeOrientation == 0 {
-						nextWanderingOrientation = envpkg.South
-					} else {
-						nextWanderingOrientation = envpkg.West
-					}
+			// While we don't have an objective, we wander
+			for agt.objective.Type == None {
+				newObjective := agt.getNextWanderingPosition()
+				elemAtObjective := agt.env.GetAt(newObjective.X, newObjective.Y)
+				if elemAtObjective != nil {
+					continue
 				}
-			} else {
-				nextWanderingOrientation = agt.orientation
+				fmt.Printf("[%s] Wandering towards %v\n", agt.id, *newObjective)
+				agt.objective.Type = Position
+				agt.objective.Position = newObjective.Copy()
 			}
-			// We go in the direction of the next orientation
-			newObjective := agt.pos.Copy()
-			for i := 0; i < agt.Speed; i++ {
-				switch nextWanderingOrientation {
-				case envpkg.North:
-					newObjective.GoNorth(nil)
-				case envpkg.South:
-					newObjective.GoSouth(nil)
-				case envpkg.East:
-					newObjective.GoEast(nil)
-				case envpkg.West:
-					newObjective.GoWest(nil)
-				case envpkg.NorthEast:
-					newObjective.GoNorth(nil)
-					newObjective.GoEast(nil)
-				case envpkg.NorthWest:
-					newObjective.GoNorth(nil)
-					newObjective.GoWest(nil)
-				case envpkg.SouthEast:
-					newObjective.GoSouth(nil)
-					newObjective.GoEast(nil)
-				case envpkg.SouthWest:
-					newObjective.GoSouth(nil)
-					newObjective.GoWest(nil)
-				}
-			}
-			fmt.Printf("[%s] Wandering towards %v\n", agt.id, *newObjective)
-			agt.objective.Type = Position
-			agt.objective.Position = *newObjective.Copy()
 		}
 	}
 }
@@ -291,7 +223,7 @@ func (agt *BeeAgent) foragerAction() {
 	if agt.objective.Type != None {
 		switch typeObj := objf.Type; typeObj {
 		case Position:
-			if agt.pos.Equal(&objf.Position) {
+			if agt.pos.Equal(objf.Position) {
 				agt.objective.Type = None
 			} else {
 				agt.gotoNextStepTowards(objf.Position.Copy())
@@ -300,8 +232,8 @@ func (agt *BeeAgent) foragerAction() {
 			if agt.pos.Near(objf.Position, 1) {
 				if flower, ok := objf.TargetedElem.(*obj.Flower); ok {
 					agt.nectar += flower.RetreiveNectar(agt.maxNectar - agt.nectar)
+					agt.objective.Type = None
 				}
-				agt.objective.Type = None
 			} else {
 				fmt.Printf("[%s] Going to flower %v\n", agt.id, objf.TargetedElem.ID())
 				agt.gotoNextStepTowards(objf.Position.Copy())
@@ -311,8 +243,8 @@ func (agt *BeeAgent) foragerAction() {
 				if hive, ok := objf.TargetedElem.(*obj.Hive); ok {
 					hive.StoreNectar(agt.nectar)
 					agt.nectar = 0
+					agt.objective.Type = None
 				}
-				agt.objective.Type = None
 			} else {
 				fmt.Printf("[%s] Going to hive %v\n", agt.id, objf.TargetedElem.ID())
 				agt.gotoNextStepTowards(objf.Position.Copy())
