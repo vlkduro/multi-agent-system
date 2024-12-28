@@ -85,6 +85,8 @@ func NewBeeAgent(id string, env *envpkg.Environment, syncChan chan bool, speed i
 func (agt *BeeAgent) Percept() {
 	if agt.job == Forager {
 		agt.foragerPerception()
+	} else if agt.job == Worker {
+		agt.workerPerception()
 	}
 }
 
@@ -321,6 +323,38 @@ func (agt *BeeAgent) foragerAction() {
 	}
 }
 
+func (agt *BeeAgent) workerPerception() {
+	agt.visionFunc = vision.WorkerBeeVision
+	agt.seenElems = agt.see()
+}
+
+func (agt *BeeAgent) workerDeliberation() {
+	var closestHornet *HornetAgent = nil
+	for _, seen := range agt.seenElems {
+		if seen.Elem != nil {
+			switch elem := (seen.Elem).(type) {
+			case *HornetAgent:
+				closestHornet = elem
+			case *obj.Hive:
+				if elem == agt.hive {
+					qNectarHive := elem.GetQNectar()
+					if qNectarHive >= 4 {
+						// TODO : dans workerAction
+						fmt.Printf("[%s] Producing honey in hive : %v\n", agt.id, elem)
+						agt.hive.GetNectar(4)
+						agt.hive.StoreHoney(1)
+					}
+				}
+			default:
+				fmt.Printf("[%s] Unknown element seen : %v\n", agt.id, elem)
+			}
+		}
+		if closestHornet != nil {
+			break
+		}
+	}
+}
+
 // Template code to change, maybe think of inheritance for different
 // bee types to avoid agmenting the complexity of the structure
 // Perhaps inheriting a job component entirely could be a good idea
@@ -346,6 +380,18 @@ func (agt *BeeAgent) workerAction() {
 			agt.pos.GoSouth(agt.env.GetMap())
 			agt.orientation = envpkg.South
 		}
+	} else {
+		// TODO
+		// produit 180mg de miel pour 600mg de nectar
+		//  pour notre simulation :
+		// 600mg nectar -> 150mg miel
+		// 100mg nectar -> 25mg miel
+		// 4mg nectar -> 1mg miel
+		// 1 abeille 4mg nectar par tour
+		/*if agt.vision.qNectarHive >= 4 {
+			agt.hive.GetNectar(4)
+			agt.hive.StoreHoney(1)
+		}*/
 	}
 }
 

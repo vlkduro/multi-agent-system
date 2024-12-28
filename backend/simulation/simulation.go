@@ -147,6 +147,10 @@ func (simu *Simulation) Run(maWs *websocket.Conn) {
 
 	// Boucle de simulation
 	for simu.IsRunning() {
+		/*for _, obj := range simu.objs {
+			// TODO : vérifie si la ruche est toujours vivante (sinon, fin de la simulation)
+			time.Sleep(time.Second / 20) // 100 Tour / Sec
+		}*/
 		for _, agt := range simu.agts {
 			c := agt.GetSyncChan()
 			simu.env.Lock()

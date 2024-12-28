@@ -90,6 +90,18 @@ func (h Hive) StoreNectar(nectar int) {
 	h.qNectar += nectar
 }
 
+func (h Hive) GetNectar(nectar int) {
+	h.qNectar -= nectar
+}
+
+func (h Hive) StoreHoney(honey int) {
+	h.qHoney += honey
+}
+
+func (h Hive) GetQNectar() int {
+	return h.qNectar
+}
+
 func (h Hive) IsAlive() (isAlive bool) {
 	if h.qHoney >= h.minHoney && h.queen {
 		isAlive = true
