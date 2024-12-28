@@ -29,7 +29,7 @@ func ExplorerBeeVision(agt envpkg.IAgent, env *envpkg.Environment) []*SeenElem {
 	addElemToList := func(x, y int) {
 		if env.IsValidPosition(x, y) {
 			if pointIsInTriangle(float64(x), float64(y), topCornerX, topCornerY, leftCornerX, leftCornerY, rightCornerX, rightCornerY) {
-				seenElems = append(seenElems, NewSeenElem(envpkg.Position{X: x, Y: y}, env.GetAt(x, y)))
+				seenElems = append(seenElems, NewSeenElem(&envpkg.Position{X: x, Y: y}, env.GetAt(x, y)))
 			}
 		}
 	}

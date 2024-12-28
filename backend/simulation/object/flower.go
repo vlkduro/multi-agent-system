@@ -112,3 +112,7 @@ func (f *Flower) RetreiveNectar(nectar int) int {
 	f.nectar -= nectar
 	return nectar
 }
+
+func (f *Flower) GetNectar() int {
+	return f.nectar
+}
