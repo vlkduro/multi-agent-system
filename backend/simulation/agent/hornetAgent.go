@@ -26,7 +26,7 @@ func NewHornetAgent(id string, env *envpkg.Environment, syncChan chan bool, s in
 		id:       envpkg.AgentID(id),
 		env:      env,
 		syncChan: syncChan,
-		Speed:    s,
+		speed:    s,
 	}
 
 	return hAgent

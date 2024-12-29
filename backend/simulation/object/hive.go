@@ -56,7 +56,7 @@ func (h Hive) Copy() interface{} {
 	}
 }
 
-func (h Hive) Become(h_alt interface{}) {
+func (h *Hive) Become(h_alt interface{}) {
 	if h_alt == nil {
 		return
 	}
@@ -86,7 +86,7 @@ func (h Hive) ToJsonObj() interface{} {
 	}
 }
 
-func (h Hive) StoreNectar(nectar int) {
+func (h *Hive) StoreNectar(nectar int) {
 	h.qNectar += nectar
 }
 
