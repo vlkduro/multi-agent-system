@@ -116,7 +116,7 @@ func (agt *Agent) goSouthWest() bool {
 
 // https://web.archive.org/web/20171022224528/http://www.policyalmanac.org:80/games/aStarTutorial.htm
 func (agt *Agent) gotoNextStepTowards(pos *envpkg.Position) {
-	chain := agt.env.PathFinding(agt.pos, pos)
+	chain := agt.env.PathFinding(agt.pos, pos, agt.Speed)
 	// We remove the first element who is the current position of the agent
 	if len(chain) > 0 && chain[0].Equal(agt.pos) {
 		chain = chain[1:]
@@ -124,57 +124,42 @@ func (agt *Agent) gotoNextStepTowards(pos *envpkg.Position) {
 	fmt.Printf("\n[%s] Going to [%d %d] : [%d %d] -> ", agt.id, pos.X, pos.Y, agt.pos.X, agt.pos.Y)
 	for i := 0; i < agt.Speed && i < len(chain); i++ {
 		pos := chain[i]
-		movementSuccess := false
 		if agt.pos.X < pos.X {
 			if agt.pos.Y < pos.Y {
-				movementSuccess = agt.goSouthEast()
+				agt.goSouthEast()
 			} else if agt.pos.Y > pos.Y {
-				movementSuccess = agt.goNorthEast()
+				agt.goNorthEast()
 			} else {
-				movementSuccess = agt.goEast()
+				agt.goEast()
 			}
 		} else if agt.pos.X > pos.X {
 			if agt.pos.Y < pos.Y {
-				movementSuccess = agt.goSouthWest()
+				agt.goSouthWest()
 			} else if agt.pos.Y > pos.Y {
-				movementSuccess = agt.goNorthWest()
+				agt.goNorthWest()
 			} else {
-				movementSuccess = agt.goWest()
+				agt.goWest()
 			}
 		} else {
 			if agt.pos.Y < pos.Y {
-				movementSuccess = agt.goSouth()
+				agt.goSouth()
 			} else if agt.pos.Y > pos.Y {
-				movementSuccess = agt.goNorth()
+				agt.goNorth()
 			}
 		}
-		// If the movement was not successful, we try to go in another direction
-		if !movementSuccess {
-		}
-		// 	directions := []envpkg.Orientation{envpkg.North, envpkg.East, envpkg.South, envpkg.West}
-		// 	rand.Shuffle(len(directions), func(i, j int) {
-		// 		directions[i], directions[j] = directions[j], directions[i]
-		// 	})
-		// 	for _, orient := range directions {
-		// 		if movementSuccess {
-		// 			break
-		// 		}
-		// 		switch orient {
-		// 		case envpkg.North:
-		// 			movementSuccess = agt.goNorth()
-		// 		case envpkg.South:
-		// 			movementSuccess = agt.goSouth()
-		// 		case envpkg.East:
-		// 			movementSuccess = agt.goEast()
-		// 		case envpkg.West:
-		// 			movementSuccess = agt.goWest()
-		// 		}
-		// 	}
-		// }
 	}
 }
 
 func (agt *Agent) getNextWanderingPosition() *envpkg.Position {
+	surroundings := agt.pos.GetNeighbours(agt.Speed)
+	// We remove the positions that are occupied
+	removeCpt := 0
+	for i := 0; i < len(surroundings); i++ {
+		idx := i - removeCpt
+		if agt.env.GetAt(surroundings[idx].X, surroundings[idx].Y) != nil {
+			surroundings = append(surroundings[:idx], surroundings[idx+1:]...)
+		}
+	}
 	nextWanderingOrientation := agt.orientation
 	// Chances : 3/4 th keeping the same orientation, 1/8th changing to the left, 1/8th changing to the right
 	chancesToChangeOrientation := rand.Intn(8)
@@ -246,18 +231,25 @@ func (agt *Agent) getNextWanderingPosition() *envpkg.Position {
 		case envpkg.West:
 			newObjective.GoWest(nil)
 		case envpkg.NorthEast:
-			newObjective.GoNorth(nil)
-			newObjective.GoEast(nil)
+			newObjective.GoNorthEast(nil)
 		case envpkg.NorthWest:
-			newObjective.GoNorth(nil)
-			newObjective.GoWest(nil)
+			newObjective.GoNorthWest(nil)
 		case envpkg.SouthEast:
-			newObjective.GoSouth(nil)
-			newObjective.GoEast(nil)
+			newObjective.GoSouthEast(nil)
 		case envpkg.SouthWest:
-			newObjective.GoSouth(nil)
-			newObjective.GoWest(nil)
+			newObjective.GoSouthWest(nil)
 		}
 	}
+	// Find the closest available position in surroundings
+	closestPosition := newObjective.Copy()
+	minDistance := agt.pos.DistanceFrom(newObjective)
+	for _, pos := range surroundings {
+		distance := pos.DistanceFrom(newObjective)
+		if distance < minDistance {
+			closestPosition = pos.Copy()
+			minDistance = distance
+		}
+	}
+	newObjective = closestPosition
 	return newObjective
 }
