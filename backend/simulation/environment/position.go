@@ -97,6 +97,9 @@ func (p Position) Copy() *Position {
 }
 
 func (p Position) Equal(other *Position) bool {
+	if other == nil {
+		return false
+	}
 	return p.X == other.X && p.Y == other.Y
 }
 

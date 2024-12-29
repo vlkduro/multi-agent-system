@@ -21,7 +21,8 @@ type Agent struct {
 	env         *envpkg.Environment
 	visionFunc  vision.VisionFunc
 	syncChan    chan bool
-	Speed       int
+	speed       int
+	lastPos     *envpkg.Position
 }
 
 // Agent is launched as a microservice
@@ -116,13 +117,13 @@ func (agt *Agent) goSouthWest() bool {
 
 // https://web.archive.org/web/20171022224528/http://www.policyalmanac.org:80/games/aStarTutorial.htm
 func (agt *Agent) gotoNextStepTowards(pos *envpkg.Position) {
-	chain := agt.env.PathFinding(agt.pos, pos, agt.Speed)
+	chain := agt.env.PathFinding(agt.pos, pos, agt.speed)
 	// We remove the first element who is the current position of the agent
 	if len(chain) > 0 && chain[0].Equal(agt.pos) {
 		chain = chain[1:]
 	}
 	fmt.Printf("\n[%s] Going to [%d %d] : [%d %d] -> ", agt.id, pos.X, pos.Y, agt.pos.X, agt.pos.Y)
-	for i := 0; i < agt.Speed && i < len(chain); i++ {
+	for i := 0; i < agt.speed && i < len(chain); i++ {
 		pos := chain[i]
 		if agt.pos.X < pos.X {
 			if agt.pos.Y < pos.Y {
@@ -151,13 +152,14 @@ func (agt *Agent) gotoNextStepTowards(pos *envpkg.Position) {
 }
 
 func (agt *Agent) getNextWanderingPosition() *envpkg.Position {
-	surroundings := agt.pos.GetNeighbours(agt.Speed)
+	surroundings := agt.pos.GetNeighbours(agt.speed)
 	// We remove the positions that are occupied
 	removeCpt := 0
 	for i := 0; i < len(surroundings); i++ {
 		idx := i - removeCpt
-		if agt.env.GetAt(surroundings[idx].X, surroundings[idx].Y) != nil {
+		if agt.env.GetAt(surroundings[idx].X, surroundings[idx].Y) != nil || surroundings[idx].Equal(agt.lastPos) {
 			surroundings = append(surroundings[:idx], surroundings[idx+1:]...)
+			removeCpt++
 		}
 	}
 	nextWanderingOrientation := agt.orientation
@@ -220,7 +222,7 @@ func (agt *Agent) getNextWanderingPosition() *envpkg.Position {
 	}
 	// We go in the direction of the next orientation
 	newObjective := agt.pos.Copy()
-	for i := 0; i < agt.Speed; i++ {
+	for i := 0; i < agt.speed; i++ {
 		switch nextWanderingOrientation {
 		case envpkg.North:
 			newObjective.GoNorth(nil)
@@ -251,5 +253,9 @@ func (agt *Agent) getNextWanderingPosition() *envpkg.Position {
 		}
 	}
 	newObjective = closestPosition
+
+	// We add the new last position to avoid cycles
+	agt.lastPos = newObjective.Copy()
+
 	return newObjective
 }

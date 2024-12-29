@@ -68,7 +68,7 @@ func NewBeeAgent(id string, env *envpkg.Environment, syncChan chan bool, speed i
 		env:        env,
 		syncChan:   syncChan,
 		visionFunc: nil,
-		Speed:      speed,
+		speed:      speed,
 	}
 	beeAgent.hive = hive
 	beeAgent.birthDate = dob
@@ -103,12 +103,22 @@ func (agt *BeeAgent) Act() {
 	}
 }
 
+func (agt *BeeAgent) hasFlowerObjective() bool {
+	if agt.objective.Type == Flower {
+		return true
+	}
+	return false
+}
+
 func (agt *BeeAgent) foragerPerception() {
 	agt.visionFunc = vision.ExplorerBeeVision
 	agt.seenElems = agt.see()
 }
 
 func (agt *BeeAgent) foragerDeliberation() {
+	if agt.hasFlowerObjective() {
+		return
+	}
 	if agt.nectar > 0 {
 		decision := rand.Intn(101)
 		chancesToGoToHive := agt.nectar / agt.maxNectar * 100
@@ -178,7 +188,7 @@ func (agt *BeeAgent) foragerDeliberation() {
 				}
 				// Corner case
 				distance := agt.pos.DistanceFrom(&envpkg.Position{X: x, Y: y})
-				isCloseToBorder = distance < float64(agt.Speed)
+				isCloseToBorder = distance < float64(agt.speed)
 				// We allow some leeway to border cases to avoid getting stuck
 				if (isCloseToBorder && distance < minBorderDistance) || (isCloseToBorder && isCorner && distance <= minBorderDistance) {
 					closestBorder = &envpkg.Position{X: x, Y: y}
@@ -229,14 +239,14 @@ func (agt *BeeAgent) foragerAction() {
 				agt.gotoNextStepTowards(objf.Position.Copy())
 			}
 		case Flower:
-			if agt.pos.Near(objf.Position, 1) {
-				if flower, ok := objf.TargetedElem.(*obj.Flower); ok {
+			if flower, ok := objf.TargetedElem.(*obj.Flower); ok {
+				if agt.pos.Near(objf.Position, 1) {
 					agt.nectar += flower.RetreiveNectar(agt.maxNectar - agt.nectar)
 					agt.objective.Type = None
+				} else {
+					fmt.Printf("[%s] Going to flower %v\n", agt.id, objf.TargetedElem.ID())
+					agt.gotoNextStepTowards(objf.Position.Copy())
 				}
-			} else {
-				fmt.Printf("[%s] Going to flower %v\n", agt.id, objf.TargetedElem.ID())
-				agt.gotoNextStepTowards(objf.Position.Copy())
 			}
 		case Hive:
 			if agt.pos.Near(objf.Position, 1) {
