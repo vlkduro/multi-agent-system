@@ -30,7 +30,7 @@ type SimulationJson struct {
 	Environment interface{}   `json:"environment"`
 }
 
-func NewSimulation(nbees int, nflowers int, maWs *websocket.Conn) *Simulation {
+func NewSimulation(nbees int, nflowers int, nhornets int, maWs *websocket.Conn) *Simulation {
 	simu := &Simulation{}
 	simu.ws = maWs
 	env := envpkg.NewEnvironment([]envpkg.IAgent{}, []envpkg.IObject{})
@@ -116,6 +116,17 @@ func NewSimulation(nbees int, nflowers int, maWs *websocket.Conn) *Simulation {
 		simu.env.AddAgent(agt)
 	}
 
+	for i := 0; i < nhornets; i++ {
+		// Creating a hornet
+		id := fmt.Sprintf("Hornet #%d", i)
+		syncChan := make(chan bool)
+		agt := agt.NewHornetAgent(id, simu.env, syncChan, rand.Intn(2)+1)
+		// ajout de l'agent à la simulation
+		simu.agts = append(simu.agts, agt)
+		// ajout de l'agent à l'environnement
+		//simu.env.AddAgent(agt) // Pas encore car pas spawn
+	}
+
 	simu.sendState()
 	return simu
 }
@@ -147,11 +158,14 @@ func (simu *Simulation) Run(maWs *websocket.Conn) {
 
 	// Boucle de simulation
 	for simu.IsRunning() {
-		for _, agt := range simu.agts {
+		for i, agt := range simu.agts {
 			c := agt.GetSyncChan()
 			simu.env.Lock()
 			c <- true
-			<-c
+			// If dead
+			if !<-c {
+				simu.agts = append(simu.agts[:i], simu.agts[i+1:]...)
+			}
 			simu.env.Unlock()
 			time.Sleep(time.Second / 100) // 100 Tour / Sec
 		}
@@ -196,7 +210,7 @@ func (simu *Simulation) print() {
 	startTime := time.Now()
 	for simu.IsRunning() {
 		fmt.Printf("\rRunning simulation for %vms...  - ", time.Since(startTime).Milliseconds())
-		time.Sleep(time.Second / 60) // 60 fps
+		time.Sleep(time.Second / 30) // 60 fps
 	}
 }
 
@@ -211,6 +225,9 @@ func (simu *Simulation) ToJsonObj() SimulationJson {
 	for _, obj := range simu.objs {
 		objects = append(objects, obj.ToJsonObj())
 	}
+
+	simu.env.Lock()
+	defer simu.env.Unlock()
 
 	return SimulationJson{Agents: agents, Objects: objects, Environment: simu.env.ToJsonObj()}
 }
