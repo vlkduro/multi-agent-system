@@ -51,12 +51,22 @@ func (env *Environment) IsValidPosition(x int, y int) bool {
 
 func (env *Environment) AddAgent(agt IAgent) bool {
 	pos := agt.Position()
-	if env.GetAt(pos.X, pos.Y) == nil {
+	if pos != nil && env.GetAt(pos.X, pos.Y) == nil {
 		//return false
 		env.grid[pos.X][pos.Y] = agt
 	}
 	env.agts = append(env.agts, agt)
 	return true
+}
+
+func (env *Environment) RemoveAgent(agt IAgent) {
+	for i, a := range env.agts {
+		if a.ID() == agt.ID() {
+			env.agts = append(env.agts[:i], env.agts[i+1:]...)
+			env.grid[a.Position().X][a.Position().Y] = nil
+			break
+		}
+	}
 }
 
 func (env *Environment) AddObject(obj IObject) bool {
@@ -139,7 +149,10 @@ func (env *Environment) PathFinding(start *Position, end *Position, numberMoves 
 	}
 
 	path := []*Position{}
-	currentNode := openList[len(openList)-1]
+	var currentNode *node = nil
+	if len(openList) > 0 {
+		currentNode = openList[len(openList)-1]
+	}
 	for currentNode != nil {
 		path = append([]*Position{currentNode.position.Copy()}, path...)
 		currentNode = currentNode.parent

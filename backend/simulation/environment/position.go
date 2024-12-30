@@ -1,6 +1,7 @@
 package environment
 
 import (
+	"fmt"
 	"math"
 
 	"gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/utils"
@@ -19,7 +20,7 @@ func NewPosition(x int, y int, maxX int, maxY int) *Position {
 }
 
 // Movement can be simulated with by passing a nil grid
-func (p *Position) move(grid [][]interface{}, newX int, newY int) bool {
+func (p *Position) move(grid [][]interface{}, newX int, newY int, elem interface{}) bool {
 	// Out of bounds
 	if newX < 0 || newY < 0 || newX >= p.maxX || newY >= p.maxY {
 		return false
@@ -30,7 +31,12 @@ func (p *Position) move(grid [][]interface{}, newX int, newY int) bool {
 	}
 	// Not a simulation
 	if grid != nil {
-		grid[p.X][p.Y], grid[newX][newY] = nil, grid[p.X][p.Y]
+		if grid[p.X][p.Y] == elem {
+			fmt.Println("Grid is not nil : ", grid[p.X][p.Y])
+			grid[p.X][p.Y], grid[newX][newY] = nil, grid[p.X][p.Y]
+		} else {
+			grid[newX][newY] = elem
+		}
 	}
 	p.X = newX
 	p.Y = newY
@@ -38,43 +44,43 @@ func (p *Position) move(grid [][]interface{}, newX int, newY int) bool {
 }
 
 // Movement can be simulated with by passing a nil grid
-func (p *Position) GoNorth(grid [][]interface{}) bool {
-	return p.move(grid, p.X, p.Y-1)
+func (p *Position) GoNorth(grid [][]interface{}, elem interface{}) bool {
+	return p.move(grid, p.X, p.Y-1, elem)
 }
 
 // Movement can be simulated with by passing a nil grid
-func (p *Position) GoSouth(grid [][]interface{}) bool {
-	return p.move(grid, p.X, p.Y+1)
+func (p *Position) GoSouth(grid [][]interface{}, elem interface{}) bool {
+	return p.move(grid, p.X, p.Y+1, elem)
 }
 
 // Movement can be simulated with by passing a nil grid
-func (p *Position) GoWest(grid [][]interface{}) bool {
-	return p.move(grid, p.X-1, p.Y)
+func (p *Position) GoWest(grid [][]interface{}, elem interface{}) bool {
+	return p.move(grid, p.X-1, p.Y, elem)
 }
 
 // Movement can be simulated with by passing a nil grid
-func (p *Position) GoEast(grid [][]interface{}) bool {
-	return p.move(grid, p.X+1, p.Y)
+func (p *Position) GoEast(grid [][]interface{}, elem interface{}) bool {
+	return p.move(grid, p.X+1, p.Y, elem)
 }
 
 // Movement can be simulated with by passing a nil grid
-func (p *Position) GoNorthEast(grid [][]interface{}) bool {
-	return p.move(grid, p.X+1, p.Y-1)
+func (p *Position) GoNorthEast(grid [][]interface{}, elem interface{}) bool {
+	return p.move(grid, p.X+1, p.Y-1, elem)
 }
 
 // Movement can be simulated with by passing a nil grid
-func (p *Position) GoNorthWest(grid [][]interface{}) bool {
-	return p.move(grid, p.X-1, p.Y-1)
+func (p *Position) GoNorthWest(grid [][]interface{}, elem interface{}) bool {
+	return p.move(grid, p.X-1, p.Y-1, elem)
 }
 
 // Movement can be simulated with by passing a nil grid
-func (p *Position) GoSouthEast(grid [][]interface{}) bool {
-	return p.move(grid, p.X+1, p.Y+1)
+func (p *Position) GoSouthEast(grid [][]interface{}, elem interface{}) bool {
+	return p.move(grid, p.X+1, p.Y+1, elem)
 }
 
 // Movement can be simulated with by passing a nil grid
-func (p *Position) GoSouthWest(grid [][]interface{}) bool {
-	return p.move(grid, p.X-1, p.Y+1)
+func (p *Position) GoSouthWest(grid [][]interface{}, elem interface{}) bool {
+	return p.move(grid, p.X-1, p.Y+1, elem)
 }
 
 func (p Position) DistanceFrom(p2 *Position) float64 {
@@ -86,9 +92,9 @@ func (p Position) Near(p2 *Position, distance int) bool {
 }
 
 // Returns the mirrored position of the point according to this point
-func (p Position) GetSymmetricOfPoint(origin Position) *Position {
-	symX := 2*origin.X - p.X
-	symY := 2*origin.Y - p.Y
+func (p Position) GetSymmetricOfPoint(p2 Position) *Position {
+	symX := 2*p.X - p2.X
+	symY := 2*p.Y - p2.Y
 	return &Position{X: symX, Y: symY, maxX: p.maxX, maxY: p.maxY}
 }
 

@@ -118,6 +118,9 @@
 		}
 
         function drawAgent(ctx, agent, cellSize) {
+            if (!agent.position) {
+                return;
+            }
             text = agent.id.replace('ExAgent ', 'ExA');
             let agtX = agent.position.x * cellSize;
             let agtY = agent.position.y * cellSize;
@@ -129,9 +132,20 @@
                 ctx.fillStyle = 'yellow';
             }
             // drawing yellow square
+            orientationColor = 'red';
+            if (agent.id.includes('Bee')) {
+                ctx.fillStyle = 'yellow';
+                text = agent.id.replace('Bee ', 'B');
+                orientationColor = 'red';
+            }
+            if (agent.id.includes('Hornet')) {
+                ctx.fillStyle = 'red';
+                text = agent.id.replace('Hornet ', 'Ho');
+                orientationColor = 'white';
+            }
             ctx.fillRect(agtX, agtY, cellSize, cellSize);
             // drawing movement
-            ctx.strokeStyle = 'red';
+            ctx.strokeStyle = orientationColor;
             if (agent.orientation === "N") {
                 canvas_arrow(ctx, agtX + cellSize / 2, agtY + cellSize, agtX + cellSize / 2, agtY);
             } else if (agent.orientation === "E") {
@@ -158,13 +172,16 @@
 
         function drawObject(ctx, object, cellSize) {
             let text = object.id;
+            let textColor = 'black';
             if (object.id.includes('Flower')) {
-                ctx.fillStyle = 'red';
+                ctx.fillStyle = 'blue';
+                textColor = 'white';
                 text = object.id.replace('Flower ', 'F');
             } 
             else if (object.id.includes('Hive')) {
                 ctx.fillStyle = 'orange';
                 text = object.id.replace('Hive ', 'H');
+                textColor = 'black';
             }
             else {
                 ctx.fillStyle = 'green';
@@ -173,7 +190,7 @@
             objY = object.position.y * cellSize;
             ctx.fillRect(objX, objY, cellSize, cellSize);
             font = findRightFont(ctx, 10, text, cellSize, cellSize);
-            ctx.fillStyle = 'black';
+            ctx.fillStyle = textColor;
             ctx.font = font + 'px Arial';
             ctx.fillText(text, objX, objY + cellSize / 2);
         }
@@ -188,6 +205,8 @@
             }
         
             const data = JSON.parse(event.data);
+            console.log(data.agents);
+            console.log(data.environment);
 
             const table = document.createElement('table');
             const headerRow = document.createElement('tr');
