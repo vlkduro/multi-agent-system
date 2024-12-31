@@ -82,24 +82,24 @@ func (agt *HornetAgent) Percept() {
 func (agt *HornetAgent) Deliberate() {
 	distanceToTarget := float64(agt.env.GetMapDimension())
 	if agt.objective.Type == Bee {
-		if bee, ok := agt.objective.TargetedElem.(BeeAgent); ok {
+		if bee, ok := agt.objective.TargetedElem.(*BeeAgent); ok {
 			distanceToTarget = bee.Position().DistanceFrom(agt.Position())
 		}
 	}
 	for _, seen := range agt.seenElems {
-		if seen.Elem != nil {
-			switch seen.Elem.(type) {
-			case *BeeAgent:
-				bee := seen.Elem.(*BeeAgent)
-				distance := bee.Position().DistanceFrom(agt.Position())
-				if distance < distanceToTarget {
-					agt.objective.Type = Bee
-					agt.objective.TargetedElem = bee
-					agt.objective.Position = bee.Position().Copy()
-					distanceToTarget = distance
+		if seen.Elem != nil && seen.Elem != agt {
+			switch elem := seen.Elem.(type) {
+			case *Agent:
+				if elem.Type() == envpkg.Bee {
+					fmt.Printf("[%s] Found a close bee (%s) \n", agt.id, elem.ID())
+					distance := elem.Position().DistanceFrom(agt.Position())
+					if distance < distanceToTarget {
+						agt.objective.Type = Bee
+						agt.objective.TargetedElem = elem
+						agt.objective.Position = elem.Position().Copy()
+						distanceToTarget = distance
+					}
 				}
-			case BeeAgent:
-				fmt.Println("=================================Hornet sees a bee wtf")
 			}
 		}
 	}
@@ -119,15 +119,19 @@ func (agt *HornetAgent) Act() {
 			agt.objective.Type = None
 		}
 	case Bee:
-		fmt.Println("=====================Hornet attacking bee !")
-		bee := agt.objective.TargetedElem.(*BeeAgent)
+		bee := agt.objective.TargetedElem.(*Agent)
+		fmt.Printf("[%s] Hornet attacking %s !\n", agt.id, bee.ID())
 		agt.gotoNextStepTowards(bee.Position().Copy())
 		if agt.Position().Near(bee.pos.Copy(), 1) {
 			bee.Kill()
 			agt.objective.Type = None
-			fmt.Println("=====================Hornet killed bee !!!")
+			fmt.Printf("[%s] Hornet killed %s !!!\n", agt.id, bee.ID())
 		}
 	}
+}
+
+func (agt HornetAgent) Type() envpkg.AgentType {
+	return envpkg.Hornet
 }
 
 func (agt *HornetAgent) ToJsonObj() interface{} {

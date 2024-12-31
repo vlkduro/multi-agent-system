@@ -107,6 +107,10 @@ func (agt *ExAgent) Act() {
 	agt.orientation = agt.movement
 }
 
+func (agt *ExAgent) Type() envpkg.AgentType {
+	return envpkg.ExAgent
+}
+
 func (agt ExAgent) ToJsonObj() interface{} {
 	return ExAgentJson{ID: string(agt.id),
 		Value:       agt.value,

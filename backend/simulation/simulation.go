@@ -162,8 +162,10 @@ func (simu *Simulation) Run(maWs *websocket.Conn) {
 			c := agt.GetSyncChan()
 			simu.env.Lock()
 			c <- true
-			// If dead
-			if !<-c {
+			isAlive := <-c
+			// If dead, remove agent from simulation
+			if !isAlive {
+				fmt.Printf("{{SIMULATION}} - [%s] is dead\n", agt.ID())
 				simu.agts = append(simu.agts[:i], simu.agts[i+1:]...)
 			}
 			simu.env.Unlock()

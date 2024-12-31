@@ -51,13 +51,16 @@ func (agt *Agent) Start() {
 		for {
 			run := <-agt.syncChan
 			if !run || !agt.alive {
-				agt.syncChan <- !run || !agt.alive
+				agt.syncChan <- false
 				break
 			}
+			fmt.Printf("[%s] === Percieving === [%s]\n", agt.ID(), agt.ID())
 			agt.iagt.Percept()
+			fmt.Printf("[%s] === Deliberating === [%s]\n", agt.ID(), agt.ID())
 			agt.iagt.Deliberate()
+			fmt.Printf("[%s] === Acting === [%s]\n", agt.ID(), agt.ID())
 			agt.iagt.Act()
-			agt.syncChan <- run
+			agt.syncChan <- agt.alive
 		}
 		fmt.Printf("[%s] Stopping Agent\n", agt.ID())
 	}()
@@ -69,6 +72,18 @@ func (agt Agent) ID() envpkg.AgentID {
 
 func (agt Agent) GetSyncChan() chan bool {
 	return agt.syncChan
+}
+
+func (agt *Agent) Percept() {
+	agt.iagt.Percept()
+}
+
+func (agt *Agent) Deliberate() {
+	agt.iagt.Deliberate()
+}
+
+func (agt *Agent) Act() {
+	agt.iagt.Act()
 }
 
 func (agt Agent) Position() *envpkg.Position {
@@ -345,7 +360,7 @@ func (agt *Agent) getNextWanderingPosition() *envpkg.Position {
 		}
 	}
 	// Find the closest available position in surroundings
-	closestPosition := newObjective.Copy()
+	closestPosition := agt.pos.Copy()
 	minDistance := agt.pos.DistanceFrom(newObjective)
 	for _, pos := range surroundings {
 		distance := pos.DistanceFrom(newObjective)
@@ -362,7 +377,17 @@ func (agt *Agent) getNextWanderingPosition() *envpkg.Position {
 	return newObjective
 }
 
-func (agt *Agent) die() {
+func (agt *Agent) Kill() {
+	agt.env.RemoveAgent(agt)
 	agt.alive = false
 	agt.pos = nil
+
+}
+
+func (agt Agent) Type() envpkg.AgentType {
+	return agt.iagt.Type()
+}
+
+func (agt *Agent) ToJsonObj() interface{} {
+	return agt.iagt.ToJsonObj()
 }

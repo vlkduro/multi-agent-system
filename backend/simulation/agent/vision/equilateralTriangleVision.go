@@ -5,6 +5,7 @@ import (
 	"sort"
 
 	envpkg "gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/simulation/environment"
+
 	"gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/utils"
 )
 
@@ -26,7 +27,9 @@ func EquilateralTriangleVision(agt envpkg.IAgent, env *envpkg.Environment, dista
 	addElemToList := func(x, y int) {
 		if env.IsValidPosition(x, y) {
 			if pointIsInTriangle(float64(x), float64(y), topCornerX, topCornerY, leftCornerX, leftCornerY, rightCornerX, rightCornerY) {
-				seenElems = append(seenElems, NewSeenElem(&envpkg.Position{X: x, Y: y}, env.GetAt(x, y)))
+				elem := env.GetAt(x, y)
+				seenElems = append(seenElems, NewSeenElem(&envpkg.Position{X: x, Y: y}, elem))
+				// fmt.Printf("Agent %s sees element %v at position (%d, %d) (%s)\n", agt.ID(), elem, x, y, reflect.TypeOf(elem))
 			}
 		}
 	}

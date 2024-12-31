@@ -2,6 +2,7 @@ package agent
 
 import (
 	"fmt"
+	"reflect"
 	"time"
 
 	"math/rand"
@@ -87,11 +88,6 @@ func (agt *BeeAgent) Act() {
 	}
 }
 
-func (agt *BeeAgent) Kill() {
-	agt.env.RemoveAgent(agt)
-	agt.die()
-}
-
 func (agt *BeeAgent) hasFlowerObjective() bool {
 	return agt.objective.Type == Flower
 }
@@ -122,6 +118,7 @@ func (agt *BeeAgent) foragerDeliberation() {
 		if seen.Elem != nil {
 			switch elem := (seen.Elem).(type) {
 			case *HornetAgent:
+				fmt.Printf("[%s] *****************Close to hornet %v\n", agt.id, reflect.TypeOf(seen.Elem))
 				closestHornet = elem
 			case *obj.Flower:
 				if !hasAlreadySeenCloserFlower {
@@ -135,8 +132,8 @@ func (agt *BeeAgent) foragerDeliberation() {
 					agt.objective.Type = Flower
 					hasAlreadySeenCloserFlower = true
 				}
-			default:
-				fmt.Printf("[%s] Unknown element seen : %v\n", agt.id, elem)
+				//default:
+				//fmt.Printf("[%s] Unknown element seen : %v\n", agt.id, elem)
 			}
 		}
 		if closestHornet != nil {
@@ -148,6 +145,16 @@ func (agt *BeeAgent) foragerDeliberation() {
 		fmt.Printf("[%s] Hornet seen, fleeing in opposite direction\n", agt.id)
 		agt.objective.Position = agt.pos.GetSymmetricOfPoint(*closestHornet.pos.Copy())
 		agt.objective.Type = Position
+		if agt.objective.Position.X < 0 {
+			agt.objective.Position.X = 0
+		} else if agt.objective.Position.X >= agt.env.GetMapDimension() {
+			agt.objective.Position.X = agt.env.GetMapDimension() - 1
+		}
+		if agt.objective.Position.Y < 0 {
+			agt.objective.Position.Y = 0
+		} else if agt.objective.Position.Y >= agt.env.GetMapDimension() {
+			agt.objective.Position.Y = agt.env.GetMapDimension() - 1
+		}
 	}
 	// If has no objective, wander
 	if agt.objective.Type == None {
@@ -215,6 +222,10 @@ func (agt *BeeAgent) workerAction() {
 			agt.goSouth()
 		}
 	}
+}
+
+func (agt BeeAgent) Type() envpkg.AgentType {
+	return envpkg.Bee
 }
 
 func (agt *BeeAgent) ToJsonObj() interface{} {
