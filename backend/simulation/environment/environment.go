@@ -34,7 +34,18 @@ func (env *Environment) GetAt(x int, y int) interface{} {
 	if x < 0 || y < 0 || x >= mapDimension || y >= mapDimension {
 		return nil
 	}
-	return env.grid[x][y]
+	elem := env.grid[x][y]
+	if elem == nil {
+		return nil
+	}
+	switch obj := elem.(type) {
+	case IAgent:
+		return obj
+	case IObject:
+		return obj
+	default:
+		return obj
+	}
 }
 
 func (env *Environment) GetMap() [][]interface{} {
@@ -49,13 +60,14 @@ func (env *Environment) IsValidPosition(x int, y int) bool {
 	return x >= 0 && y >= 0 && x < mapDimension && y < mapDimension
 }
 
+// Returns true is added on grid, false if not
 func (env *Environment) AddAgent(agt IAgent) bool {
 	pos := agt.Position()
-	if pos != nil && env.GetAt(pos.X, pos.Y) == nil {
-		//return false
-		env.grid[pos.X][pos.Y] = agt
-	}
 	env.agts = append(env.agts, agt)
+	if pos != nil && env.GetAt(pos.X, pos.Y) == nil {
+		env.grid[pos.X][pos.Y] = agt
+		return false
+	}
 	return true
 }
 
@@ -107,9 +119,10 @@ func (env *Environment) PathFinding(start *Position, end *Position, numberMoves 
 	startNode := &node{position: start.Copy(), cost: 0, heuristic: start.ManhattanDistance(end)}
 	openList = append(openList, startNode)
 
-	// We allow pathfinding to last 50 iterations
+	// We allow pathfinding to last 3 times the number of moves
 	cpt := 0
-	for len(openList) > 0 && cpt < numberMoves*2 {
+	for len(openList) > 0 && cpt < numberMoves*3 {
+		//fmt.Printf("%d ", cpt)
 		currentNode := openList[0]
 		currentIndex := 0
 		for index, node := range openList {
@@ -147,6 +160,7 @@ func (env *Environment) PathFinding(start *Position, end *Position, numberMoves 
 		}
 		cpt++
 	}
+	//fmt.Println("")
 
 	path := []*Position{}
 	var currentNode *node = nil

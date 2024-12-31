@@ -1,7 +1,6 @@
 package environment
 
 import (
-	"fmt"
 	"math"
 
 	"gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/utils"
@@ -32,7 +31,6 @@ func (p *Position) move(grid [][]interface{}, newX int, newY int, elem interface
 	// Not a simulation
 	if grid != nil {
 		if grid[p.X][p.Y] == elem {
-			fmt.Println("Grid is not nil : ", grid[p.X][p.Y])
 			grid[p.X][p.Y], grid[newX][newY] = nil, grid[p.X][p.Y]
 		} else {
 			grid[newX][newY] = elem

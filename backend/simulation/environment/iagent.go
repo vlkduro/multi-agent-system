@@ -15,6 +15,14 @@ const (
 	SouthWest Orientation = "SW"
 )
 
+type AgentType string
+
+const (
+	ExAgent AgentType = "ExAgent"
+	Bee     AgentType = "Bee"
+	Hornet  AgentType = "Hornet"
+)
+
 // IAgent is an interface representing the agent's actions
 // limits
 type IAgent interface {
@@ -27,4 +35,5 @@ type IAgent interface {
 	Percept()
 	Deliberate()
 	Act()
+	Type() AgentType
 }
