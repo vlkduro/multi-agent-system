@@ -94,6 +94,9 @@ func (agt *BeeAgent) Deliberate() {
 	if agt.job == Forager {
 		agt.foragerDeliberation()
 	}
+	if agt.job == Worker {
+		agt.workerDeliberation()
+	}
 }
 
 func (agt *BeeAgent) Act() {
@@ -141,6 +144,8 @@ func (agt *BeeAgent) foragerDeliberation() {
 					agt.objective.Type = Flower
 					hasAlreadySeenCloserFlower = true
 				}
+			//case *obj.Hive:
+			//fmt.Printf("[%s] Hive seen : %v\n", agt.id, elem)
 			default:
 				fmt.Printf("[%s] Unknown element seen : %v\n", agt.id, elem)
 			}
@@ -256,20 +261,32 @@ func (agt *BeeAgent) foragerAction() {
 }
 
 func (agt *BeeAgent) workerPerception() {
+	fmt.Printf("[%s] Worker bee percepting...\n", agt.id)
 	agt.visionFunc = vision.WorkerBeeVision
 	agt.seenElems = agt.see()
 }
 
 func (agt *BeeAgent) workerDeliberation() {
+	fmt.Printf("[%s] Worker bee deliberating...\n", agt.id)
 	var closestHornet *HornetAgent = nil
+	fmt.Printf("[%s] Hornet ? %v\n", agt.id, closestHornet)
 	for _, seen := range agt.seenElems {
 		if seen.Elem != nil {
 			switch elem := (seen.Elem).(type) {
 			case *HornetAgent:
 				closestHornet = elem
 			case *obj.Hive:
-				if elem == agt.hive {
+				fmt.Printf("[%s] Hive seen : %v\n", agt.id, elem)
+
+				beehivepos := agt.hive.GetPosition()
+				hiveseenpos := elem.GetPosition()
+
+				fmt.Printf("[%s] Hive seen (position) : %v\n", agt.id, hiveseenpos)
+				fmt.Printf("[%s] agt.hive (position) : %v\n", agt.id, beehivepos)
+				if hiveseenpos.Equal(&beehivepos) {
+					fmt.Println("equal true")
 					qNectarHive := elem.GetQNectar()
+					fmt.Printf("[%s] qNectar : %d\n", agt.id, qNectarHive)
 					if qNectarHive >= 4 {
 						// TODO : dans workerAction
 						fmt.Printf("[%s] Producing honey in hive : %v\n", agt.id, elem)
@@ -291,7 +308,8 @@ func (agt *BeeAgent) workerDeliberation() {
 // bee types to avoid agmenting the complexity of the structure
 // Perhaps inheriting a job component entirely could be a good idea
 func (agt *BeeAgent) workerAction() {
-	chancesToBecomeForager := rand.Intn(10)
+	fmt.Printf("[%s] Worker bee acting...\n", agt.id)
+	chancesToBecomeForager := rand.Intn(100)
 	if chancesToBecomeForager == 0 {
 		agt.job = Forager
 		xFactor := rand.Intn(2)

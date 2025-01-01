@@ -86,6 +86,11 @@ func (h Hive) ToJsonObj() interface{} {
 	}
 }
 
+func (h Hive) GetPosition() (position envpkg.Position) {
+	position = *h.pos.Copy()
+	return
+}
+
 func (h *Hive) StoreNectar(nectar int) {
 	h.qNectar += nectar
 }
