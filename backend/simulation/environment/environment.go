@@ -70,7 +70,7 @@ func (env *Environment) AddObject(obj IObject) bool {
 }
 
 // https://web.archive.org/web/20171022224528/http://www.policyalmanac.org:80/games/aStarTutorial.htm
-func (env *Environment) PathFinding(start *Position, end *Position) []*Position {
+func (env *Environment) PathFinding(start *Position, end *Position, numberMoves int) []*Position {
 	if start == nil || end == nil {
 		return nil
 	}
@@ -98,8 +98,8 @@ func (env *Environment) PathFinding(start *Position, end *Position) []*Position 
 	openList = append(openList, startNode)
 
 	// We allow pathfinding to last 50 iterations
-	cpt := 50
-	for len(openList) > 0 && cpt > 0 {
+	cpt := 0
+	for len(openList) > 0 && cpt < numberMoves*2 {
 		currentNode := openList[0]
 		currentIndex := 0
 		for index, node := range openList {
@@ -121,7 +121,7 @@ func (env *Environment) PathFinding(start *Position, end *Position) []*Position 
 			return path
 		}
 
-		for _, neighbor := range currentNode.position.GetNeighbours() {
+		for _, neighbor := range currentNode.position.GetNeighbours(1) {
 			if !env.IsValidPosition(neighbor.X, neighbor.Y) || closedList[posToString(neighbor)] {
 				continue
 			}
@@ -135,7 +135,7 @@ func (env *Environment) PathFinding(start *Position, end *Position) []*Position 
 			neighborNode := &node{position: neighbor.Copy(), parent: currentNode, cost: cost, heuristic: heuristic}
 			openList = append(openList, neighborNode)
 		}
-		cpt--
+		cpt++
 	}
 
 	path := []*Position{}
