@@ -67,7 +67,7 @@ func NewSimulation(nbees int, nflowers int, nhornets int, maWs *websocket.Conn) 
 		availablePositions := make([]*envpkg.Position, 0)
 		for x := centerOfPatchX - offset; x < centerOfPatchX+offset; x++ {
 			for y := centerOfPatchY - offset; y < centerOfPatchY+offset; y++ {
-				if simu.env.IsValidPosition(x, y) {
+				if simu.env.IsValidPosition(x, y) && simu.env.GetAt(x, y) == nil {
 					availablePositions = append(availablePositions, envpkg.NewPosition(x, y, mapDimension, mapDimension))
 				}
 			}

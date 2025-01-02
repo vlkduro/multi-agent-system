@@ -109,17 +109,26 @@ func (agt *HornetAgent) Deliberate() {
 }
 
 func (agt *HornetAgent) Act() {
-	if agt.objective.Type == None {
+	objf := &agt.objective
+	if objf.Type == None {
 		return
 	}
-	switch agt.objective.Type {
+	switch objf.Type {
 	case Position:
-		agt.gotoNextStepTowards(agt.objective.Position.Copy())
-		if agt.Position().Equal(agt.objective.Position) {
+		if agt.pos.Equal(objf.Position) {
 			agt.objective.Type = None
+		} else if agt.pos.Equal(agt.lastPos) {
+			// In some cases, the agent gets stuck on an unattaignable position
+			agt.lastPos = objf.Position.Copy()
+			agt.objective.Type = None
+		} else {
+			agt.gotoNextStepTowards(objf.Position.Copy())
+			if agt.pos.Equal(objf.Position) {
+				agt.objective.Type = None
+			}
 		}
 	case Bee:
-		bee := agt.objective.TargetedElem.(*Agent)
+		bee := objf.TargetedElem.(*Agent)
 		fmt.Printf("[%s] Hornet attacking %s !\n", agt.id, bee.ID())
 		agt.gotoNextStepTowards(bee.Position().Copy())
 		if agt.Position().Near(bee.pos.Copy(), 1) {

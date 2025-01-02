@@ -168,8 +168,14 @@ func (agt *Agent) goSouthWest() bool {
 
 // https://web.archive.org/web/20171022224528/http://www.policyalmanac.org:80/games/aStarTutorial.htm
 func (agt *Agent) gotoNextStepTowards(pos *envpkg.Position) {
+	// If the position is already occupied and we are near it (by one), we don't move
+	if agt.env.GetAt(pos.X, pos.Y) != nil {
+		if agt.pos.Near(pos, 1) {
+			return
+		}
+	}
 	chain := agt.env.PathFinding(agt.pos, pos, agt.speed)
-	// We remove the first element who is the current position of the agent
+	// We remove the first element (it is the current position of the agent)
 	if len(chain) > 0 && chain[0].Equal(agt.pos) {
 		chain = chain[1:]
 	}
@@ -250,6 +256,23 @@ func (agt *Agent) wander() {
 		} else if closestBorder.Y == agt.env.GetMapDimension()-1 {
 			keepAwayFromBorderPos.GoNorth(nil, nil)
 		}
+		// If the position is already occupied by something, we find the closest available position
+		if agt.env.GetAt(keepAwayFromBorderPos.X, keepAwayFromBorderPos.Y) != nil {
+			surroundings := agt.pos.GetNeighbours(agt.speed)
+			closestPosition := agt.pos.Copy()
+			minDistance := agt.pos.DistanceFrom(keepAwayFromBorderPos)
+			for _, pos := range surroundings {
+				if agt.env.GetAt(pos.X, pos.Y) != nil {
+					continue
+				}
+				distance := pos.DistanceFrom(keepAwayFromBorderPos)
+				if distance <= minDistance {
+					closestPosition = pos.Copy()
+					minDistance = distance
+				}
+			}
+			keepAwayFromBorderPos = closestPosition.Copy()
+		}
 		agt.objective.Position = keepAwayFromBorderPos.Copy()
 		agt.objective.Type = Position
 		fmt.Printf("[%s] Too close to border (%d %d), going to (%d %d)\n", agt.id, closestBorder.X, closestBorder.Y, agt.objective.Position.X, agt.objective.Position.Y)
@@ -269,16 +292,8 @@ func (agt *Agent) wander() {
 }
 
 func (agt *Agent) getNextWanderingPosition() *envpkg.Position {
+	// We get the accessible surroundings of the agent
 	surroundings := agt.pos.GetNeighbours(agt.speed)
-	// We remove the positions that are occupied
-	removeCpt := 0
-	for i := 0; i < len(surroundings); i++ {
-		idx := i - removeCpt
-		if agt.env.GetAt(surroundings[idx].X, surroundings[idx].Y) != nil || surroundings[idx].Equal(agt.lastPos) {
-			surroundings = append(surroundings[:idx], surroundings[idx+1:]...)
-			removeCpt++
-		}
-	}
 	nextWanderingOrientation := agt.orientation
 	// Chances : 3/4 th keeping the same orientation, 1/8th changing to the left, 1/8th changing to the right
 	chancesToChangeOrientation := rand.Intn(8)
@@ -359,10 +374,17 @@ func (agt *Agent) getNextWanderingPosition() *envpkg.Position {
 			newObjective.GoSouthWest(nil, nil)
 		}
 	}
-	// Find the closest available position in surroundings
+	// If this position is a valid one, we return it
+	if agt.env.GetAt(newObjective.X, newObjective.Y) == nil && !newObjective.Equal(agt.lastPos) {
+		return newObjective
+	}
+	// Else we find the closest available position in surroundings
 	closestPosition := agt.pos.Copy()
 	minDistance := agt.pos.DistanceFrom(newObjective)
 	for _, pos := range surroundings {
+		if agt.env.GetAt(pos.X, pos.Y) == nil && !pos.Equal(agt.lastPos) {
+			continue
+		}
 		distance := pos.DistanceFrom(newObjective)
 		if distance < minDistance {
 			closestPosition = pos.Copy()
@@ -370,10 +392,8 @@ func (agt *Agent) getNextWanderingPosition() *envpkg.Position {
 		}
 	}
 	newObjective = closestPosition
-
-	// We add the new last position to avoid cycles
-	agt.lastPos = newObjective.Copy()
-
+	// We remember the current position to avoid cycles
+	agt.lastPos = agt.pos.Copy()
 	return newObjective
 }
 

@@ -2,7 +2,6 @@ package agent
 
 import (
 	"fmt"
-	"reflect"
 	"time"
 
 	"math/rand"
@@ -118,7 +117,7 @@ func (agt *BeeAgent) foragerDeliberation() {
 		if seen.Elem != nil {
 			switch elem := (seen.Elem).(type) {
 			case *HornetAgent:
-				fmt.Printf("[%s] *****************Close to hornet %v\n", agt.id, reflect.TypeOf(seen.Elem))
+				fmt.Printf("[%s] Close to hornet %v\n", agt.id, elem.ID())
 				closestHornet = elem
 			case *obj.Flower:
 				if !hasAlreadySeenCloserFlower {
@@ -168,6 +167,9 @@ func (agt *BeeAgent) foragerAction() {
 		switch typeObj := objf.Type; typeObj {
 		case Position:
 			if agt.pos.Equal(objf.Position) {
+				agt.objective.Type = None
+			} else if agt.env.GetAt(objf.Position.X, objf.Position.Y) != nil && agt.pos.Near(objf.Position, 1) {
+				// In some cases, the agent wants to go to a position where there is already an element (agent or object)
 				agt.objective.Type = None
 			} else {
 				agt.gotoNextStepTowards(objf.Position.Copy())

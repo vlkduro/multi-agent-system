@@ -125,17 +125,4 @@ func (p Position) GetNeighbours(distance int) []*Position {
 		}
 	}
 	return neighbours
-	// return []*Position{
-	// 	// NW N NE
-	// 	NewPosition(p.X-1, p.Y-1, p.maxX, p.maxY),
-	// 	NewPosition(p.X, p.Y-1, p.maxX, p.maxY),
-	// 	NewPosition(p.X+1, p.Y-1, p.maxX, p.maxY),
-	// 	// W E
-	// 	NewPosition(p.X-1, p.Y, p.maxX, p.maxY),
-	// 	NewPosition(p.X+1, p.Y, p.maxX, p.maxY),
-	// 	// SW S SE
-	// 	NewPosition(p.X-1, p.Y+1, p.maxX, p.maxY),
-	// 	NewPosition(p.X, p.Y+1, p.maxX, p.maxY),
-	// 	NewPosition(p.X+1, p.Y+1, p.maxX, p.maxY),
-	// }
 }
