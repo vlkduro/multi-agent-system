@@ -114,6 +114,10 @@ func (h Hive) IsAlive() (isAlive bool) {
 	return
 }
 
+/*func (h Hive) Type() envpkg.AgentType {
+	return envpkg.Hive
+}*/
+
 func (h *Hive) Die() {
 	h.queen = false
 }
