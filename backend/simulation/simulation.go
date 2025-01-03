@@ -46,7 +46,7 @@ func NewSimulation(nbees int, nflowers int, nhornets int, maWs *websocket.Conn) 
 		id := fmt.Sprintf("Hive #%d", i)
 		x, y := rand.Intn(mapDimension), rand.Intn(mapDimension)
 		pos := envpkg.NewPosition(x, y, mapDimension, mapDimension)
-		hive := obj.NewHive(id, pos, 0, 0, 0, 10)
+		hive := obj.NewHive(id, pos, 0, 0, 0, 10, env)
 		// ajout de l'objet à la simulation
 		simu.objs = append(simu.objs, hive)
 		// ajout de l'objet à l'environnement

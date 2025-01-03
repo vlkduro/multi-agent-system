@@ -7,6 +7,7 @@ import (
 
 	"gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/simulation/agent/vision"
 	envpkg "gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/simulation/environment"
+	obj "gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/simulation/object"
 )
 
 // HornetAgent hérite de /simulation/agent/agent.go "struct Agent"
@@ -39,6 +40,25 @@ func NewHornetAgent(id string, env *envpkg.Environment, syncChan chan bool, s in
 	}
 	hAgent.birthDate = time.Now()
 	return hAgent
+}
+
+// A simple way to organize target priority for the hornet.
+// If the hornet sees the Hive, and is surroundered by at least 2 of its kind, it will prioritize it.
+// false : bee
+// true : hive
+func PriorityTarget(hornet HornetAgent) bool {
+	nbHornet := 0
+	for _, seen := range hornet.seenElems {
+		switch elem := seen.Elem.(type) {
+		case *HornetAgent:
+			if elem.ID() != hornet.ID() {
+				fmt.Printf("HornetAgent %s seen by %s\n", elem.ID(), hornet.ID())
+				nbHornet++
+			}
+		}
+	}
+	fmt.Printf("nbHornet = %d\n", nbHornet)
+	return nbHornet >= 1
 }
 
 func (agt *HornetAgent) Percept() {
@@ -78,7 +98,8 @@ func (agt *HornetAgent) Percept() {
 	}
 }
 
-// The hornet agent always targets the closest bee
+// The hornet agent always targets the closest bee unless :
+// Sees a hive + is close to at least 2 of its kind
 func (agt *HornetAgent) Deliberate() {
 	distanceToTarget := float64(agt.env.GetMapDimension())
 	if agt.objective.Type == Bee {
@@ -86,11 +107,17 @@ func (agt *HornetAgent) Deliberate() {
 			distanceToTarget = bee.Position().DistanceFrom(agt.Position())
 		}
 	}
+	if agt.objective.Type == Hive {
+		if hive, ok := agt.objective.TargetedElem.(*obj.Hive); ok {
+			distanceToTarget = hive.Position().DistanceFrom(agt.Position())
+		}
+	}
 	for _, seen := range agt.seenElems {
 		if seen.Elem != nil && seen.Elem != agt {
+			priority := PriorityTarget(*agt)
 			switch elem := seen.Elem.(type) {
 			case *Agent:
-				if elem.Type() == envpkg.Bee {
+				if elem.Type() == envpkg.Bee && !priority {
 					fmt.Printf("[%s] Found a close bee (%s) \n", agt.id, elem.ID())
 					distance := elem.Position().DistanceFrom(agt.Position())
 					if distance < distanceToTarget {
@@ -100,9 +127,22 @@ func (agt *HornetAgent) Deliberate() {
 						distanceToTarget = distance
 					}
 				}
+			case *obj.Hive:
+				if elem.TypeObject() == envpkg.Hive && priority {
+					fmt.Printf("[%s] Found a close hive (%s) \n", agt.id, elem.ID())
+					distance := elem.Position().DistanceFrom(agt.Position())
+					if distance < distanceToTarget {
+						agt.objective.Type = Hive
+						agt.objective.TargetedElem = elem
+						agt.objective.Position = elem.Position().Copy()
+						distanceToTarget = distance
+
+					}
+				}
 			}
 		}
 	}
+	fmt.Printf(string(agt.objective.Type))
 	if agt.objective.Type == None {
 		agt.wander()
 	}
@@ -136,6 +176,19 @@ func (agt *HornetAgent) Act() {
 			agt.objective.Type = None
 			fmt.Printf("[%s] Hornet killed %s !!!\n", agt.id, bee.ID())
 		}
+
+	case Hive:
+		hive := objf.TargetedElem.(*obj.Hive)
+		fmt.Printf("[%s] Hornet attacking hive %s !\n", agt.id, hive.ID())
+		agt.gotoNextStepTowards(hive.Position().Copy())
+		if agt.Position().Near(hive.Pos.Copy(), 1) {
+			if hive.IsAlive() {
+				hive.Die()
+			}
+			agt.objective.Type = None
+			fmt.Printf("[%s] Hornet destructed %s !!!\n", agt.id, hive.ID())
+		}
+		fmt.Println("Hornet attacking Hive")
 	}
 }
 

@@ -401,7 +401,6 @@ func (agt *Agent) Kill() {
 	agt.env.RemoveAgent(agt)
 	agt.alive = false
 	agt.pos = nil
-
 }
 
 func (agt Agent) Type() envpkg.AgentType {

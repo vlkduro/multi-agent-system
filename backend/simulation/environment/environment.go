@@ -81,6 +81,16 @@ func (env *Environment) RemoveAgent(agt IAgent) {
 	}
 }
 
+func (env *Environment) RemoveObject(obj IObject) {
+	for i, a := range env.objs {
+		if a.ID() == obj.ID() {
+			env.objs = append(env.objs[:i], env.objs[i+1:]...)
+			env.grid[obj.Position().X][obj.Position().Y] = nil
+			break
+		}
+	}
+}
+
 func (env *Environment) AddObject(obj IObject) bool {
 	pos := obj.Position()
 	if env.GetAt(pos.X, pos.Y) != nil {
