@@ -2,12 +2,11 @@ package agent
 
 import (
 	"fmt"
-	"math/rand"
-	"time"
-
 	"gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/simulation/agent/vision"
 	envpkg "gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/simulation/environment"
 	obj "gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/simulation/object"
+	"math/rand"
+	"time"
 )
 
 // HornetAgent hérite de /simulation/agent/agent.go "struct Agent"
@@ -16,6 +15,7 @@ type HornetAgent struct {
 	Agent
 	birthDate time.Time
 	seenElems []*vision.SeenElem
+	killCount int
 }
 
 type HornetAgentJson struct {
@@ -24,6 +24,7 @@ type HornetAgentJson struct {
 	Orientation envpkg.Orientation `json:"orientation"`
 	Objective   objective          `json:"objective"`
 	SeenElems   []*vision.SeenElem `json:"seenElems"`
+	KillCount   int                `json:"killCount"`
 }
 
 func NewHornetAgent(id string, env *envpkg.Environment, syncChan chan bool, s int) *HornetAgent {
@@ -39,6 +40,7 @@ func NewHornetAgent(id string, env *envpkg.Environment, syncChan chan bool, s in
 		objective:  objective{Position: nil, Type: None},
 	}
 	hAgent.birthDate = time.Now()
+	hAgent.killCount = 0
 	return hAgent
 }
 
@@ -48,6 +50,9 @@ func NewHornetAgent(id string, env *envpkg.Environment, syncChan chan bool, s in
 // true : hive
 func PriorityTarget(hornet HornetAgent) bool {
 	nbHornet := 0
+	if hornet.killCount >= 5 {
+		return true
+	}
 	for _, seen := range hornet.seenElems {
 		switch elem := seen.Elem.(type) {
 		case *HornetAgent:
@@ -169,26 +174,30 @@ func (agt *HornetAgent) Act() {
 		}
 	case Bee:
 		bee := objf.TargetedElem.(*Agent)
-		fmt.Printf("[%s] Hornet attacking %s !\n", agt.id, bee.ID())
-		agt.gotoNextStepTowards(bee.Position().Copy())
-		if agt.Position().Near(bee.pos.Copy(), 1) {
-			bee.Kill()
-			agt.objective.Type = None
-			fmt.Printf("[%s] Hornet killed %s !!!\n", agt.id, bee.ID())
+		if bee != nil {
+			fmt.Printf("[%s] Hornet attacking %s !\n", agt.id, bee.ID())
+			agt.gotoNextStepTowards(bee.Position().Copy())
+			if agt.Position().Near(bee.pos.Copy(), 1) {
+				bee.Kill()
+				agt.killCount++
+				agt.objective.Type = None
+				fmt.Printf("[%s] killed %s !!!, Has %d kill(s) \n", agt.id, bee.ID(), agt.killCount)
+			}
 		}
 
 	case Hive:
-		hive := objf.TargetedElem.(*obj.Hive)
-		fmt.Printf("[%s] Hornet attacking hive %s !\n", agt.id, hive.ID())
-		agt.gotoNextStepTowards(hive.Position().Copy())
-		if agt.Position().Near(hive.Pos.Copy(), 1) {
-			if hive.IsAlive() {
-				hive.Die()
+		if agt.pos.Near(objf.Position, 1) {
+			if hive, ok := objf.TargetedElem.(*obj.Hive); ok {
+				if hive.IsAlive() {
+					hive.Die()
+				} else {
+					fmt.Printf("Hive is already killed \n !")
+				}
 			}
-			agt.objective.Type = None
-			fmt.Printf("[%s] Hornet destructed %s !!!\n", agt.id, hive.ID())
+		} else {
+			fmt.Printf("Hornet [%s] going to kill hive %v\n", agt.id, objf.TargetedElem.(envpkg.IObject).ID())
+			agt.gotoNextStepTowards(objf.Position.Copy())
 		}
-		fmt.Println("Hornet attacking Hive")
 	}
 }
 
