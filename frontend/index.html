@@ -19,12 +19,13 @@
     <div id="nectar-value">
         <p id="nectar"></p>
     </div>
-    <div class="sidebar">
-        <div class="ocean" id="ocean">
-            <div class="wave"></div>
-            <div class="wave"></div>
+    <div id="main">
+        <div class="sidebar">
+            <div class="ocean" id="ocean">
+                <div class="wave"></div>
+                <div class="wave"></div>
+            </div>
         </div>
-    </div>
         <script type="module">
             const connectionState = document.getElementById('connection-state');
             const errorsDiv = document.getElementById('errors');
@@ -32,9 +33,10 @@
             const nectar = document.getElementById('nectar');
 
             const app = new PIXI.Application();
-            await app.init({ background: '#ffffff', resizeTo: window });
-            document.body.appendChild(app.canvas);
+            await app.init({ background: '#ffffff', width: window.innerHeight * 0.9, height: window.innerHeight * 0.9 });
+            document.getElementById('main').appendChild(app.canvas);
             app.canvas.style.margin = ' 0% 0% 0% 20%';
+
             PIXI.Assets.add({ alias: 'beeWorker', src: './res/sprites/beeForager.png' });
             PIXI.Assets.add({ alias: 'beeGuardian', src: './res/sprites/beeGuardian.png' });
             PIXI.Assets.add({ alias: 'beeForager', src: './res/sprites/beeForager.png' });
@@ -70,6 +72,9 @@
             }
 
             function drawAgent(elem, position, cellSize) {
+                if (!elem || !elem.position) {
+                    return;
+                }
                 let sprite;
                 switch (true) {
                     case elem.id.startsWith('Bee'):
@@ -81,6 +86,7 @@
                         //Hornet un peu plus grand
                         sprite.width = cellSize * 1.5;
                         sprite.height = cellSize * 1.5;
+                        sprite.zIndex = 100;
 
                         break;
                     case elem.id.startsWith('Flower'):
@@ -186,17 +192,17 @@
             }
 
             function drawSidebar(hive, agentsCount) {
-                if(ocean != null){
-                    let quantity = hive.quantity_nectar / agentsCount -10;
-                    if(quantity < 0){
+                if (ocean != null) {
+                    let quantity = hive.quantity_nectar / agentsCount - 10;
+                    if (quantity < 0) {
                         quantity = 0;
                     }
-                    if(quantity > 90){
+                    if (quantity > 90) {
                         quantity = 90;
                     }
                     ocean.style.height = `${quantity}%`;
                 }
-                if(nectar != null){
+                if (nectar != null) {
                     nectar.textContent = `Nectar: ${hive.quantity_nectar}`;
                 }
             }
@@ -207,8 +213,9 @@
             ws.onmessage = function (event) {
                 app.stage.removeChildren(); // Supprimer les éléments précédemment dessinés
                 const data = JSON.parse(event.data);
-                drawGrid(data.agents, data.environment.mapDimension);
-                drawGrid(data.objects, data.environment.mapDimension);
+                console.log(data);
+                drawGrid(data.agents, data.environment.mapDimension+1);
+                drawGrid(data.objects, data.environment.mapDimension+1);
                 drawSidebar(data.objects[0], data.agents.length);
             }
 
@@ -239,6 +246,7 @@
                 ws.send('new');
             }
         </script>
+    </div>
     <div id="errors"></div>
 </body>
 

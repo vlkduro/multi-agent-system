@@ -74,8 +74,8 @@ func (env *Environment) AddAgent(agt IAgent) bool {
 func (env *Environment) RemoveAgent(agt IAgent) {
 	for i, a := range env.agts {
 		if a.ID() == agt.ID() {
+			env.grid[agt.Position().X][agt.Position().Y] = nil
 			env.agts = append(env.agts[:i], env.agts[i+1:]...)
-			env.grid[a.Position().X][a.Position().Y] = nil
 			break
 		}
 	}
@@ -159,7 +159,7 @@ func (env *Environment) PathFinding(start *Position, end *Position, numberMoves 
 				continue
 			}
 
-			if env.GetAt(neighbor.X, neighbor.Y) != nil {
+			if _, ok := env.GetAt(neighbor.X, neighbor.Y).(IAgent); ok {
 				continue
 			}
 
@@ -205,4 +205,8 @@ func (env *Environment) ToJsonObj() interface{} {
 	}
 
 	return EnvironmentJson{MapDimension: mapDimension, Grid: grid}
+}
+
+func (env *Environment) GetHive() IObject {
+	return env.objs[0]
 }
