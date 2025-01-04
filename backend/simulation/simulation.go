@@ -158,19 +158,23 @@ func (simu *Simulation) Run(maWs *websocket.Conn) {
 
 	// Boucle de simulation
 	for simu.IsRunning() {
+		rand.Shuffle(len(simu.agts), func(i, j int) {
+			simu.agts[i], simu.agts[j] = simu.agts[j], simu.agts[i]
+		})
+		for _, agt := range simu.agts {
+			c := agt.GetSyncChan()
+			c <- true
+		}
 		for i, agt := range simu.agts {
 			c := agt.GetSyncChan()
-			simu.env.Lock()
-			c <- true
 			isAlive := <-c
 			// If dead, remove agent from simulation
 			if !isAlive {
 				fmt.Printf("{{SIMULATION}} - [%s] is dead\n", agt.ID())
 				simu.agts = append(simu.agts[:i], simu.agts[i+1:]...)
 			}
-			simu.env.Unlock()
-			time.Sleep(time.Second / 100) // 100 Tour / Sec
 		}
+		time.Sleep(time.Second / 1) // 100 Tour / Sec
 	}
 
 	// Arrêt des agents
@@ -209,10 +213,10 @@ func (simu *Simulation) sendState() {
 
 // Intention d'en faire un microservice
 func (simu *Simulation) print() {
-	startTime := time.Now()
 	for simu.IsRunning() {
+		startTime := time.Now()
 		fmt.Printf("\rRunning simulation for %vms...  - ", time.Since(startTime).Milliseconds())
-		time.Sleep(time.Second / 30) // 60 fps
+		time.Sleep(time.Second / 60) // 60 fps
 	}
 }
 
