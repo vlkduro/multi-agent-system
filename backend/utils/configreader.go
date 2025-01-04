@@ -57,6 +57,10 @@ func GetNumberBees() int {
 	return getIntAttributeFromConfigFile("NumberBees")
 }
 
+func GetNumberHornets() int {
+	return getIntAttributeFromConfigFile("NumberHornets")
+}
+
 func GetMaxNectar() int {
 	return getIntAttributeFromConfigFile("MaxNectar")
 }
@@ -79,6 +83,10 @@ func GetMapDimension() int {
 
 func GetBeeAgentVisionRange() float64 {
 	return getFloat64AttributeFromConfigFile("BeeAgentVisionRange")
+}
+
+func GetHornetAgentVisionRange() float64 {
+	return getFloat64AttributeFromConfigFile("HornetAgentVisionRange")
 }
 
 func GetExName() string {

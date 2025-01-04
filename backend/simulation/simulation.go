@@ -30,7 +30,7 @@ type SimulationJson struct {
 	Environment interface{}   `json:"environment"`
 }
 
-func NewSimulation(nbees int, nflowers int, maWs *websocket.Conn) *Simulation {
+func NewSimulation(nbees int, nflowers int, nhornets int, maWs *websocket.Conn) *Simulation {
 	simu := &Simulation{}
 	simu.ws = maWs
 	env := envpkg.NewEnvironment([]envpkg.IAgent{}, []envpkg.IObject{})
@@ -46,7 +46,7 @@ func NewSimulation(nbees int, nflowers int, maWs *websocket.Conn) *Simulation {
 		id := fmt.Sprintf("Hive #%d", i)
 		x, y := rand.Intn(mapDimension), rand.Intn(mapDimension)
 		pos := envpkg.NewPosition(x, y, mapDimension, mapDimension)
-		hive := obj.NewHive(id, pos, 0, 0, 0, 10)
+		hive := obj.NewHive(id, pos, 0, 0, 0, 10, env)
 		// ajout de l'objet à la simulation
 		simu.objs = append(simu.objs, hive)
 		// ajout de l'objet à l'environnement
@@ -67,7 +67,7 @@ func NewSimulation(nbees int, nflowers int, maWs *websocket.Conn) *Simulation {
 		availablePositions := make([]*envpkg.Position, 0)
 		for x := centerOfPatchX - offset; x < centerOfPatchX+offset; x++ {
 			for y := centerOfPatchY - offset; y < centerOfPatchY+offset; y++ {
-				if simu.env.IsValidPosition(x, y) {
+				if simu.env.IsValidPosition(x, y) && simu.env.GetAt(x, y) == nil {
 					availablePositions = append(availablePositions, envpkg.NewPosition(x, y, mapDimension, mapDimension))
 				}
 			}
@@ -116,6 +116,17 @@ func NewSimulation(nbees int, nflowers int, maWs *websocket.Conn) *Simulation {
 		simu.env.AddAgent(agt)
 	}
 
+	for i := 0; i < nhornets; i++ {
+		// Creating a hornet
+		id := fmt.Sprintf("Hornet #%d", i)
+		syncChan := make(chan bool)
+		agt := agt.NewHornetAgent(id, simu.env, syncChan, rand.Intn(2)+1)
+		// ajout de l'agent à la simulation
+		simu.agts = append(simu.agts, agt)
+		// ajout de l'agent à l'environnement
+		//simu.env.AddAgent(agt) // Pas encore car pas spawn
+	}
+
 	simu.sendState()
 	return simu
 }
@@ -147,11 +158,16 @@ func (simu *Simulation) Run(maWs *websocket.Conn) {
 
 	// Boucle de simulation
 	for simu.IsRunning() {
-		for _, agt := range simu.agts {
+		for i, agt := range simu.agts {
 			c := agt.GetSyncChan()
 			simu.env.Lock()
 			c <- true
-			<-c
+			isAlive := <-c
+			// If dead, remove agent from simulation
+			if !isAlive {
+				fmt.Printf("{{SIMULATION}} - [%s] is dead\n", agt.ID())
+				simu.agts = append(simu.agts[:i], simu.agts[i+1:]...)
+			}
 			simu.env.Unlock()
 			time.Sleep(time.Second / 100) // 100 Tour / Sec
 		}
@@ -196,7 +212,7 @@ func (simu *Simulation) print() {
 	startTime := time.Now()
 	for simu.IsRunning() {
 		fmt.Printf("\rRunning simulation for %vms...  - ", time.Since(startTime).Milliseconds())
-		time.Sleep(time.Second / 60) // 60 fps
+		time.Sleep(time.Second / 30) // 60 fps
 	}
 }
 
@@ -211,6 +227,9 @@ func (simu *Simulation) ToJsonObj() SimulationJson {
 	for _, obj := range simu.objs {
 		objects = append(objects, obj.ToJsonObj())
 	}
+
+	simu.env.Lock()
+	defer simu.env.Unlock()
 
 	return SimulationJson{Agents: agents, Objects: objects, Environment: simu.env.ToJsonObj()}
 }

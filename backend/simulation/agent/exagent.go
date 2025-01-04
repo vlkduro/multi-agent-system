@@ -96,15 +96,19 @@ func (agt *ExAgent) Act() {
 	agt.value += agt.toAdd
 	switch agt.movement {
 	case envpkg.North:
-		agt.pos.GoNorth(agt.env.GetMap())
+		agt.goNorth()
 	case envpkg.East:
-		agt.pos.GoEast(agt.env.GetMap())
+		agt.goEast()
 	case envpkg.South:
-		agt.pos.GoSouth(agt.env.GetMap())
+		agt.goSouth()
 	case envpkg.West:
-		agt.pos.GoWest(agt.env.GetMap())
+		agt.goWest()
 	}
 	agt.orientation = agt.movement
+}
+
+func (agt *ExAgent) Type() envpkg.AgentType {
+	return envpkg.ExAgent
 }
 
 func (agt ExAgent) ToJsonObj() interface{} {
