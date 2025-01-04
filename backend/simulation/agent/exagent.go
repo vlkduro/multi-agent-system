@@ -32,7 +32,7 @@ type ExAgentJson struct {
 	SeenElems   []*vision.SeenElem `json:"seenElems"`
 }
 
-func NewExAgent(id string, pos *envpkg.Position, env *envpkg.Environment, syncChan chan bool) *ExAgent {
+func NewExAgent(id string, pos *envpkg.Position, env *envpkg.Environment, syncChan chan envpkg.AgentID) *ExAgent {
 	exagt := &ExAgent{}
 	exagt.Agent = Agent{
 		iagt:        exagt,

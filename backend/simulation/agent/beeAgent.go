@@ -43,7 +43,7 @@ type BeeAgentJson struct {
 	Objective   objective          `json:"objective"`
 }
 
-func NewBeeAgent(id string, env *envpkg.Environment, syncChan chan bool, speed int, hive *obj.Hive, dob time.Time, maxnectar int, job job) *BeeAgent {
+func NewBeeAgent(id string, env *envpkg.Environment, syncChan chan envpkg.AgentID, speed int, hive *obj.Hive, dob time.Time, maxnectar int, job job) *BeeAgent {
 	beeAgent := &BeeAgent{}
 	beeAgent.Agent = Agent{
 		iagt:       beeAgent,
@@ -114,6 +114,7 @@ func (agt *BeeAgent) foragerDeliberation() {
 	var closestHornet *HornetAgent = nil
 	hasAlreadySeenCloserFlower := false
 	for _, seen := range agt.seenElems {
+
 		if seen.Elem != nil {
 			switch elem := (seen.Elem).(type) {
 			case *HornetAgent:
@@ -121,15 +122,16 @@ func (agt *BeeAgent) foragerDeliberation() {
 				closestHornet = elem
 			case *obj.Flower:
 				if !hasAlreadySeenCloserFlower {
-					if elem.GetNectar() == 0 {
+					if elem.GetNectar() != 0 {
+
+						fmt.Printf("[%s] Flower seen, going to it !\n", agt.id)
+						agt.objective.TargetedElem = elem
+						agt.objective.Position = elem.Position().Copy()
+						agt.objective.Type = Flower
+						hasAlreadySeenCloserFlower = true
+					} else {
 						fmt.Printf("[%s] Flower seen with no nectar, ignoring it !\n", agt.id)
-						continue
 					}
-					fmt.Printf("[%s] Flower seen, going to it !\n", agt.id)
-					agt.objective.TargetedElem = elem
-					agt.objective.Position = elem.Position().Copy()
-					agt.objective.Type = Flower
-					hasAlreadySeenCloserFlower = true
 				}
 				//default:
 				//fmt.Printf("[%s] Unknown element seen : %v\n", agt.id, elem)
@@ -168,13 +170,18 @@ func (agt *BeeAgent) foragerAction() {
 		case Position:
 			if agt.pos.Equal(objf.Position) {
 				agt.objective.Type = None
-			} else if agt.env.GetAt(objf.Position.X, objf.Position.Y) != nil && agt.pos.Near(objf.Position, 1) {
-				// In some cases, the agent wants to go to a position where there is already an element (agent or object)
-				agt.objective.Type = None
+				fmt.Printf("[%s] Objectif reached %v\n", agt.id, objf.Position)
 			} else {
-				agt.gotoNextStepTowards(objf.Position.Copy())
-				if agt.pos.Equal(objf.Position) {
+				if _, ok := agt.env.GetAt(objf.Position.X, objf.Position.Y).(envpkg.IAgent); ok {
+					// In some cases, the agent wants to go to a position where there is already an agent
 					agt.objective.Type = None
+					fmt.Printf("[%s] Agent at desired position, go wonder \n", agt.id)
+				} else {
+					agt.gotoNextStepTowards(objf.Position.Copy())
+					if agt.pos.Equal(objf.Position) {
+						agt.objective.Type = None
+					}
+					fmt.Printf("[%s] GO next position\n", agt.id)
 				}
 			}
 		case Flower:
@@ -182,8 +189,9 @@ func (agt *BeeAgent) foragerAction() {
 				if agt.pos.Near(objf.Position, 1) {
 					agt.nectar += flower.RetreiveNectar(agt.maxNectar - agt.nectar)
 					agt.objective.Type = None
+					fmt.Printf("[%s] Nectar stealed %v\n", agt.id, objf.TargetedElem.(envpkg.IObject).ID())
 				} else {
-					fmt.Printf("[%s] Going to flower %v\n", agt.id, objf.TargetedElem.(envpkg.IObject).ID())
+					fmt.Printf("[%s] Going to flower %v %v\n", agt.id, objf.Position, agt.pos)
 					agt.gotoNextStepTowards(objf.Position.Copy())
 				}
 			}
@@ -193,6 +201,7 @@ func (agt *BeeAgent) foragerAction() {
 					hive.StoreNectar(agt.nectar)
 					agt.nectar = 0
 					agt.objective.Type = None
+					fmt.Printf("[%s] Nectar stored %v\n", agt.id, objf.TargetedElem.(envpkg.IObject).ID())
 				}
 			} else {
 				fmt.Printf("[%s] Going to hive %v\n", agt.id, objf.TargetedElem.(envpkg.IObject).ID())

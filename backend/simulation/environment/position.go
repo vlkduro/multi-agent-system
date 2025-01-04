@@ -25,17 +25,19 @@ func (p *Position) move(grid [][]interface{}, newX int, newY int, elem interface
 		return false
 	}
 	// Collision
-	if grid != nil && (grid[newX][newY] != nil) {
-		return false
-	}
-	// Not a simulation
 	if grid != nil {
+
+		if _, ok := grid[newX][newY].(IAgent); ok {
+			return false
+		}
 		if grid[p.X][p.Y] == elem {
 			grid[p.X][p.Y], grid[newX][newY] = nil, grid[p.X][p.Y]
 		} else {
 			grid[newX][newY] = elem
 		}
 	}
+	// Not a simulation
+
 	p.X = newX
 	p.Y = newY
 	return true

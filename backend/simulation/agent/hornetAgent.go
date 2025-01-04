@@ -2,11 +2,12 @@ package agent
 
 import (
 	"fmt"
+	"math/rand"
+	"time"
+
 	"gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/simulation/agent/vision"
 	envpkg "gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/simulation/environment"
 	obj "gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/simulation/object"
-	"math/rand"
-	"time"
 )
 
 // HornetAgent hérite de /simulation/agent/agent.go "struct Agent"
@@ -27,7 +28,7 @@ type HornetAgentJson struct {
 	KillCount   int                `json:"killCount"`
 }
 
-func NewHornetAgent(id string, env *envpkg.Environment, syncChan chan bool, s int) *HornetAgent {
+func NewHornetAgent(id string, env *envpkg.Environment, syncChan chan envpkg.AgentID, s int) *HornetAgent {
 	hAgent := &HornetAgent{}
 	hAgent.Agent = Agent{
 		iagt:       hAgent,
@@ -50,9 +51,6 @@ func NewHornetAgent(id string, env *envpkg.Environment, syncChan chan bool, s in
 // true : hive
 func PriorityTarget(hornet HornetAgent) bool {
 	nbHornet := 0
-	if hornet.killCount >= 5 {
-		return true
-	}
 	for _, seen := range hornet.seenElems {
 		switch elem := seen.Elem.(type) {
 		case *HornetAgent:
@@ -62,13 +60,12 @@ func PriorityTarget(hornet HornetAgent) bool {
 			}
 		}
 	}
-	fmt.Printf("nbHornet = %d\n", nbHornet)
 	return nbHornet >= 1
 }
 
 func (agt *HornetAgent) Percept() {
 	if agt.pos == nil {
-		chance := rand.Intn(2)
+		chance := rand.Intn(50)
 		if chance == 0 {
 			// either spawns at the top or the bottom or the left or the right
 			chance = rand.Intn(4)
@@ -147,7 +144,6 @@ func (agt *HornetAgent) Deliberate() {
 			}
 		}
 	}
-	fmt.Printf(string(agt.objective.Type))
 	if agt.objective.Type == None {
 		agt.wander()
 	}
@@ -161,10 +157,6 @@ func (agt *HornetAgent) Act() {
 	switch objf.Type {
 	case Position:
 		if agt.pos.Equal(objf.Position) {
-			agt.objective.Type = None
-		} else if agt.pos.Equal(agt.lastPos) {
-			// In some cases, the agent gets stuck on an unattaignable position
-			agt.lastPos = objf.Position.Copy()
 			agt.objective.Type = None
 		} else {
 			agt.gotoNextStepTowards(objf.Position.Copy())

@@ -107,21 +107,19 @@ func NewSimulation(nbees int, nflowers int, nhornets int, maWs *websocket.Conn) 
 	for i := 0; i < nbees; i++ {
 		// Creating a bee
 		id := fmt.Sprintf("Bee #%d", i)
-		syncChan := make(chan bool)
+		syncChan := make(chan envpkg.AgentID)
 		hive := hiveList[rand.Intn(nhive)]
 		agt := agt.NewBeeAgent(id, simu.env, syncChan, rand.Intn(2)+1, hive, time.Now(), maxNectar, agt.Worker)
-		// ajout de l'agent à la simulation
-		simu.agts = append(simu.agts, agt)
 		// ajout de l'agent à l'environnement
 		simu.env.AddAgent(agt)
+		simu.agts = append(simu.agts, agt)
 	}
 
 	for i := 0; i < nhornets; i++ {
 		// Creating a hornet
 		id := fmt.Sprintf("Hornet #%d", i)
-		syncChan := make(chan bool)
+		syncChan := make(chan envpkg.AgentID)
 		agt := agt.NewHornetAgent(id, simu.env, syncChan, rand.Intn(2)+1)
-		// ajout de l'agent à la simulation
 		simu.agts = append(simu.agts, agt)
 		// ajout de l'agent à l'environnement
 		//simu.env.AddAgent(agt) // Pas encore car pas spawn
@@ -153,35 +151,60 @@ func (simu *Simulation) Run(maWs *websocket.Conn) {
 
 	// Démarrage des agents
 	for i := range simu.agts {
-		simu.agts[i].Start()
+		if simu.agts[i] != nil {
+			simu.agts[i].Start()
+		}
 	}
 
 	// Boucle de simulation
+	j := 1
 	for simu.IsRunning() {
 		rand.Shuffle(len(simu.agts), func(i, j int) {
 			simu.agts[i], simu.agts[j] = simu.agts[j], simu.agts[i]
 		})
 		for _, agt := range simu.agts {
-			c := agt.GetSyncChan()
-			c <- true
-		}
-		for i, agt := range simu.agts {
-			c := agt.GetSyncChan()
-			isAlive := <-c
-			// If dead, remove agent from simulation
-			if !isAlive {
-				fmt.Printf("{{SIMULATION}} - [%s] is dead\n", agt.ID())
-				simu.agts = append(simu.agts[:i], simu.agts[i+1:]...)
+			if agt != nil {
+				c := agt.GetSyncChan()
+				c <- "true"
 			}
 		}
-		time.Sleep(time.Second / 1) // 100 Tour / Sec
+		var killed bool = false
+		for i, agt := range simu.agts {
+			if agt != nil {
+				c := agt.GetSyncChan()
+				isAlive := <-c
+				// If dead, remove agent from simulation
+				if isAlive != "true" {
+					fmt.Printf("{{SIMULATION}} - [%s] is dead\n", agt.ID())
+					//Stop the agent
+					simu.env.RemoveAgent(agt)
+					simu.agts[i] = nil
+					killed = true
+				}
+			}
+		}
+		if killed {
+			for i, agt := range simu.agts {
+				if agt == nil {
+					simu.agts = append(simu.agts[:i], simu.agts[i+1:]...)
+					i--
+					break
+
+				}
+			}
+		}
+		fmt.Printf("\n\n Tour terminé %d\n\n", j)
+		time.Sleep(time.Second / 3) // 100 Tour / Sec
+		j++
 	}
 
 	// Arrêt des agents
 	for _, agt := range simu.agts {
-		c := agt.GetSyncChan()
-		c <- false
-		<-c
+		if agt != nil {
+			c := agt.GetSyncChan()
+			c <- "false"
+			<-c
+		}
 	}
 }
 
@@ -216,16 +239,17 @@ func (simu *Simulation) print() {
 	for simu.IsRunning() {
 		startTime := time.Now()
 		fmt.Printf("\rRunning simulation for %vms...  - ", time.Since(startTime).Milliseconds())
-		time.Sleep(time.Second / 60) // 60 fps
+		time.Sleep(time.Second / 3) // 60 fps
 	}
 }
 
 func (simu *Simulation) ToJsonObj() SimulationJson {
 	agents := []interface{}{}
 	objects := []interface{}{}
-
 	for _, agt := range simu.agts {
-		agents = append(agents, agt.ToJsonObj())
+		if agt != nil {
+			agents = append(agents, agt.ToJsonObj())
+		}
 	}
 
 	for _, obj := range simu.objs {
