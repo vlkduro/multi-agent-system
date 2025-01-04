@@ -26,9 +26,8 @@ func (server *WebSocketServer) newSimulation(conn *websocket.Conn) {
 		server.simulation.Stop()
 	}
 	nAgts := utils.GetNumberBees()
-	nObjs := utils.GetNumberFlowers()
-	nHorn := utils.GetNumberHornets()
-	server.simulation = simulation.NewSimulation(nAgts, nObjs, nHorn, conn)
+	nObjs := utils.GetNumberObjects()
+	server.simulation = simulation.NewSimulation(nAgts, nObjs, conn)
 }
 
 func (server *WebSocketServer) launchSimulation(
@@ -36,9 +35,8 @@ func (server *WebSocketServer) launchSimulation(
 ) {
 	if server.simulation == nil {
 		nAgts := utils.GetNumberBees()
-		nObjs := utils.GetNumberFlowers()
-		nHorn := utils.GetNumberHornets()
-		server.simulation = simulation.NewSimulation(nAgts, nObjs, nHorn, conn)
+		nObjs := utils.GetNumberObjects()
+		server.simulation = simulation.NewSimulation(nAgts, nObjs, conn)
 	}
 
 	if server.simulation.IsRunning() {
@@ -105,7 +103,7 @@ func (server *WebSocketServer) startSimulation(w http.ResponseWriter, r *http.Re
 }
 
 func (server *WebSocketServer) LaunchServer() {
-	http.HandleFunc("/", server.startSimulation)
+	http.HandleFunc("/ws/", server.startSimulation)
 
 	log.Printf("WebSocket server starting on port %d", server.port)
 	err := http.ListenAndServe(fmt.Sprintf(":%d", server.port), nil)
