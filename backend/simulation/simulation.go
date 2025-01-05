@@ -194,7 +194,7 @@ func (simu *Simulation) Run(maWs *websocket.Conn) {
 			}
 		}
 		fmt.Printf("\n\n Tour terminé %d\n\n", j)
-		time.Sleep(time.Second / 20) // 100 Tour / Sec
+		time.Sleep(time.Second / 100) // 100 Tour / Sec
 		j++
 	}
 
