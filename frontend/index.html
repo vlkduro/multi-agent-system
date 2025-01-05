@@ -40,6 +40,7 @@
             await app.init({ background: '#ffffff', width: window.innerHeight * 0.9, height: window.innerHeight * 0.9 });
             document.getElementById('main').appendChild(app.canvas);
             app.canvas.style.margin = ' 0% 0% 0% 20%';
+            app.canvas.style.border = '1px solid black';
 
             PIXI.Assets.add({ alias: 'beeWorker', src: './res/sprites/beeForager.png' });
             PIXI.Assets.add({ alias: 'beeGuardian', src: './res/sprites/beeGuardian.png' });
