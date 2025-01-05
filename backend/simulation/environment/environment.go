@@ -56,6 +56,47 @@ func (env *Environment) GetMapDimension() int {
 	return mapDimension
 }
 
+func (env *Environment) ObjectCount(obj ObjectType) int {
+	if env == nil || env.objs == nil {
+		return 0
+	}
+	nb := 0
+	for _, o := range env.objs {
+		if o.TypeObject() == obj {
+			nb++
+		}
+	}
+	return nb
+}
+
+// It counts only Bees still alive
+func (env *Environment) BeeAgentCount() int {
+	if env == nil || env.agts == nil {
+		return 0
+	}
+	nb := 0
+	for _, a := range env.agts {
+		if a.Type() == Bee {
+			nb++
+		}
+	}
+	return nb
+}
+
+func (env *Environment) AllObjectCount() int {
+	if env.objs == nil || env == nil {
+		return 0
+	}
+	return len(env.objs)
+}
+
+func (env *Environment) AllAgentCount() int {
+	if env.agts == nil || env == nil {
+		return 0
+	}
+	return len(env.agts)
+}
+
 func (env *Environment) IsValidPosition(x int, y int) bool {
 	return x >= 0 && y >= 0 && x < mapDimension && y < mapDimension
 }

@@ -117,6 +117,6 @@ func (f *Flower) GetNectar() int {
 	return f.nectar
 }
 
-func (f Flower) ObjectType() envpkg.ObjectType {
+func (f Flower) TypeObject() envpkg.ObjectType {
 	return envpkg.Flower
 }

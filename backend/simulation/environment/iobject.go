@@ -15,4 +15,5 @@ type IObject interface {
 	Copy() interface{}
 	Become(interface{})
 	ToJsonObj() interface{}
+	TypeObject() ObjectType
 }
