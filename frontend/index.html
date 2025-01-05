@@ -271,22 +271,6 @@
                 }
             }
 
-            function updateHornetTable(hornets) {
-                const tableBody = document.querySelector('#hornet-table tbody');
-                tableBody.innerHTML = '';
-                hornets.forEach(hornet => {
-                    const row = document.createElement('tr');
-                    const idCell = document.createElement('td');
-                    idCell.textContent = hornet.id;
-                    row.appendChild(idCell);
-                    const killCountCell = document.createElement('td');
-                    killCountCell.textContent = hornet.killCount;
-                    row.appendChild(killCountCell);
-
-                    tableBody.appendChild(row);
-                });
-            }
-
 
             const ws = new WebSocket('ws://localhost:8080/ws/');
 
@@ -298,7 +282,6 @@
                 drawGrid(data.objects, data.environment.mapDimension + 1);
                 drawSidebar(data.objects[0], data.agents.length);
                 cleanUnusedSprites(data.agents, data.objects);
-                updateHornetTable(data.hornets);
             }
 
             ws.onerror = function (event) {

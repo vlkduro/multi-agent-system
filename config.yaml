@@ -5,14 +5,13 @@ MapDimension: 30
 NumberBees: 20
 BeeAgentVisionRange: 4.0
 MaxNectar: 70 # in mg -> https://wildflowermeadows.com/2024/01/how-far-do-honeybees-fly/
-BeeCreationCost: 20
 
 # Hornets
 NumberHornets: 3
 HornetAgentVisionRange: 4.0
 
 # Flowers
-NumberFlowers: 14
+NumberFlowers: 10
 NumberFlowerPatches: 3
 MaxNectarHeld: 80 # in mg, defined as this in the code
 ProducedNectarPerTurn: 6 # in mg -> https://www.miel-lerucherdelours.fr/en/content/67-the-sunflowers
