@@ -193,6 +193,11 @@ func (simu *Simulation) Run(maWs *websocket.Conn) {
 				}
 			}
 		}
+		for _, obj := range simu.objs {
+			if obj != nil {
+				obj.Update()
+			}
+		}
 		fmt.Printf("\n\n Tour terminé %d\n\n", j)
 		time.Sleep(time.Second / 100) // 100 Tour / Sec
 		j++
