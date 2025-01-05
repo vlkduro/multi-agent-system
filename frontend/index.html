@@ -19,10 +19,10 @@
     </div>
     <table id="hornet-table">
         <thead>
-        <tr>
-            <th>Hornet ID</th>
-            <th>Kill Count</th>
-        </tr>
+            <tr>
+                <th>Hornet ID</th>
+                <th>Kill Count</th>
+            </tr>
         </thead>
         <tbody id="hornetBody">
         </tbody>
@@ -100,30 +100,30 @@
                         sprite.x = position.x * cellSize;
                         sprite.y = position.y * cellSize;
                     }
-                    if (elem.orientation){
+                    if (elem.orientation) {
                         changeOrientation(sprite, elem.orientation);
                     }
-                    if(elem.id.startsWith('Flower')){
-                        if(elem.gender == "female"){
-                            if(elem.nectar < 20 && sprite.texture != flowerFemaleBadTexture){
+                    if (elem.id.startsWith('Flower')) {
+                        if (elem.gender == "female") {
+                            if (elem.nectar < 20 && sprite.texture != flowerFemaleBadTexture) {
                                 sprite.texture = flowerFemaleBadTexture;
 
-                            }else if(elem.nectar > 20 && sprite.texture != flowerFemaleGoodTexture){
+                            } else if (elem.nectar > 20 && sprite.texture != flowerFemaleGoodTexture) {
                                 sprite.texture = flowerFemaleGoodTexture;
                             }
-                        }else{
-                            if(elem.nectar < 20 && sprite.texture != flowerMaleBadTexture){
+                        } else {
+                            if (elem.nectar < 20 && sprite.texture != flowerMaleBadTexture) {
                                 sprite.texture = flowerMaleBadTexture;
-                            }else if(elem.nectar >20 && sprite.texture != flowerMaleGoodTexture){
+                            } else if (elem.nectar > 20 && sprite.texture != flowerMaleGoodTexture) {
                                 sprite.texture = flowerMaleGoodTexture;
                             }
                         }
                     }
-                    if(elem.id.startsWith('Hornet')){
-                        if(elem.killCount  && elem.killCount> 0){
+                    if (elem.id.startsWith('Hornet')) {
+                        if (elem.killCount && elem.killCount > 0) {
                             let table = document.getElementById('hornet-table');
                             let row = table.rows.namedItem(elem.id);
-                            if(row){
+                            if (row) {
                                 row.cells[1].textContent = elem.killCount;
                             }
                         }
@@ -221,8 +221,33 @@
                 let sprite = PIXI.Sprite.from(hiveEmptyTexture);
                 //Ruche plus grande et devant
                 sprite.zIndex = 2;
+                //center the sprite
+                sprite.anchor.set(0.5);
+                sprite.x = hive.position.x * cellSize + cellSize / 2;
+                sprite.y = hive.position.y * cellSize + cellSize / 2;
+
                 sprite.width = cellSize * 4;
                 sprite.height = cellSize * 4;
+
+
+                sprite.interactive = true;
+                sprite.buttonMode = true;
+                const hitPadding = 20;
+                sprite.hitArea = new PIXI.Rectangle(
+                    -sprite.width / 2 - hitPadding,
+                    -sprite.height / 2 - hitPadding,
+                    sprite.width + hitPadding * 2,
+                    sprite.height + hitPadding * 2
+                );
+
+                //clic hold on hive
+                sprite.on('pointerdown', (event) => {
+                    sprite.visible = false;
+                });
+                sprite.on('pointerout', () => {
+                    sprite.visible = true;
+                });
+
                 return sprite;
             }
 
@@ -256,7 +281,7 @@
             function cleanUnusedSprites(agent, objects) {
                 const existingIds = new Set();
                 for (let elem of agent.concat(objects)) {
-                    if(elem){
+                    if (elem) {
                         existingIds.add(elem.id);
 
                     }

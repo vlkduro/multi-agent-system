@@ -281,23 +281,22 @@ func (simu *Simulation) ToJsonObj() SimulationJson {
 }
 
 func (simu *Simulation) AddBee() bool {
+
 	if !simu.IsRunning() && simu.addBee != nil {
 		return false
 	}
+	simu.env.Lock()
+	defer simu.env.Unlock()
 	cost := utils.GetBeeCreationCost()
 	hive := simu.objs[0].(*obj.Hive)
-	// Creating a bee
-	if simu.IsRunning() && hive.GetHoney() > cost {
-		hive.RetreiveHoney(cost)
+	if hive.GetHoney() < cost {
+		return false
 	}
+	hive.RetreiveHoney(cost)
 	id := fmt.Sprintf("Bee #%d", len(simu.agts))
 	syncChan := make(chan envpkg.AgentID)
 	agt := agt.NewBeeAgent(id, simu.env, syncChan, rand.Intn(2)+1, hive, time.Now(), utils.GetMaxNectar(), agt.Worker)
 	// ajout de l'agent à l'environnement
-	simu.Lock()
-	simu.env.Lock()
 	simu.addBee = agt
-	simu.env.Unlock()
-	simu.Unlock()
 	return true
 }

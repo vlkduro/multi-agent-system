@@ -298,7 +298,7 @@ func (agt *BeeAgent) workerAction() {
 		agt.job = Forager
 		xFactor := rand.Intn(2)
 		yFactor := rand.Intn(2)
-
+		agt.objective.Type = None
 		agt.pos = agt.hive.Position().Copy()
 		if xFactor == 0 {
 			agt.goWest()
@@ -316,8 +316,10 @@ func (agt *BeeAgent) workerAction() {
 			switch typeObj := objf.Type; typeObj {
 			case ProduceHoney:
 				fmt.Printf("[%s] Producing honey in hive : %v\n", agt.id, agt.hive)
-				agt.hive.GetNectar(4)
-				agt.hive.StoreHoney(1)
+				if agt.hive.GetQNectar() > 4 {
+					agt.hive.GetNectar(4)
+					agt.hive.StoreHoney(1)
+				}
 			}
 		}
 		// produit 180mg de miel pour 600mg de nectar
