@@ -21,6 +21,7 @@ type Simulation struct {
 	objs    []envpkg.IObject
 	running bool
 	ws      *websocket.Conn
+	addBee  envpkg.IAgent
 	sync.Mutex
 }
 
@@ -34,6 +35,7 @@ func NewSimulation(nbees int, nflowers int, nhornets int, maWs *websocket.Conn) 
 	simu := &Simulation{}
 	simu.ws = maWs
 	env := envpkg.NewEnvironment([]envpkg.IAgent{}, []envpkg.IObject{})
+	simu.addBee = nil
 	simu.env = env
 	//On récupère la webSocket
 	mapDimension := utils.GetMapDimension()
@@ -193,8 +195,20 @@ func (simu *Simulation) Run(maWs *websocket.Conn) {
 				}
 			}
 		}
+		if simu.addBee != nil {
+			simu.env.AddAgent(simu.addBee)
+			simu.addBee.Start()
+			simu.agts = append(simu.agts, simu.addBee)
+			fmt.Printf("{{SIMULATION}} - Bee added\n")
+			simu.addBee = nil
+		}
+		for _, obj := range simu.objs {
+			if obj != nil {
+				obj.Update()
+			}
+		}
 		fmt.Printf("\n\n Tour terminé %d\n\n", j)
-		time.Sleep(time.Second / 20) // 100 Tour / Sec
+		time.Sleep(time.Second / 3) // 100 Tour / Sec
 		j++
 	}
 
@@ -223,7 +237,7 @@ func (simu *Simulation) log() {
 	}
 	for simu.IsRunning() {
 		simu.sendState()
-		time.Sleep(time.Second / 60) // 60 fps
+		time.Sleep(time.Second / 3) // 60 fps
 	}
 }
 
@@ -238,7 +252,7 @@ func (simu *Simulation) sendState() {
 func (simu *Simulation) print() {
 	for simu.IsRunning() {
 		startTime := time.Now()
-		fmt.Printf("\rRunning simulation for %vms...  - ", time.Since(startTime).Milliseconds())
+		fmt.Printf("\rRunning simulation for %vms...  - \n", time.Since(startTime).Milliseconds())
 		time.Sleep(time.Second / 3) // 60 fps
 	}
 }
@@ -260,4 +274,26 @@ func (simu *Simulation) ToJsonObj() SimulationJson {
 	defer simu.env.Unlock()
 
 	return SimulationJson{Agents: agents, Objects: objects, Environment: simu.env.ToJsonObj()}
+}
+
+func (simu *Simulation) AddBee() bool {
+	if !simu.IsRunning() && simu.addBee != nil {
+		return false
+	}
+	cost := utils.GetBeeCreationCost()
+	hive := simu.objs[0].(*obj.Hive)
+	// Creating a bee
+	if simu.IsRunning() && hive.GetHoney() > cost {
+		hive.RetreiveHoney(cost)
+	}
+	id := fmt.Sprintf("Bee #%d", len(simu.agts))
+	syncChan := make(chan envpkg.AgentID)
+	agt := agt.NewBeeAgent(id, simu.env, syncChan, rand.Intn(2)+1, hive, time.Now(), utils.GetMaxNectar(), agt.Worker)
+	// ajout de l'agent à l'environnement
+	simu.Lock()
+	simu.env.Lock()
+	simu.addBee = agt
+	simu.env.Unlock()
+	simu.Unlock()
+	return true
 }

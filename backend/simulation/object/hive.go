@@ -2,17 +2,19 @@ package object
 
 import (
 	envpkg "gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/simulation/environment"
+	"gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/utils"
 )
 
 type Hive struct {
-	id       envpkg.ObjectID
-	Pos      *envpkg.Position
-	qHoney   int
-	qNectar  int
-	qPollen  int
-	queen    bool
-	minHoney int
-	env      *envpkg.Environment
+	id          envpkg.ObjectID
+	Pos         *envpkg.Position
+	qHoney      int
+	qNectar     int
+	qPollen     int
+	queen       bool
+	minHoney    int
+	env         *envpkg.Environment
+	flowerStack *utils.Stack[*Flower]
 }
 
 type HiveJson struct {
@@ -21,20 +23,21 @@ type HiveJson struct {
 	QuantityHoney  int             `json:"quantity_honey"`
 	QuantityNectar int             `json:"quantity_nectar"`
 	QuantityPollen int             `json:"quantity_pollen"`
-	Quenn          bool            `json:"queen"`
+	Queen          bool            `json:"queen"`
 	MinHoney       int             `json:"min_honey"`
 }
 
 func NewHive(id string, pos *envpkg.Position, qHoney int, qNectar int, qPollen int, minHoney int, environment *envpkg.Environment) *Hive {
 	return &Hive{
-		id:       envpkg.ObjectID(id),
-		Pos:      pos.Copy(),
-		qHoney:   qHoney,
-		qNectar:  qNectar,
-		qPollen:  qPollen,
-		queen:    true,
-		minHoney: minHoney,
-		env:      environment,
+		id:          envpkg.ObjectID(id),
+		Pos:         pos.Copy(),
+		qHoney:      qHoney,
+		qNectar:     qNectar,
+		qPollen:     qPollen,
+		queen:       true,
+		minHoney:    minHoney,
+		env:         environment,
+		flowerStack: utils.NewStack[*Flower](),
 	}
 }
 
@@ -76,6 +79,19 @@ func (h *Hive) Become(h_alt interface{}) {
 	}
 }
 
+func (h *Hive) Update() {
+	h.qNectar -= h.env.GetNumberAgent() - utils.GetNumberHornets()
+	if h.qNectar < 0 {
+		h.qNectar = 0
+	}
+	if h.qNectar > 0 {
+		h.qHoney += 1
+		h.qNectar -= 1
+	}
+	// Compter les abeilles de la ruche pour débiter du miel
+	// Ou si autre mieux, le faire
+}
+
 func (h Hive) ToJsonObj() interface{} {
 	return HiveJson{
 		ID:             string(h.id),
@@ -83,7 +99,7 @@ func (h Hive) ToJsonObj() interface{} {
 		QuantityHoney:  h.qHoney,
 		QuantityNectar: h.qNectar,
 		QuantityPollen: h.qPollen,
-		Quenn:          h.queen,
+		Queen:          h.queen,
 		MinHoney:       h.minHoney,
 	}
 }
@@ -108,4 +124,23 @@ func (h *Hive) Die() {
 
 func (h Hive) TypeObject() envpkg.ObjectType {
 	return envpkg.Hive
+}
+
+func (h Hive) GetHoney() int {
+	return h.qHoney
+}
+
+func (h *Hive) RetreiveHoney(honey int) {
+	h.qHoney -= honey
+}
+func (h *Hive) AddFlower(flower *Flower) {
+	h.flowerStack.Push(flower)
+}
+
+func (h *Hive) GetLatestFlowerPos() *Flower {
+	if h.flowerStack.IsEmpty() {
+		return nil
+	}
+	flower, _ := h.flowerStack.Pop()
+	return flower
 }

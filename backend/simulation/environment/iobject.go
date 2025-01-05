@@ -14,6 +14,7 @@ type IObject interface {
 	Position() *Position
 	Copy() interface{}
 	Become(interface{})
+	Update()
 	ToJsonObj() interface{}
 	TypeObject() ObjectType
 }
