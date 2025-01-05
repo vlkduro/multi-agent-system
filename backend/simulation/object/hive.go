@@ -5,6 +5,7 @@ import (
 )
 
 type Hive struct {
+	envpkg.IObject
 	id       envpkg.ObjectID
 	Pos      *envpkg.Position
 	qHoney   int
@@ -21,7 +22,7 @@ type HiveJson struct {
 	QuantityHoney  int             `json:"quantity_honey"`
 	QuantityNectar int             `json:"quantity_nectar"`
 	QuantityPollen int             `json:"quantity_pollen"`
-	Quenn          bool            `json:"queen"`
+	Queen          bool            `json:"queen"`
 	MinHoney       int             `json:"min_honey"`
 }
 
@@ -76,6 +77,15 @@ func (h *Hive) Become(h_alt interface{}) {
 	}
 }
 
+func (h *Hive) Update() {
+	if h.qNectar > 0 {
+		h.qHoney += 1
+		h.qNectar -= 1
+	}
+	// Compter les abeilles de la ruche pour débiter du miel
+	// Ou si autre mieux, le faire
+}
+
 func (h Hive) ToJsonObj() interface{} {
 	return HiveJson{
 		ID:             string(h.id),
@@ -83,7 +93,7 @@ func (h Hive) ToJsonObj() interface{} {
 		QuantityHoney:  h.qHoney,
 		QuantityNectar: h.qNectar,
 		QuantityPollen: h.qPollen,
-		Quenn:          h.queen,
+		Queen:          h.queen,
 		MinHoney:       h.minHoney,
 	}
 }

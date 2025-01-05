@@ -73,6 +73,14 @@ func GetNumberFlowerPatches() int {
 	return getIntAttributeFromConfigFile("NumberFlowerPatches")
 }
 
+func GetProducedNectarPerTurn() int {
+	return getIntAttributeFromConfigFile("ProducedNectarPerTurn")
+}
+
+func GetMaxNectarHeld() int {
+	return getIntAttributeFromConfigFile("MaxNectarHeld")
+}
+
 func GetNumberObjects() int {
 	return getIntAttributeFromConfigFile("NumberFlowers") + 1
 }
