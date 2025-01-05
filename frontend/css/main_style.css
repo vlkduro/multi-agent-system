@@ -86,20 +86,47 @@
 }
 
 #hornet-table {
-    position: absolute;
-    top: 20px;
-    right: 20px;
+    min-width: 200px;
+    max-width: 250px;
+    width: auto;
     border-collapse: collapse;
-    width: 200px;
-}
-
-#hornet-table th, #hornet-table td {
-    padding: 8px;
-    text-align: left;
-    border: 1px solid #ddd;
+    font-family: Arial, sans-serif;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 #hornet-table th {
-    background-color: #f4f4f4;
+    background-color: #cfa50e;
+    color: white;
+    padding: 8px;
+    text-align: left;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+#hornet-table td {
+    padding: 6px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+#hornet-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+#hornet-table tr:hover {
+    background-color: #e0e0e0;
+}
+
+#hornet-table td:first-child {
     font-weight: bold;
 }
+
+#hornet-table td:last-child {
+    border-right: none;
