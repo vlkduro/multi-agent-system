@@ -4,6 +4,7 @@ import (
 	"math/rand/v2"
 
 	envpkg "gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/simulation/environment"
+	"gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/utils"
 )
 
 // Enum FlowerGender
@@ -15,12 +16,14 @@ const (
 )
 
 type Flower struct {
+	envpkg.IObject
 	id         envpkg.ObjectID
 	pos        *envpkg.Position
 	gender     FlowerGender
 	pollinated bool
 	occupied   bool
 	nectar     int // in mg
+	maxNectar  int // in mg
 }
 
 type FlowerJson struct {
@@ -39,13 +42,15 @@ func NewFlower(id string, pos *envpkg.Position) *Flower {
 	} else {
 		gender = Female
 	}
+	maxNectar := utils.GetMaxNectarHeld()
 	return &Flower{
 		id:         envpkg.ObjectID(id),
 		pos:        pos.Copy(),
 		gender:     gender,
 		pollinated: false,
 		occupied:   false,
-		nectar:     80,
+		nectar:     maxNectar,
+		maxNectar:  maxNectar,
 	}
 }
 
@@ -84,6 +89,11 @@ func (f *Flower) Become(f2 interface{}) {
 	f.pollinated = f2Flower.pollinated
 	f.occupied = f2Flower.occupied
 	f.nectar = f2Flower.nectar
+}
+
+func (f *Flower) Update() {
+	addedNectar := utils.GetProducedNectarPerTurn()
+	f.nectar = (addedNectar + f.nectar) % f.maxNectar
 }
 
 func (f Flower) ToJsonObj() interface{} {
