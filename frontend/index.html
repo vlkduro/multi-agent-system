@@ -17,6 +17,17 @@
         <button id="new-simulation">New simulation</button>
         <button id="add-bee">Add bee</button>
     </div>
+    <table id="hornet-table">
+        <thead>
+        <tr>
+            <th>Hornet ID</th>
+            <th>Kill Count</th>
+        </tr>
+        </thead>
+        <tbody id="hornetBody">
+        </tbody>
+    </table>
+
     <div id="nectar-value">
         <p id="nectar"></p>
         <p id="honey"></p>
@@ -108,6 +119,15 @@
                             }
                         }
                     }
+                    if(elem.id.startsWith('Hornet')){
+                        if(elem.killCount  && elem.killCount> 0){
+                            let table = document.getElementById('hornet-table');
+                            let row = table.rows.namedItem(elem.id);
+                            if(row){
+                                row.cells[1].textContent = elem.killCount;
+                            }
+                        }
+                    }
                 } else {
                     let sprite;
                     switch (true) {
@@ -121,6 +141,14 @@
                             sprite.width = cellSize * 1.5;
                             sprite.height = cellSize * 1.5;
                             sprite.zIndex = 100;
+                            // AD hornet row to table
+                            let tbody = document.getElementById('hornetBody');
+                            let row = tbody.insertRow(-1);
+                            row.id = elem.id;
+                            let cell1 = row.insertCell(0);
+                            let cell2 = row.insertCell(1);
+                            cell1.innerHTML = elem.id;
+                            cell2.innerHTML = 0;
 
                             break;
                         case elem.id.startsWith('Flower'):
@@ -299,6 +327,10 @@
             document.getElementById('new-simulation').onclick = () => {
                 spritesMap.clear();
                 app.stage.removeChildren();
+                let tBody = document.getElementById('hornetBody');
+                while (tBody.firstChild) {
+                    tBody.removeChild(tBody.firstChild);
+                }
                 ws.send('new');
             }
             document.getElementById('add-bee').onclick = () => {

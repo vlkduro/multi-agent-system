@@ -204,5 +204,6 @@ func (agt *HornetAgent) ToJsonObj() interface{} {
 		Orientation: agt.orientation,
 		Objective:   agt.objective,
 		SeenElems:   agt.seenElems,
+		KillCount:   agt.killCount,
 	}
 }
