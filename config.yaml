@@ -1,10 +1,14 @@
 # Environment 
-MapDimension: 40
+MapDimension: 30
 
 # Bees
 NumberBees: 20
 BeeAgentVisionRange: 4.0
 MaxNectar: 70 # in mg -> https://wildflowermeadows.com/2024/01/how-far-do-honeybees-fly/
+
+# Hornets
+NumberHornets: 6
+HornetAgentVisionRange: 4.0
 
 # Flowers
 NumberFlowers: 10

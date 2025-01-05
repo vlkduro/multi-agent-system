@@ -31,7 +31,7 @@ func getTriangleCoordinates(startPt envpkg.Position, height float64, oppositeBas
 	//        of topCorner on C1
 	// Combining the two circles gives us the leftCorner and rightCorner points
 	// First circle : C1 = (x - a)² + (y - b)² = height²
-	// Second circle : C2 = (x - p)² + (y - q)² = oppositeBaseSize²
+	// Second circle : C2 = (x - p)² + (y - q)² = (oppositeBaseSize/2)²
 	// We get the tangent of the center of C2 (point on C1)
 	// The points of intersection between C2 and the tangent of C1 are the leftCorner and rightCorner
 	// This allows for maintining precision over the height of the triangle and the opposite base size

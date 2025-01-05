@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI30 WebSocket</title>
+    <script src="./utils/pixi.min.js"></script>
+    <link rel="stylesheet" href="css/main_style.css">
+</head>
+
+<body>
+    <h2 id="connection-state">Connection closed</h2>
+    <div style="display:flex; gap:10px; margin-bottom: 50px;">
+        <button id="start-simulation">Start simulation</button>
+        <button id="stop-simulation">Stop simulation</button>
+        <button id="new-simulation">New simulation</button>
+    </div>
+    <div id="nectar-value">
+        <p id="nectar"></p>
+    </div>
+    <div id="main">
+        <div class="sidebar">
+            <div class="ocean" id="ocean">
+                <div class="wave"></div>
+                <div class="wave"></div>
+            </div>
+        </div>
+        <script type="module">
+            const connectionState = document.getElementById('connection-state');
+            const errorsDiv = document.getElementById('errors');
+            const ocean = document.getElementById('ocean');
+            const nectar = document.getElementById('nectar');
+
+            const app = new PIXI.Application();
+            await app.init({ background: '#ffffff', width: window.innerHeight * 0.9, height: window.innerHeight * 0.9 });
+            document.getElementById('main').appendChild(app.canvas);
+            app.canvas.style.margin = ' 0% 0% 0% 20%';
+
+            PIXI.Assets.add({ alias: 'beeWorker', src: './res/sprites/beeForager.png' });
+            PIXI.Assets.add({ alias: 'beeGuardian', src: './res/sprites/beeGuardian.png' });
+            PIXI.Assets.add({ alias: 'beeForager', src: './res/sprites/beeForager.png' });
+            PIXI.Assets.add({ alias: 'hornet', src: './res/sprites/hornet.png' });
+            PIXI.Assets.add({ alias: 'flowerMaleGood', src: './res/sprites/fleurMaleGood.png' });
+            PIXI.Assets.add({ alias: 'flowerMaleBad', src: './res/sprites/fleurMaleBad.png' });
+            PIXI.Assets.add({ alias: 'flowerFemaleGood', src: './res/sprites/fleurFemaleGood.png' });
+            PIXI.Assets.add({ alias: 'flowerFemaleBad', src: './res/sprites/fleurFemaleBad.png' });
+            PIXI.Assets.add({ alias: 'hiveEmpty', src: './res/sprites/hiveEmpty.png' });
+            PIXI.Assets.add({ alias: 'hiveMid', src: './res/sprites/hive2.png' });
+            PIXI.Assets.add({ alias: 'hiveFull', src: './res/sprites/hiveFull.png' });
+
+            const beeWorkerTexture = await PIXI.Assets.load('beeWorker');
+            const beeGuardianTexture = await PIXI.Assets.load('beeGuardian');
+            const beeForagerTexture = await PIXI.Assets.load('beeForager');
+            const hiveEmptyTexture = await PIXI.Assets.load('hiveEmpty');
+            const hiveMidTexture = await PIXI.Assets.load('hiveMid');
+            const hiveFullTexture = await PIXI.Assets.load('hiveFull');
+            const flowerMaleBadTexture = await PIXI.Assets.load('flowerMaleBad');
+            const flowerMaleGoodTexture = await PIXI.Assets.load('flowerMaleGood');
+            const flowerFemaleBadTexture = await PIXI.Assets.load('flowerFemaleBad');
+            const flowerFemaleGoodTexture = await PIXI.Assets.load('flowerFemaleGood');
+            const hornetTexture = await PIXI.Assets.load('hornet');
+
+            function drawGrid(grid, gridSize) {
+                const cellSize = app.screen.height / gridSize; // Taille de chaque cellule
+
+                // Supprimer les éléments précédemment dessinés
+                // Parcours de la grille et dessin des objets
+                for (let elem of grid) {
+                    drawAgent(elem, elem.position, cellSize);
+                }
+            }
+
+            function drawAgent(elem, position, cellSize) {
+                if (!elem || !elem.position) {
+                    return;
+                }
+                let sprite;
+                switch (true) {
+                    case elem.id.startsWith('Bee'):
+                        sprite = getSpriteFromBee(elem, cellSize);
+                        break;
+                    case elem.id.startsWith('Hornet'):
+                        sprite = PIXI.Sprite.from(hornetTexture);
+                        changeOrientation(sprite, elem.orientation);
+                        //Hornet un peu plus grand
+                        sprite.width = cellSize * 1.5;
+                        sprite.height = cellSize * 1.5;
+                        sprite.zIndex = 100;
+
+                        break;
+                    case elem.id.startsWith('Flower'):
+                        sprite = getSpriteFromFlower(elem, cellSize);
+                        break;
+                    case elem.id.startsWith('Hive'):
+                        sprite = getSpriteFromHive(elem, cellSize);
+                        break;
+                    default:
+                        console.log('Unknown element type:', elem.id);
+                }
+                sprite.x = position.x * cellSize;
+                sprite.y = position.y * cellSize;
+
+                app.stage.addChild(sprite);
+            }
+
+            function changeOrientation(sprite, orientation) {
+                switch (orientation) {
+                    case 'N':
+                        sprite.rotation = 0;
+                        break;
+                    case 'NE':
+                        sprite.rotation = Math.PI / 4;
+                        break;
+                    case 'E':
+                        sprite.rotation = Math.PI / 2;
+                        break;
+                    case 'SE':
+                        sprite.rotation = 3 * Math.PI / 4;
+                        break;
+                    case 'S':
+                        sprite.rotation = Math.PI;
+                        break;
+                    case 'SW':
+                        sprite.rotation = 5 * Math.PI / 4;
+                        break;
+                    case 'W':
+                        sprite.rotation = 3 * Math.PI / 2;
+                        break;
+                    case 'NW':
+                        sprite.rotation = 7 * Math.PI / 4;
+                        break;
+                }
+            }
+
+            function getSpriteFromBee(bee, cellSize) {
+                let sprite;
+                switch (bee.job) {
+                    case 2:
+                        sprite = PIXI.Sprite.from(beeWorkerTexture);
+                        break;
+                    case 1:
+                        sprite = PIXI.Sprite.from(beeGuardianTexture);
+                        break;
+                    default:
+                        sprite = PIXI.Sprite.from(beeForagerTexture);
+                        break;
+                }
+                sprite.width = cellSize;
+                sprite.height = cellSize;
+                changeOrientation(sprite, bee.orientation);
+                return sprite
+            }
+
+            function getSpriteFromHive(hive, cellSize) {
+                let sprite = PIXI.Sprite.from(hiveEmptyTexture);
+                //Ruche plus grande et devant
+                sprite.zIndex = 2;
+                sprite.width = cellSize * 4;
+                sprite.height = cellSize * 4;
+                return sprite;
+            }
+
+            function getSpriteFromFlower(flower, cellSize) {
+                let sprite;
+                switch (true) {
+                    case flower.gender === "female":
+                        if (flower.nectar == 0) {
+                            sprite = PIXI.Sprite.from(flowerFemaleBadTexture);
+                            break;
+                        } else {
+                            sprite = PIXI.Sprite.from(flowerFemaleGoodTexture);
+                            break;
+                        }
+                    default:
+                        if (flower.nectar == 0) {
+                            sprite = PIXI.Sprite.from(flowerMaleBadTexture);
+                            break;
+                        } else {
+                            sprite = PIXI.Sprite.from(flowerMaleGoodTexture);
+                            break;
+                        }
+                        break;
+                }
+                sprite.width = cellSize;
+                sprite.height = cellSize;
+                return sprite;
+            }
+            function updatePollenLevel(percentage) {
+                const pollenBar = document.getElementById('pollenBar');
+                pollenBar.style.height = `${percentage}%`;
+            }
+
+            function drawSidebar(hive, agentsCount) {
+                if (ocean != null) {
+                    let quantity = hive.quantity_nectar / agentsCount - 10;
+                    if (quantity < 0) {
+                        quantity = 0;
+                    }
+                    if (quantity > 90) {
+                        quantity = 90;
+                    }
+                    ocean.style.height = `${quantity}%`;
+                }
+                if (nectar != null) {
+                    nectar.textContent = `Nectar: ${hive.quantity_nectar}`;
+                }
+            }
+
+            const ws = new WebSocket('ws://localhost:8080/ws/');
+
+            //Function trigered when data are reiceve from websocket
+            ws.onmessage = function (event) {
+                app.stage.removeChildren(); // Supprimer les éléments précédemment dessinés
+                const data = JSON.parse(event.data);
+                console.log(data);
+                drawGrid(data.agents, data.environment.mapDimension+1);
+                drawGrid(data.objects, data.environment.mapDimension+1);
+                drawSidebar(data.objects[0], data.agents.length);
+            }
+
+            ws.onerror = function (event) {
+                errorsDiv.innerHTML += '<p>Error: ' + event.message + '</p>';
+            };
+
+            ws.onclose = function (event) {
+                connectionState.textContent = 'Connection closed';
+                ws.close(1, "bye")
+            };
+
+            ws.onopen = function (event) {
+                connectionState.textContent = 'Connected'
+            }
+
+
+
+            document.getElementById('start-simulation').onclick = () => {
+                ws.send('start');
+            }
+
+            document.getElementById('stop-simulation').onclick = () => {
+                ws.send('stop');
+            }
+
+            document.getElementById('new-simulation').onclick = () => {
+                ws.send('new');
+            }
+        </script>
+    </div>
+    <div id="errors"></div>
+</body>
+
+</html>

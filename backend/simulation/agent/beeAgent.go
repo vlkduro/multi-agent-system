@@ -30,29 +30,11 @@ type BeeAgent struct {
 	job                job
 	seenElems          []*vision.SeenElem
 	availablePositions []envpkg.Position
-	objective          objective
-}
-
-type objectiveType string
-
-const (
-	None         objectiveType = "none"
-	Position     objectiveType = "position"
-	Flower       objectiveType = "flower"
-	Hive         objectiveType = "hive"
-	ProduceHoney objectiveType = "produce honey"
-)
-
-// BeeAgent structure to be marshalled in json
-type objective struct {
-	TargetedElem envpkg.IObject
-	Position     *envpkg.Position `json:"position"`
-	Type         objectiveType    `json:"type"`
 }
 
 type BeeAgentJson struct {
 	ID          string             `json:"id"`
-	Position    envpkg.Position    `json:"position"`
+	Position    *envpkg.Position   `json:"position"`
 	Orientation envpkg.Orientation `json:"orientation"`
 	SeenElems   []*vision.SeenElem `json:"seenElems"`
 	MaxNectar   int                `json:"maxNectar"`
@@ -61,7 +43,7 @@ type BeeAgentJson struct {
 	Objective   objective          `json:"objective"`
 }
 
-func NewBeeAgent(id string, env *envpkg.Environment, syncChan chan bool, speed int, hive *obj.Hive, dob time.Time, maxnectar int, job job) *BeeAgent {
+func NewBeeAgent(id string, env *envpkg.Environment, syncChan chan envpkg.AgentID, speed int, hive *obj.Hive, dob time.Time, maxnectar int, job job) *BeeAgent {
 	beeAgent := &BeeAgent{}
 	beeAgent.Agent = Agent{
 		iagt:       beeAgent,
@@ -70,16 +52,17 @@ func NewBeeAgent(id string, env *envpkg.Environment, syncChan chan bool, speed i
 		syncChan:   syncChan,
 		visionFunc: nil,
 		speed:      speed,
+		alive:      true,
+		objective:  objective{Position: nil, Type: None},
 	}
 	beeAgent.hive = hive
 	beeAgent.birthDate = dob
 	beeAgent.maxNectar = maxnectar
 	beeAgent.job = job
 	beeAgent.nectar = 0
-	beeAgent.objective = objective{Position: nil, Type: None}
 	beeAgent.availablePositions = []envpkg.Position{}
 	beeAgent.seenElems = []*vision.SeenElem{}
-	beeAgent.pos = hive.Position().Copy()
+	//beeAgent.pos = hive.Position().Copy()
 	return beeAgent
 }
 
@@ -110,10 +93,7 @@ func (agt *BeeAgent) Act() {
 }
 
 func (agt *BeeAgent) hasFlowerObjective() bool {
-	if agt.objective.Type == Flower {
-		return true
-	}
-	return false
+	return agt.objective.Type == Flower
 }
 
 func (agt *BeeAgent) foragerPerception() {
@@ -139,26 +119,27 @@ func (agt *BeeAgent) foragerDeliberation() {
 	var closestHornet *HornetAgent = nil
 	hasAlreadySeenCloserFlower := false
 	for _, seen := range agt.seenElems {
+
 		if seen.Elem != nil {
 			switch elem := (seen.Elem).(type) {
 			case *HornetAgent:
+				fmt.Printf("[%s] Close to hornet %v\n", agt.id, elem.ID())
 				closestHornet = elem
 			case *obj.Flower:
 				if !hasAlreadySeenCloserFlower {
-					if elem.GetNectar() == 0 {
+					if elem.GetNectar() != 0 {
+
+						fmt.Printf("[%s] Flower seen, going to it !\n", agt.id)
+						agt.objective.TargetedElem = elem
+						agt.objective.Position = elem.Position().Copy()
+						agt.objective.Type = Flower
+						hasAlreadySeenCloserFlower = true
+					} else {
 						fmt.Printf("[%s] Flower seen with no nectar, ignoring it !\n", agt.id)
-						continue
 					}
-					fmt.Printf("[%s] Flower seen, going to it !\n", agt.id)
-					agt.objective.TargetedElem = elem
-					agt.objective.Position = elem.Position().Copy()
-					agt.objective.Type = Flower
-					hasAlreadySeenCloserFlower = true
 				}
-			//case *obj.Hive:
-			//fmt.Printf("[%s] Hive seen : %v\n", agt.id, elem)
-			default:
-				fmt.Printf("[%s] Unknown element seen : %v\n", agt.id, elem)
+				//default:
+				//fmt.Printf("[%s] Unknown element seen : %v\n", agt.id, elem)
 			}
 		}
 		if closestHornet != nil {
@@ -170,69 +151,20 @@ func (agt *BeeAgent) foragerDeliberation() {
 		fmt.Printf("[%s] Hornet seen, fleeing in opposite direction\n", agt.id)
 		agt.objective.Position = agt.pos.GetSymmetricOfPoint(*closestHornet.pos.Copy())
 		agt.objective.Type = Position
+		if agt.objective.Position.X < 0 {
+			agt.objective.Position.X = 0
+		} else if agt.objective.Position.X >= agt.env.GetMapDimension() {
+			agt.objective.Position.X = agt.env.GetMapDimension() - 1
+		}
+		if agt.objective.Position.Y < 0 {
+			agt.objective.Position.Y = 0
+		} else if agt.objective.Position.Y >= agt.env.GetMapDimension() {
+			agt.objective.Position.Y = agt.env.GetMapDimension() - 1
+		}
 	}
 	// If has no objective, wander
 	if agt.objective.Type == None {
-		var closestBorder *envpkg.Position = nil
-		minBorderDistance := agt.pos.DistanceFrom(&envpkg.Position{X: 0, Y: 0})
-		isCloseToBorder := false
-		// If we are close to the border, we go in the opposite direction
-		// We put -1 in the list to test the flat border cases
-		for _, x := range []int{-1, 0, agt.env.GetMapDimension() - 1} {
-			for _, y := range []int{-1, 0, agt.env.GetMapDimension() - 1} {
-				isCorner := true
-				if x == -1 && y == -1 {
-					continue
-				}
-				// Flat north or south border
-				if x == -1 {
-					x = agt.pos.X
-					isCorner = false
-				}
-				if y == -1 {
-					// Flat west or east border
-					y = agt.pos.Y
-					isCorner = false
-				}
-				// Corner case
-				distance := agt.pos.DistanceFrom(&envpkg.Position{X: x, Y: y})
-				isCloseToBorder = distance < float64(agt.speed)
-				// We allow some leeway to border cases to avoid getting stuck
-				if (isCloseToBorder && distance < minBorderDistance) || (isCloseToBorder && isCorner && distance <= minBorderDistance) {
-					closestBorder = &envpkg.Position{X: x, Y: y}
-					minBorderDistance = distance
-				}
-			}
-		}
-		if closestBorder != nil {
-			// If we are too close to the border, we go to the opposite side
-			keepAwayFromBorderPos := agt.pos.Copy()
-			if closestBorder.X == 0 {
-				keepAwayFromBorderPos.GoEast(nil)
-			} else if closestBorder.X == agt.env.GetMapDimension()-1 {
-				keepAwayFromBorderPos.GoWest(nil)
-			}
-			if closestBorder.Y == 0 {
-				keepAwayFromBorderPos.GoSouth(nil)
-			} else if closestBorder.Y == agt.env.GetMapDimension()-1 {
-				keepAwayFromBorderPos.GoNorth(nil)
-			}
-			agt.objective.Position = keepAwayFromBorderPos.Copy()
-			agt.objective.Type = Position
-			fmt.Printf("[%s] Too close to border (%d %d), going to (%d %d)\n", agt.id, closestBorder.X, closestBorder.Y, agt.objective.Position.X, agt.objective.Position.Y)
-		} else {
-			// While we don't have an objective, we wander
-			for agt.objective.Type == None {
-				newObjective := agt.getNextWanderingPosition()
-				elemAtObjective := agt.env.GetAt(newObjective.X, newObjective.Y)
-				if elemAtObjective != nil {
-					continue
-				}
-				fmt.Printf("[%s] Wandering towards %v\n", agt.id, *newObjective)
-				agt.objective.Type = Position
-				agt.objective.Position = newObjective.Copy()
-			}
-		}
+		agt.wander()
 	}
 }
 
@@ -243,16 +175,28 @@ func (agt *BeeAgent) foragerAction() {
 		case Position:
 			if agt.pos.Equal(objf.Position) {
 				agt.objective.Type = None
+				fmt.Printf("[%s] Objectif reached %v\n", agt.id, objf.Position)
 			} else {
-				agt.gotoNextStepTowards(objf.Position.Copy())
+				if _, ok := agt.env.GetAt(objf.Position.X, objf.Position.Y).(envpkg.IAgent); ok {
+					// In some cases, the agent wants to go to a position where there is already an agent
+					agt.objective.Type = None
+					fmt.Printf("[%s] Agent at desired position, go wonder \n", agt.id)
+				} else {
+					agt.gotoNextStepTowards(objf.Position.Copy())
+					if agt.pos.Equal(objf.Position) {
+						agt.objective.Type = None
+					}
+					fmt.Printf("[%s] GO next position\n", agt.id)
+				}
 			}
 		case Flower:
 			if flower, ok := objf.TargetedElem.(*obj.Flower); ok {
 				if agt.pos.Near(objf.Position, 1) {
 					agt.nectar += flower.RetreiveNectar(agt.maxNectar - agt.nectar)
 					agt.objective.Type = None
+					fmt.Printf("[%s] Nectar stealed %v\n", agt.id, objf.TargetedElem.(envpkg.IObject).ID())
 				} else {
-					fmt.Printf("[%s] Going to flower %v\n", agt.id, objf.TargetedElem.ID())
+					fmt.Printf("[%s] Going to flower %v %v\n", agt.id, objf.Position, agt.pos)
 					agt.gotoNextStepTowards(objf.Position.Copy())
 				}
 			}
@@ -262,9 +206,10 @@ func (agt *BeeAgent) foragerAction() {
 					hive.StoreNectar(agt.nectar)
 					agt.nectar = 0
 					agt.objective.Type = None
+					fmt.Printf("[%s] Nectar stored %v\n", agt.id, objf.TargetedElem.(envpkg.IObject).ID())
 				}
 			} else {
-				fmt.Printf("[%s] Going to hive %v\n", agt.id, objf.TargetedElem.ID())
+				fmt.Printf("[%s] Going to hive %v\n", agt.id, objf.TargetedElem.(envpkg.IObject).ID())
 				agt.gotoNextStepTowards(objf.Position.Copy())
 			}
 		}
@@ -335,18 +280,14 @@ func (agt *BeeAgent) workerAction() {
 
 		agt.pos = agt.hive.Position().Copy()
 		if xFactor == 0 {
-			agt.pos.GoWest(agt.env.GetMap())
-			agt.orientation = envpkg.West
+			agt.goWest()
 		} else {
-			agt.pos.GoEast(agt.env.GetMap())
-			agt.orientation = envpkg.East
+			agt.goEast()
 		}
 		if yFactor == 0 {
-			agt.pos.GoNorth(agt.env.GetMap())
-			agt.orientation = envpkg.North
+			agt.goNorth()
 		} else {
-			agt.pos.GoSouth(agt.env.GetMap())
-			agt.orientation = envpkg.South
+			agt.goSouth()
 		}
 	} else {
 		objf := &agt.objective
@@ -367,9 +308,13 @@ func (agt *BeeAgent) workerAction() {
 	}
 }
 
+func (agt BeeAgent) Type() envpkg.AgentType {
+	return envpkg.Bee
+}
+
 func (agt *BeeAgent) ToJsonObj() interface{} {
 	return BeeAgentJson{ID: string(agt.id),
-		Position:    *agt.pos,
+		Position:    agt.pos,
 		Orientation: agt.orientation,
 		SeenElems:   agt.seenElems,
 		MaxNectar:   agt.maxNectar,

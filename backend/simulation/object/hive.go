@@ -6,12 +6,13 @@ import (
 
 type Hive struct {
 	id       envpkg.ObjectID
-	pos      *envpkg.Position
+	Pos      *envpkg.Position
 	qHoney   int
 	qNectar  int
 	qPollen  int
 	queen    bool
 	minHoney int
+	env      *envpkg.Environment
 }
 
 type HiveJson struct {
@@ -24,15 +25,16 @@ type HiveJson struct {
 	MinHoney       int             `json:"min_honey"`
 }
 
-func NewHive(id string, pos *envpkg.Position, qHoney int, qNectar int, qPollen int, minHoney int) *Hive {
+func NewHive(id string, pos *envpkg.Position, qHoney int, qNectar int, qPollen int, minHoney int, environment *envpkg.Environment) *Hive {
 	return &Hive{
 		id:       envpkg.ObjectID(id),
-		pos:      pos.Copy(),
+		Pos:      pos.Copy(),
 		qHoney:   qHoney,
 		qNectar:  qNectar,
 		qPollen:  qPollen,
 		queen:    true,
 		minHoney: minHoney,
+		env:      environment,
 	}
 }
 
@@ -41,13 +43,13 @@ func (h Hive) ID() envpkg.ObjectID {
 }
 
 func (h Hive) Position() *envpkg.Position {
-	return h.pos.Copy()
+	return h.Pos.Copy()
 }
 
 func (h Hive) Copy() interface{} {
 	return &Hive{
 		id:       h.id,
-		pos:      h.pos.Copy(),
+		Pos:      h.Pos.Copy(),
 		qHoney:   h.qHoney,
 		qNectar:  h.qNectar,
 		qPollen:  h.qPollen,
@@ -65,7 +67,7 @@ func (h *Hive) Become(h_alt interface{}) {
 
 	if ok {
 		h.id = altered_hive.id
-		h.pos = altered_hive.pos.Copy()
+		h.Pos = altered_hive.Pos.Copy()
 		h.qHoney = altered_hive.qHoney
 		h.qNectar = altered_hive.qNectar
 		h.qPollen = altered_hive.qPollen
@@ -77,7 +79,7 @@ func (h *Hive) Become(h_alt interface{}) {
 func (h Hive) ToJsonObj() interface{} {
 	return HiveJson{
 		ID:             string(h.id),
-		Position:       *h.pos.Copy(),
+		Position:       *h.Pos.Copy(),
 		QuantityHoney:  h.qHoney,
 		QuantityNectar: h.qNectar,
 		QuantityPollen: h.qPollen,
@@ -87,7 +89,7 @@ func (h Hive) ToJsonObj() interface{} {
 }
 
 func (h Hive) GetPosition() (position envpkg.Position) {
-	position = *h.pos.Copy()
+	position = *h.Pos.Copy()
 	return
 }
 
@@ -120,4 +122,11 @@ func (h Hive) IsAlive() (isAlive bool) {
 
 func (h *Hive) Die() {
 	h.queen = false
+	h.env.RemoveObject(h)
+	h.IsAlive()
+	h.Pos = nil
+}
+
+func (h Hive) TypeObject() envpkg.ObjectType {
+	return envpkg.Hive
 }

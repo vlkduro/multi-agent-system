@@ -67,6 +67,7 @@ La production de miel nécessite une certaine quantité de nectar et un certain 
 - Un frelon chasse les abeilles
 - Un frelon cherche les ruches d’abeilles
 - Suffisamment de frelons peuvent tuer la reine
+- Un frelon ayant tué suffisemment d'abeilles se dirigera vers la ruche
 - Un frelon peut environner des fleurs, suivre des abeilles ou environner la ruche
 
 On pourrait proposer à l'utilisateur de gérer la proportion d'abeilles productrices et exploratrices en temps réel (chaque abeille ayant un coût en miel pour la ruche).

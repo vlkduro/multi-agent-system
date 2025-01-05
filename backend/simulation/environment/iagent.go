@@ -15,16 +15,25 @@ const (
 	SouthWest Orientation = "SW"
 )
 
+type AgentType string
+
+const (
+	ExAgent AgentType = "ExAgent"
+	Bee     AgentType = "Bee"
+	Hornet  AgentType = "Hornet"
+)
+
 // IAgent is an interface representing the agent's actions
 // limits
 type IAgent interface {
 	ID() AgentID
 	Position() *Position
 	Orientation() Orientation
-	GetSyncChan() chan bool
+	GetSyncChan() chan AgentID
 	ToJsonObj() interface{}
 	Start()
 	Percept()
 	Deliberate()
 	Act()
+	Type() AgentType
 }
