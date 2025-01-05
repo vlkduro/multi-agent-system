@@ -9,7 +9,7 @@ import (
 )
 
 func getIntAttributeFromConfigFile(attribute string) int {
-	file, err := os.Open("./config.yaml")
+	file, err := os.Open("/Users/quentin.v/ai30_valakou_martins_chartier_bidaux/config.yaml")
 	if err != nil {
 		log.Fatalf("failed to open config file: %v", err)
 	}
@@ -24,7 +24,7 @@ func getIntAttributeFromConfigFile(attribute string) int {
 }
 
 func getFloat64AttributeFromConfigFile(attribute string) float64 {
-	file, err := os.Open("./config.yaml")
+	file, err := os.Open("/Users/quentin.v/ai30_valakou_martins_chartier_bidaux/config.yaml")
 	if err != nil {
 		log.Fatalf("failed to open config file: %v", err)
 	}
@@ -39,7 +39,7 @@ func getFloat64AttributeFromConfigFile(attribute string) float64 {
 }
 
 func getStringAttributeFromConfigFile(attribute string) string {
-	file, err := os.Open("./config.yaml")
+	file, err := os.Open("/Users/quentin.v/ai30_valakou_martins_chartier_bidaux/config.yaml")
 	if err != nil {
 		log.Fatalf("failed to open config file: %v", err)
 	}
