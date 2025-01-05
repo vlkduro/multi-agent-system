@@ -45,12 +45,45 @@ func NewHornetAgent(id string, env *envpkg.Environment, syncChan chan envpkg.Age
 	return hAgent
 }
 
+func (h *HornetAgent) GetObjectCount(obj envpkg.ObjectType) int {
+	if h.env == nil {
+		return 0
+	}
+	return h.env.ObjectCount(obj)
+}
+
+func (h *HornetAgent) GetBeeAgentCount() int {
+	if h.env == nil {
+		return 0
+	}
+	return h.env.BeeAgentCount()
+}
+
+func (h *HornetAgent) GetAllObjectCount() int {
+	if h.env == nil {
+		return 0
+	}
+	return h.env.AllObjectCount()
+}
+
+func (h *HornetAgent) GetAllAgentCount() int {
+	if h.env == nil {
+		return 0
+	}
+	return h.env.AllAgentCount()
+}
+
 // A simple way to organize target priority for the hornet.
 // If the hornet sees the Hive, and is surroundered by at least 2 of its kind, it will prioritize it.
 // false : bee
 // true : hive
 func PriorityTarget(hornet HornetAgent) bool {
 	nbHornet := 0
+	// if a hornet killed at least half of the bees, he will seek for the hive
+	if hornet.killCount >= hornet.GetBeeAgentCount()/2 {
+		fmt.Printf("[%s] has killed most bees ! : [%d]/[%d] \n", hornet.ID(), hornet.killCount, hornet.GetBeeAgentCount())
+		return true
+	}
 	for _, seen := range hornet.seenElems {
 		switch elem := seen.Elem.(type) {
 		case *HornetAgent:
@@ -204,5 +237,6 @@ func (agt *HornetAgent) ToJsonObj() interface{} {
 		Orientation: agt.orientation,
 		Objective:   agt.objective,
 		SeenElems:   agt.seenElems,
+		KillCount:   agt.killCount,
 	}
 }

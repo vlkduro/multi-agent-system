@@ -84,3 +84,22 @@
         transform: translate3d(0, 5px, 0);
     }
 }
+
+#hornet-table {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    border-collapse: collapse;
+    width: 200px;
+}
+
+#hornet-table th, #hornet-table td {
+    padding: 8px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+#hornet-table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}

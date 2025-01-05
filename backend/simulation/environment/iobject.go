@@ -16,4 +16,5 @@ type IObject interface {
 	Become(interface{})
 	Update()
 	ToJsonObj() interface{}
+	TypeObject() ObjectType
 }
