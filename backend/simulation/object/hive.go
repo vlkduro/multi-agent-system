@@ -80,6 +80,10 @@ func (h *Hive) Become(h_alt interface{}) {
 }
 
 func (h *Hive) Update() {
+	h.qNectar -= h.env.GetNumberAgent() - utils.GetNumberHornets()
+	if h.qNectar < 0 {
+		h.qNectar = 0
+	}
 	if h.qNectar > 0 {
 		h.qHoney += 1
 		h.qNectar -= 1
@@ -122,6 +126,13 @@ func (h Hive) TypeObject() envpkg.ObjectType {
 	return envpkg.Hive
 }
 
+func (h Hive) GetHoney() int {
+	return h.qHoney
+}
+
+func (h *Hive) RetreiveHoney(honey int) {
+	h.qHoney -= honey
+}
 func (h *Hive) AddFlower(flower *Flower) {
 	h.flowerStack.Push(flower)
 }

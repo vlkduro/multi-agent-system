@@ -93,7 +93,10 @@ func (f *Flower) Become(f2 interface{}) {
 
 func (f *Flower) Update() {
 	addedNectar := utils.GetProducedNectarPerTurn()
-	f.nectar = (addedNectar + f.nectar) % f.maxNectar
+	f.nectar = (addedNectar + f.nectar)
+	if f.nectar > f.maxNectar {
+		f.nectar = f.maxNectar
+	}
 }
 
 func (f Flower) ToJsonObj() interface{} {
