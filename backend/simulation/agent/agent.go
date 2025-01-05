@@ -270,15 +270,17 @@ func (agt *Agent) wander() {
 	if closestBorder != nil {
 		// If we are too close to the border, we go to the opposite side
 		keepAwayFromBorderPos := agt.pos.Copy()
-		if closestBorder.X == 0 {
-			keepAwayFromBorderPos.GoEast(nil, nil)
-		} else if closestBorder.X == agt.env.GetMapDimension()-1 {
-			keepAwayFromBorderPos.GoWest(nil, nil)
-		}
-		if closestBorder.Y == 0 {
-			keepAwayFromBorderPos.GoSouth(nil, nil)
-		} else if closestBorder.Y == agt.env.GetMapDimension()-1 {
-			keepAwayFromBorderPos.GoNorth(nil, nil)
+		for i := 0; i < agt.speed; i++ {
+			if closestBorder.X == 0 {
+				keepAwayFromBorderPos.GoEast(nil, nil)
+			} else if closestBorder.X == agt.env.GetMapDimension()-1 {
+				keepAwayFromBorderPos.GoWest(nil, nil)
+			}
+			if closestBorder.Y == 0 {
+				keepAwayFromBorderPos.GoSouth(nil, nil)
+			} else if closestBorder.Y == agt.env.GetMapDimension()-1 {
+				keepAwayFromBorderPos.GoNorth(nil, nil)
+			}
 		}
 		// If the position is already occupied by something, we find the closest available position
 		if agt.env.GetAt(keepAwayFromBorderPos.X, keepAwayFromBorderPos.Y) != nil {
@@ -320,7 +322,6 @@ func (agt *Agent) getNextWanderingPosition() *envpkg.Position {
 	nextWanderingOrientation := agt.orientation
 	// Chances : 3/4 th keeping the same orientation, 1/8th changing to the left, 1/8th changing to the right
 	chancesToChangeOrientation := rand.Intn(8)
-	// To the left
 	if chancesToChangeOrientation < 2 {
 		switch agt.orientation {
 		case envpkg.North:
