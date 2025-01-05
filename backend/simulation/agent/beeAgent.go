@@ -62,7 +62,7 @@ func NewBeeAgent(id string, env *envpkg.Environment, syncChan chan envpkg.AgentI
 	beeAgent.nectar = 0
 	beeAgent.availablePositions = []envpkg.Position{}
 	beeAgent.seenElems = []*vision.SeenElem{}
-	//beeAgent.pos = hive.Position().Copy()
+	beeAgent.pos = hive.Position().Copy()
 	return beeAgent
 }
 
@@ -77,8 +77,7 @@ func (agt *BeeAgent) Percept() {
 func (agt *BeeAgent) Deliberate() {
 	if agt.job == Forager {
 		agt.foragerDeliberation()
-	}
-	if agt.job == Worker {
+	} else if agt.job == Worker {
 		agt.workerDeliberation()
 	}
 }
@@ -86,8 +85,7 @@ func (agt *BeeAgent) Deliberate() {
 func (agt *BeeAgent) Act() {
 	if agt.job == Forager {
 		agt.foragerAction()
-	}
-	if agt.job == Worker {
+	} else if agt.job == Worker {
 		agt.workerAction()
 	}
 }
@@ -217,7 +215,6 @@ func (agt *BeeAgent) foragerAction() {
 }
 
 func (agt *BeeAgent) workerPerception() {
-	fmt.Printf("[%s] Worker bee percepting...\n", agt.id)
 	agt.visionFunc = vision.WorkerBeeVision
 	agt.seenElems = agt.see()
 }
@@ -254,8 +251,8 @@ func (agt *BeeAgent) workerDeliberation() {
 						agt.objective.Type = ProduceHoney
 					}
 				}
-			default:
-				fmt.Printf("[%s] Unknown element seen : %v\n", agt.id, elem)
+				//default:
+				//fmt.Printf("[%s] Unknown element seen : %v\n", agt.id, elem)
 			}
 		}
 		if closestHornet != nil {
