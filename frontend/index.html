@@ -16,6 +16,16 @@
         <button id="stop-simulation">Stop simulation</button>
         <button id="new-simulation">New simulation</button>
     </div>
+    <table id="hornet-table" border="1">
+        <thead>
+        <tr>
+            <th>Hornet ID</th>
+            <th>Kill Count</th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
     <div id="nectar-value">
         <p id="nectar"></p>
     </div>
@@ -241,6 +251,23 @@
                 }
             }
 
+            function updateHornetTable(hornets) {
+                const tableBody = document.querySelector('#hornet-table tbody');
+                tableBody.innerHTML = '';
+                hornets.forEach(hornet => {
+                    const row = document.createElement('tr');
+                    const idCell = document.createElement('td');
+                    idCell.textContent = hornet.id;
+                    row.appendChild(idCell);
+                    const killCountCell = document.createElement('td');
+                    killCountCell.textContent = hornet.killCount;
+                    row.appendChild(killCountCell);
+
+                    tableBody.appendChild(row);
+                });
+            }
+
+
             const ws = new WebSocket('ws://localhost:8080/ws/');
 
             //Function trigered when data are reiceve from websocket
@@ -251,6 +278,7 @@
                 drawGrid(data.objects, data.environment.mapDimension + 1);
                 drawSidebar(data.objects[0], data.agents.length);
                 cleanUnusedSprites(data.agents, data.objects);
+                updateHornetTable(data.hornets);
             }
 
             ws.onerror = function (event) {
