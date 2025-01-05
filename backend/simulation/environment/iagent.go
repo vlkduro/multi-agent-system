@@ -29,7 +29,7 @@ type IAgent interface {
 	ID() AgentID
 	Position() *Position
 	Orientation() Orientation
-	GetSyncChan() chan bool
+	GetSyncChan() chan AgentID
 	ToJsonObj() interface{}
 	Start()
 	Percept()

@@ -37,7 +37,7 @@ type Agent struct {
 	orientation envpkg.Orientation
 	env         *envpkg.Environment
 	visionFunc  vision.VisionFunc
-	syncChan    chan bool
+	syncChan    chan envpkg.AgentID
 	speed       int
 	lastPos     *envpkg.Position
 	alive       bool
@@ -50,19 +50,27 @@ func (agt *Agent) Start() {
 	go func() {
 		for {
 			run := <-agt.syncChan
-			if !run || !agt.alive {
-				agt.syncChan <- false
-				break
+			if run != "true" || !agt.alive {
+				agt.syncChan <- agt.id
+				return
 			}
 			fmt.Printf("[%s] === Percieving === [%s]\n", agt.ID(), agt.ID())
 			agt.iagt.Percept()
+
 			fmt.Printf("[%s] === Deliberating === [%s]\n", agt.ID(), agt.ID())
 			agt.iagt.Deliberate()
+
 			fmt.Printf("[%s] === Acting === [%s]\n", agt.ID(), agt.ID())
 			agt.iagt.Act()
-			agt.syncChan <- agt.alive
+
+			var alive envpkg.AgentID
+			if agt.alive {
+				alive = "true"
+			} else {
+				alive = agt.ID()
+			}
+			agt.syncChan <- alive
 		}
-		fmt.Printf("[%s] Stopping Agent\n", agt.ID())
 	}()
 }
 
@@ -70,20 +78,26 @@ func (agt Agent) ID() envpkg.AgentID {
 	return agt.id
 }
 
-func (agt Agent) GetSyncChan() chan bool {
+func (agt Agent) GetSyncChan() chan envpkg.AgentID {
 	return agt.syncChan
 }
 
 func (agt *Agent) Percept() {
+	agt.env.Lock()
 	agt.iagt.Percept()
+	agt.env.Unlock()
 }
 
 func (agt *Agent) Deliberate() {
+	agt.env.Lock()
 	agt.iagt.Deliberate()
+	agt.env.Unlock()
 }
 
 func (agt *Agent) Act() {
+	agt.env.Lock()
 	agt.iagt.Act()
+	agt.env.Unlock()
 }
 
 func (agt Agent) Position() *envpkg.Position {
@@ -168,8 +182,8 @@ func (agt *Agent) goSouthWest() bool {
 
 // https://web.archive.org/web/20171022224528/http://www.policyalmanac.org:80/games/aStarTutorial.htm
 func (agt *Agent) gotoNextStepTowards(pos *envpkg.Position) {
-	// If the position is already occupied and we are near it (by one), we don't move
-	if agt.env.GetAt(pos.X, pos.Y) != nil {
+	// If the position is already occupied by a agent and we are near it (by one), we don't move
+	if _, ok := agt.env.GetAt(pos.X, pos.Y).(envpkg.IAgent); ok {
 		if agt.pos.Near(pos, 1) {
 			return
 		}
@@ -184,24 +198,33 @@ func (agt *Agent) gotoNextStepTowards(pos *envpkg.Position) {
 		pos := chain[i]
 		if agt.pos.X < pos.X {
 			if agt.pos.Y < pos.Y {
+				agt.lastPos = agt.pos
 				agt.goSouthEast()
 			} else if agt.pos.Y > pos.Y {
+				agt.lastPos = agt.pos
 				agt.goNorthEast()
 			} else {
+				agt.lastPos = agt.pos
 				agt.goEast()
 			}
 		} else if agt.pos.X > pos.X {
 			if agt.pos.Y < pos.Y {
+				agt.lastPos = agt.pos
 				agt.goSouthWest()
 			} else if agt.pos.Y > pos.Y {
+				agt.lastPos = agt.pos
+
 				agt.goNorthWest()
 			} else {
+				agt.lastPos = agt.pos
 				agt.goWest()
 			}
 		} else {
 			if agt.pos.Y < pos.Y {
+				agt.lastPos = agt.pos
 				agt.goSouth()
 			} else if agt.pos.Y > pos.Y {
+				agt.lastPos = agt.pos
 				agt.goNorth()
 			}
 		}
@@ -293,7 +316,6 @@ func (agt *Agent) wander() {
 
 func (agt *Agent) getNextWanderingPosition() *envpkg.Position {
 	// We get the accessible surroundings of the agent
-	surroundings := agt.pos.GetNeighbours(agt.speed)
 	nextWanderingOrientation := agt.orientation
 	// Chances : 3/4 th keeping the same orientation, 1/8th changing to the left, 1/8th changing to the right
 	chancesToChangeOrientation := rand.Intn(8)
@@ -374,33 +396,11 @@ func (agt *Agent) getNextWanderingPosition() *envpkg.Position {
 			newObjective.GoSouthWest(nil, nil)
 		}
 	}
-	// If this position is a valid one, we return it
-	if agt.env.GetAt(newObjective.X, newObjective.Y) == nil && !newObjective.Equal(agt.lastPos) {
-		return newObjective
-	}
-	// Else we find the closest available position in surroundings
-	closestPosition := agt.pos.Copy()
-	minDistance := agt.pos.DistanceFrom(newObjective)
-	for _, pos := range surroundings {
-		if agt.env.GetAt(pos.X, pos.Y) == nil && !pos.Equal(agt.lastPos) {
-			continue
-		}
-		distance := pos.DistanceFrom(newObjective)
-		if distance < minDistance {
-			closestPosition = pos.Copy()
-			minDistance = distance
-		}
-	}
-	newObjective = closestPosition
-	// We remember the current position to avoid cycles
-	agt.lastPos = agt.pos.Copy()
 	return newObjective
 }
 
 func (agt *Agent) Kill() {
-	agt.env.RemoveAgent(agt)
 	agt.alive = false
-	agt.pos = nil
 }
 
 func (agt Agent) Type() envpkg.AgentType {
