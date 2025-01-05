@@ -100,6 +100,10 @@ func (server *WebSocketServer) startSimulation(w http.ResponseWriter, r *http.Re
 		case "bye":
 			conn.Close()
 			conn = nil
+		case "addBee":
+			if server.simulation != nil {
+				server.simulation.AddBee()
+			}
 		}
 	}
 }

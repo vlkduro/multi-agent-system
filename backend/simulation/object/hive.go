@@ -2,6 +2,7 @@ package object
 
 import (
 	envpkg "gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/simulation/environment"
+	"gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/utils"
 )
 
 type Hive struct {
@@ -78,6 +79,10 @@ func (h *Hive) Become(h_alt interface{}) {
 }
 
 func (h *Hive) Update() {
+	h.qNectar -= h.env.GetNumberAgent() - utils.GetNumberHornets()
+	if h.qNectar < 0 {
+		h.qNectar = 0
+	}
 	if h.qNectar > 0 {
 		h.qHoney += 1
 		h.qNectar -= 1
@@ -118,4 +123,12 @@ func (h *Hive) Die() {
 
 func (h Hive) TypeObject() envpkg.ObjectType {
 	return envpkg.Hive
+}
+
+func (h Hive) GetHoney() int {
+	return h.qHoney
+}
+
+func (h *Hive) RetreiveHoney(honey int) {
+	h.qHoney -= honey
 }

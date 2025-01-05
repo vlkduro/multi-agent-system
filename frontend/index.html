@@ -11,13 +11,15 @@
 
 <body>
     <h2 id="connection-state">Connection closed</h2>
-    <div style="display:flex; gap:10px; margin-bottom: 50px;">
+    <div class="boutton-group">
         <button id="start-simulation">Start simulation</button>
         <button id="stop-simulation">Stop simulation</button>
         <button id="new-simulation">New simulation</button>
+        <button id="add-bee">Add bee</button>
     </div>
     <div id="nectar-value">
         <p id="nectar"></p>
+        <p id="honey"></p>
     </div>
     <div id="main">
         <div class="sidebar">
@@ -31,6 +33,8 @@
             const errorsDiv = document.getElementById('errors');
             const ocean = document.getElementById('ocean');
             const nectar = document.getElementById('nectar');
+            const honey = document.getElementById('honey');
+            const addBee = document.getElementById('add-bee');
 
             const app = new PIXI.Application();
             await app.init({ background: '#ffffff', width: window.innerHeight * 0.9, height: window.innerHeight * 0.9 });
@@ -89,16 +93,16 @@
                     }
                     if(elem.id.startsWith('Flower')){
                         if(elem.gender == "female"){
-                            if(elem.nectar == 0 && sprite.texture != flowerFemaleBadTexture){
+                            if(elem.nectar < 20 && sprite.texture != flowerFemaleBadTexture){
                                 sprite.texture = flowerFemaleBadTexture;
 
-                            }else if(elem.nectar != 0 && sprite.texture != flowerFemaleGoodTexture){
+                            }else if(elem.nectar > 20 && sprite.texture != flowerFemaleGoodTexture){
                                 sprite.texture = flowerFemaleGoodTexture;
                             }
                         }else{
-                            if(elem.nectar == 0 && sprite.texture != flowerMaleBadTexture){
+                            if(elem.nectar < 20 && sprite.texture != flowerMaleBadTexture){
                                 sprite.texture = flowerMaleBadTexture;
-                            }else if(elem.nectar != 0 && sprite.texture != flowerMaleGoodTexture){
+                            }else if(elem.nectar >20 && sprite.texture != flowerMaleGoodTexture){
                                 sprite.texture = flowerMaleGoodTexture;
                             }
                         }
@@ -218,10 +222,6 @@
                 sprite.height = cellSize;
                 return sprite;
             }
-            function updatePollenLevel(percentage) {
-                const pollenBar = document.getElementById('pollenBar');
-                pollenBar.style.height = `${percentage}%`;
-            }
 
             // Fonction pour nettoyer les sprites qui ne sont plus dans la grille
             function cleanUnusedSprites(agent, objects) {
@@ -243,7 +243,7 @@
 
             function drawSidebar(hive, agentsCount) {
                 if (ocean != null) {
-                    let quantity = hive.quantity_nectar / agentsCount - 10;
+                    let quantity = hive.quantity_honey / agentsCount - 10;
                     if (quantity < 0) {
                         quantity = 0;
                     }
@@ -254,6 +254,9 @@
                 }
                 if (nectar != null) {
                     nectar.textContent = `Nectar: ${hive.quantity_nectar}`;
+                }
+                if (honey != null) {
+                    honey.textContent = `Honey: ${hive.quantity_honey}`;
                 }
             }
 
@@ -290,14 +293,15 @@
 
             document.getElementById('stop-simulation').onclick = () => {
                 ws.send('stop');
-                spritesMap.clear();
-                app.stage.removeChildren();
             }
 
             document.getElementById('new-simulation').onclick = () => {
                 spritesMap.clear();
                 app.stage.removeChildren();
                 ws.send('new');
+            }
+            document.getElementById('add-bee').onclick = () => {
+                ws.send('addBee');
             }
         </script>
     </div>
