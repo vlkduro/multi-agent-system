@@ -51,9 +51,6 @@ func NewHornetAgent(id string, env *envpkg.Environment, syncChan chan envpkg.Age
 // true : hive
 func PriorityTarget(hornet HornetAgent) bool {
 	nbHornet := 0
-	if hornet.killCount >= 5 {
-		return true
-	}
 	for _, seen := range hornet.seenElems {
 		switch elem := seen.Elem.(type) {
 		case *HornetAgent:
@@ -68,7 +65,7 @@ func PriorityTarget(hornet HornetAgent) bool {
 
 func (agt *HornetAgent) Percept() {
 	if agt.pos == nil {
-		chance := rand.Intn(2)
+		chance := rand.Intn(50)
 		if chance == 0 {
 			// either spawns at the top or the bottom or the left or the right
 			chance = rand.Intn(4)

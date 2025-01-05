@@ -239,7 +239,7 @@ func (simu *Simulation) print() {
 	for simu.IsRunning() {
 		startTime := time.Now()
 		fmt.Printf("\rRunning simulation for %vms...  - ", time.Since(startTime).Milliseconds())
-		time.Sleep(time.Second / 60) // 60 fps
+		time.Sleep(time.Second / 3) // 60 fps
 	}
 }
 
