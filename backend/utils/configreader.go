@@ -9,7 +9,7 @@ import (
 )
 
 func getIntAttributeFromConfigFile(attribute string) int {
-	file, err := os.Open("/Users/quentin.v/ai30_valakou_martins_chartier_bidaux/config.yaml")
+	file, err := os.Open("./config.yaml")
 	if err != nil {
 		log.Fatalf("failed to open config file: %v", err)
 	}
@@ -24,7 +24,7 @@ func getIntAttributeFromConfigFile(attribute string) int {
 }
 
 func getFloat64AttributeFromConfigFile(attribute string) float64 {
-	file, err := os.Open("/Users/quentin.v/ai30_valakou_martins_chartier_bidaux/config.yaml")
+	file, err := os.Open("./config.yaml")
 	if err != nil {
 		log.Fatalf("failed to open config file: %v", err)
 	}
@@ -39,7 +39,7 @@ func getFloat64AttributeFromConfigFile(attribute string) float64 {
 }
 
 func getStringAttributeFromConfigFile(attribute string) string {
-	file, err := os.Open("/Users/quentin.v/ai30_valakou_martins_chartier_bidaux/config.yaml")
+	file, err := os.Open("./config.yaml")
 	if err != nil {
 		log.Fatalf("failed to open config file: %v", err)
 	}
@@ -57,6 +57,10 @@ func GetNumberBees() int {
 	return getIntAttributeFromConfigFile("NumberBees")
 }
 
+func GetNumberHornets() int {
+	return getIntAttributeFromConfigFile("NumberHornets")
+}
+
 func GetMaxNectar() int {
 	return getIntAttributeFromConfigFile("MaxNectar")
 }
@@ -70,7 +74,7 @@ func GetNumberFlowerPatches() int {
 }
 
 func GetNumberObjects() int {
-	return getIntAttributeFromConfigFile("NumberObjects")
+	return getIntAttributeFromConfigFile("NumberFlowers") + 1
 }
 
 func GetMapDimension() int {
@@ -79,6 +83,10 @@ func GetMapDimension() int {
 
 func GetBeeAgentVisionRange() float64 {
 	return getFloat64AttributeFromConfigFile("BeeAgentVisionRange")
+}
+
+func GetHornetAgentVisionRange() float64 {
+	return getFloat64AttributeFromConfigFile("HornetAgentVisionRange")
 }
 
 func GetExName() string {

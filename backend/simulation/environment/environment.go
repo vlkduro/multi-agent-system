@@ -34,7 +34,18 @@ func (env *Environment) GetAt(x int, y int) interface{} {
 	if x < 0 || y < 0 || x >= mapDimension || y >= mapDimension {
 		return nil
 	}
-	return env.grid[x][y]
+	elem := env.grid[x][y]
+	if elem == nil {
+		return nil
+	}
+	switch obj := elem.(type) {
+	case IAgent:
+		return obj
+	case IObject:
+		return obj
+	default:
+		return obj
+	}
 }
 
 func (env *Environment) GetMap() [][]interface{} {
@@ -49,14 +60,35 @@ func (env *Environment) IsValidPosition(x int, y int) bool {
 	return x >= 0 && y >= 0 && x < mapDimension && y < mapDimension
 }
 
+// Returns true is added on grid, false if not
 func (env *Environment) AddAgent(agt IAgent) bool {
 	pos := agt.Position()
-	if env.GetAt(pos.X, pos.Y) == nil {
-		//return false
-		env.grid[pos.X][pos.Y] = agt
-	}
 	env.agts = append(env.agts, agt)
+	if pos != nil && env.GetAt(pos.X, pos.Y) == nil {
+		env.grid[pos.X][pos.Y] = agt
+		return false
+	}
 	return true
+}
+
+func (env *Environment) RemoveAgent(agt IAgent) {
+	for i, a := range env.agts {
+		if a.ID() == agt.ID() {
+			env.grid[agt.Position().X][agt.Position().Y] = nil
+			env.agts = append(env.agts[:i], env.agts[i+1:]...)
+			break
+		}
+	}
+}
+
+func (env *Environment) RemoveObject(obj IObject) {
+	for i, a := range env.objs {
+		if a.ID() == obj.ID() {
+			env.objs = append(env.objs[:i], env.objs[i+1:]...)
+			env.grid[obj.Position().X][obj.Position().Y] = nil
+			break
+		}
+	}
 }
 
 func (env *Environment) AddObject(obj IObject) bool {
@@ -97,9 +129,10 @@ func (env *Environment) PathFinding(start *Position, end *Position, numberMoves 
 	startNode := &node{position: start.Copy(), cost: 0, heuristic: start.ManhattanDistance(end)}
 	openList = append(openList, startNode)
 
-	// We allow pathfinding to last 50 iterations
+	// We allow pathfinding to last 3 times the number of moves
 	cpt := 0
-	for len(openList) > 0 && cpt < numberMoves*2 {
+	for len(openList) > 0 && cpt < numberMoves*3 {
+		//fmt.Printf("%d ", cpt)
 		currentNode := openList[0]
 		currentIndex := 0
 		for index, node := range openList {
@@ -126,7 +159,7 @@ func (env *Environment) PathFinding(start *Position, end *Position, numberMoves 
 				continue
 			}
 
-			if env.GetAt(neighbor.X, neighbor.Y) != nil {
+			if _, ok := env.GetAt(neighbor.X, neighbor.Y).(IAgent); ok {
 				continue
 			}
 
@@ -137,9 +170,13 @@ func (env *Environment) PathFinding(start *Position, end *Position, numberMoves 
 		}
 		cpt++
 	}
+	//fmt.Println("")
 
 	path := []*Position{}
-	currentNode := openList[len(openList)-1]
+	var currentNode *node = nil
+	if len(openList) > 0 {
+		currentNode = openList[len(openList)-1]
+	}
 	for currentNode != nil {
 		path = append([]*Position{currentNode.position.Copy()}, path...)
 		currentNode = currentNode.parent
@@ -168,4 +205,8 @@ func (env *Environment) ToJsonObj() interface{} {
 	}
 
 	return EnvironmentJson{MapDimension: mapDimension, Grid: grid}
+}
+
+func (env *Environment) GetHive() IObject {
+	return env.objs[0]
 }
