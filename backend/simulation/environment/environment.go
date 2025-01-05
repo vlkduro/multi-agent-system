@@ -210,3 +210,7 @@ func (env *Environment) ToJsonObj() interface{} {
 func (env *Environment) GetHive() IObject {
 	return env.objs[0]
 }
+
+func (env *Environment) GetNumberAgent() int {
+	return len(env.agts)
+}

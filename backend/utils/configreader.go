@@ -100,3 +100,7 @@ func GetHornetAgentVisionRange() float64 {
 func GetExName() string {
 	return getStringAttributeFromConfigFile("ExName")
 }
+
+func GetBeeCreationCost() int {
+	return getIntAttributeFromConfigFile("BeeCreationCost")
+}
