@@ -30,6 +30,7 @@ type BeeAgent struct {
 	job                job
 	seenElems          []*vision.SeenElem
 	availablePositions []envpkg.Position
+	latestFlowerSeen   *obj.Flower
 }
 
 type BeeAgentJson struct {
@@ -103,6 +104,7 @@ func (agt *BeeAgent) foragerDeliberation() {
 	if agt.hasFlowerObjective() {
 		return
 	}
+	goesToHive := false
 	if agt.nectar > 0 {
 		decision := rand.Intn(101)
 		chancesToGoToHive := agt.nectar / agt.maxNectar * 100
@@ -111,13 +113,12 @@ func (agt *BeeAgent) foragerDeliberation() {
 			agt.objective.TargetedElem = agt.hive
 			agt.objective.Position = agt.hive.Position().Copy()
 			agt.objective.Type = Hive
-			return
+			goesToHive = true
 		}
 	}
 	var closestHornet *HornetAgent = nil
 	hasAlreadySeenCloserFlower := false
 	for _, seen := range agt.seenElems {
-
 		if seen.Elem != nil {
 			switch elem := (seen.Elem).(type) {
 			case *HornetAgent:
@@ -126,14 +127,21 @@ func (agt *BeeAgent) foragerDeliberation() {
 			case *obj.Flower:
 				if !hasAlreadySeenCloserFlower {
 					if elem.GetNectar() != 0 {
-
-						fmt.Printf("[%s] Flower seen, going to it !\n", agt.id)
-						agt.objective.TargetedElem = elem
-						agt.objective.Position = elem.Position().Copy()
-						agt.objective.Type = Flower
-						hasAlreadySeenCloserFlower = true
+						if goesToHive {
+							if agt.latestFlowerSeen == nil {
+								fmt.Printf("[%s] Flower seen, preparing to tell hive !\n", agt.id)
+								agt.latestFlowerSeen = elem
+							}
+							return
+						} else {
+							fmt.Printf("[%s] %v seen, going to it !\n", agt.id, elem.ID())
+							agt.objective.TargetedElem = elem
+							agt.objective.Position = elem.Position().Copy()
+							agt.objective.Type = Flower
+							hasAlreadySeenCloserFlower = true
+						}
 					} else {
-						fmt.Printf("[%s] Flower seen with no nectar, ignoring it !\n", agt.id)
+						fmt.Printf("[%s] %v seen with no nectar, ignoring it !\n", agt.id, elem.ID())
 					}
 				}
 				//default:
@@ -184,7 +192,7 @@ func (agt *BeeAgent) foragerAction() {
 					if agt.pos.Equal(objf.Position) {
 						agt.objective.Type = None
 					}
-					fmt.Printf("[%s] GO next position\n", agt.id)
+					fmt.Printf("[%s] Go next position : %v \n", agt.id, objf.Position)
 				}
 			}
 		case Flower:
@@ -192,19 +200,35 @@ func (agt *BeeAgent) foragerAction() {
 				if agt.pos.Near(objf.Position, 1) {
 					agt.nectar += flower.RetreiveNectar(agt.maxNectar - agt.nectar)
 					agt.objective.Type = None
-					fmt.Printf("[%s] Nectar stealed %v\n", agt.id, objf.TargetedElem.(envpkg.IObject).ID())
+					fmt.Printf("[%s] Nectar taken %v\n", agt.id, objf.TargetedElem.(envpkg.IObject).ID())
 				} else {
-					fmt.Printf("[%s] Going to flower %v %v\n", agt.id, objf.Position, agt.pos)
-					agt.gotoNextStepTowards(objf.Position.Copy())
+					fmt.Printf("[%s] Going to flower : %v %v\n", agt.id, flower.ID(), flower.Position())
+					agt.gotoNextStepTowards(flower.Position().Copy())
 				}
 			}
 		case Hive:
 			if agt.pos.Near(objf.Position, 1) {
 				if hive, ok := objf.TargetedElem.(*obj.Hive); ok {
-					hive.StoreNectar(agt.nectar)
-					agt.nectar = 0
-					agt.objective.Type = None
-					fmt.Printf("[%s] Nectar stored %v\n", agt.id, objf.TargetedElem.(envpkg.IObject).ID())
+					if agt.nectar > 0 {
+						hive.StoreNectar(agt.nectar)
+						agt.nectar = 0
+						agt.objective.Type = None
+						fmt.Printf("[%s] Nectar stored %v\n", agt.id, objf.TargetedElem.(envpkg.IObject).ID())
+					}
+					foundFlower := agt.hive.GetLatestFlowerPos()
+					// If the hive has a flower to tell the agent
+					if foundFlower != nil {
+						agt.objective.Position = foundFlower.Position().Copy()
+						agt.objective.Type = Flower
+						agt.objective.TargetedElem = foundFlower
+						fmt.Printf("[%s] Hive has a flower to tell : %v\n", agt.id, foundFlower.ID())
+					}
+					// If the agent has seen a flower and is near the hive
+					if agt.latestFlowerSeen != nil {
+						fmt.Printf("[%s] I told Hive my flower : %v\n", agt.id, agt.latestFlowerSeen.ID())
+						agt.hive.AddFlower(agt.latestFlowerSeen)
+						agt.latestFlowerSeen = nil
+					}
 				}
 			} else {
 				fmt.Printf("[%s] Going to hive %v\n", agt.id, objf.TargetedElem.(envpkg.IObject).ID())
