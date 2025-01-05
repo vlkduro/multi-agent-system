@@ -2,18 +2,19 @@ package object
 
 import (
 	envpkg "gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/simulation/environment"
+	"gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux/backend/utils"
 )
 
 type Hive struct {
-	envpkg.IObject
-	id       envpkg.ObjectID
-	Pos      *envpkg.Position
-	qHoney   int
-	qNectar  int
-	qPollen  int
-	queen    bool
-	minHoney int
-	env      *envpkg.Environment
+	id          envpkg.ObjectID
+	Pos         *envpkg.Position
+	qHoney      int
+	qNectar     int
+	qPollen     int
+	queen       bool
+	minHoney    int
+	env         *envpkg.Environment
+	flowerStack *utils.Stack[*Flower]
 }
 
 type HiveJson struct {
@@ -28,14 +29,15 @@ type HiveJson struct {
 
 func NewHive(id string, pos *envpkg.Position, qHoney int, qNectar int, qPollen int, minHoney int, environment *envpkg.Environment) *Hive {
 	return &Hive{
-		id:       envpkg.ObjectID(id),
-		Pos:      pos.Copy(),
-		qHoney:   qHoney,
-		qNectar:  qNectar,
-		qPollen:  qPollen,
-		queen:    true,
-		minHoney: minHoney,
-		env:      environment,
+		id:          envpkg.ObjectID(id),
+		Pos:         pos.Copy(),
+		qHoney:      qHoney,
+		qNectar:     qNectar,
+		qPollen:     qPollen,
+		queen:       true,
+		minHoney:    minHoney,
+		env:         environment,
+		flowerStack: utils.NewStack[*Flower](),
 	}
 }
 
@@ -118,4 +120,16 @@ func (h *Hive) Die() {
 
 func (h Hive) TypeObject() envpkg.ObjectType {
 	return envpkg.Hive
+}
+
+func (h *Hive) AddFlower(flower *Flower) {
+	h.flowerStack.Push(flower)
+}
+
+func (h *Hive) GetLatestFlowerPos() *Flower {
+	if h.flowerStack.IsEmpty() {
+		return nil
+	}
+	flower, _ := h.flowerStack.Pop()
+	return flower
 }
