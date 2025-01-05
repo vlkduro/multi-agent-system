@@ -87,6 +87,22 @@
                     if (elem.orientation){
                         changeOrientation(sprite, elem.orientation);
                     }
+                    if(elem.id.startsWith('Flower')){
+                        if(elem.gender == "female"){
+                            if(elem.nectar == 0 && sprite.texture != flowerFemaleBadTexture){
+                                sprite.texture = flowerFemaleBadTexture;
+
+                            }else if(elem.nectar != 0 && sprite.texture != flowerFemaleGoodTexture){
+                                sprite.texture = flowerFemaleGoodTexture;
+                            }
+                        }else{
+                            if(elem.nectar == 0 && sprite.texture != flowerMaleBadTexture){
+                                sprite.texture = flowerMaleBadTexture;
+                            }else if(elem.nectar != 0 && sprite.texture != flowerMaleGoodTexture){
+                                sprite.texture = flowerMaleGoodTexture;
+                            }
+                        }
+                    }
                 } else {
                     let sprite;
                     switch (true) {
@@ -274,9 +290,13 @@
 
             document.getElementById('stop-simulation').onclick = () => {
                 ws.send('stop');
+                spritesMap.clear();
+                app.stage.removeChildren();
             }
 
             document.getElementById('new-simulation').onclick = () => {
+                spritesMap.clear();
+                app.stage.removeChildren();
                 ws.send('new');
             }
         </script>
