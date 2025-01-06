@@ -283,7 +283,7 @@ func (agt *Agent) wander() {
 			}
 		}
 		// If the position is already occupied by something, we find the closest available position
-		if agt.env.GetAt(keepAwayFromBorderPos.X, keepAwayFromBorderPos.Y) != nil {
+		if _, ok := agt.env.GetAt(keepAwayFromBorderPos.X, keepAwayFromBorderPos.Y).(envpkg.IAgent); ok {
 			surroundings := agt.pos.GetNeighbours(agt.speed)
 			closestPosition := agt.pos.Copy()
 			minDistance := agt.pos.DistanceFrom(keepAwayFromBorderPos)
