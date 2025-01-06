@@ -9,8 +9,8 @@
 ## Sommaire
 
 - [Installation](#installation)
-- [Architecture](#architecture)
 - [Conception](#conception)
+- [Architecture](#architecture)
 - [Sources](#sources)
 
 ## Installation
@@ -36,17 +36,6 @@ git clone git@gitlab.utc.fr:bidauxal/ai30_valakou_martins_chartier_bidaux.git
 ```
 go run .\cmd\launch-server.go
 ```
-
-## Architecture
-
-`Agent` et `Object` sont des interfaces de même stabilité que l'environement. C'est à dire que lorsque une des interfaces change, `Environment` change également. Ils sont donc dans le même package pour l'instant
-
-> Remarque : mettre `Agent` (i.e `Object`) dans le package `agent` (i.e `object`) crée une boucle de dépendance :
-> `Agent` appelle le package `environment` et `Environment` appelle le package `agent`, par défaut le compilateur interdit les dépendances cycliques
-
-### Architecture logicielle en langage UML
-
-![Première version](/architecture/projet_uml.png "Architecture du projet en UML")
 
 ## Conception
 
@@ -97,6 +86,17 @@ On pourrait proposer à l'utilisateur de gérer la proportion d'abeilles product
 Améliorations possibles :
 
 - La ruche peut être déplacée contre une grosse quantité de miel (proportionnel au nombre d’habitants)
+
+### Modélisation UML
+
+![Première version](/architecture/projet_uml.png "Architecture du projet en UML")
+
+## Architecture
+
+`Agent` et `Object` sont des interfaces de même stabilité que l'environement. C'est à dire que lorsque une des interfaces change, `Environment` change également. Ils sont donc dans le même package pour l'instant
+
+> Remarque : mettre `Agent` (i.e `Object`) dans le package `agent` (i.e `object`) crée une boucle de dépendance :
+> `Agent` appelle le package `environment` et `Environment` appelle le package `agent`, par défaut le compilateur interdit les dépendances cycliques
 
 ## Sources
 
