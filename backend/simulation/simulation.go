@@ -145,6 +145,7 @@ func (simu *Simulation) Run(maWs *websocket.Conn) {
 	}
 	log.Printf("Simulation started")
 	simu.Unlock()
+	tps := utils.GetTPS()
 
 	// Démarrage du micro-service de Log
 	go simu.log()
@@ -212,7 +213,7 @@ func (simu *Simulation) Run(maWs *websocket.Conn) {
 			}
 		}
 		fmt.Printf("\n\n Tour terminé %d\n\n", j)
-		time.Sleep(time.Second / 3) // 100 Tour / Sec
+		time.Sleep(time.Second / time.Duration(tps))
 		j++
 	}
 
@@ -239,9 +240,10 @@ func (simu *Simulation) log() {
 	if (simu.ws) == nil {
 		return
 	}
+	logPerSecond := utils.GetLogPerSecond()
 	for simu.IsRunning() {
 		simu.sendState()
-		time.Sleep(time.Second / 3) // 60 fps
+		time.Sleep(time.Second / time.Duration(logPerSecond))
 	}
 }
 
@@ -254,10 +256,11 @@ func (simu *Simulation) sendState() {
 
 // Intention d'en faire un microservice
 func (simu *Simulation) print() {
+	logPerSecond := utils.GetLogPerSecond()
 	for simu.IsRunning() {
 		startTime := time.Now()
 		fmt.Printf("\rRunning simulation for %vms...  - \n", time.Since(startTime).Milliseconds())
-		time.Sleep(time.Second / 3) // 60 fps
+		time.Sleep(time.Second / time.Duration(logPerSecond))
 	}
 }
 
