@@ -94,7 +94,7 @@ Améliorations possibles :
 
 ### Modélisation UML
 
-![](/docs/conception/projet_uml.png "Modélisation du projet en UML")
+![](/docs/conception/simu_bees_uml_v2.png "Modélisation du projet en UML")
 
 ## Architecture
 
