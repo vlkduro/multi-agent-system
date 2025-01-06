@@ -141,6 +141,13 @@ Améliorations possibles :
 - [« Ce frelon n'aurait pas dû se frotter à ces abeilles »](https://www.youtube.com/watch?v=N_AO8XvAZgQ), National Geographic Wild France, 28/04/2021 (visionnée le 28/11/2024)
 - [« Comment les abeilles parviennent-elles à se défendre ? »](https://www.nationalgeographic.fr/video/animaux/comment-les-abeilles-parviennent-elles-a-se-defendre), National Geographic, 15/04/2023 (visionnée le 28/11/2024)
 
-### Implémentation vision et pathfinding
+### Autres
 
+- https://wildflowermeadows.com/2024/01/how-far-do-honeybees-fly/
+- https://www.miel-lerucherdelours.fr/en/content/67-the-sunflowers
+- https://web.archive.org/web/20171022224528/http://www.policyalmanac.org:80/games/aStarTutorial.htm
+- https://www.youtube.com/watch?v=PSlWb90JJx4
+- https://www.geeksforgeeks.org/check-whether-a-given-point-lies-inside-a-triangle-or-not/
+- https://stackoverflow.com/questions/27516387/what-is-the-correct-way-to-find-the-min-between-two-integers-in-go
+- https://dev.to/natamacm/round-numbers-in-go-5c01
 -

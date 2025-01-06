@@ -44,8 +44,6 @@ Nombre d'alvéoles dans une ruche ?
 
 Passer la fleur en agent (Percept de la place dispo dans un périmètre pour se reproduire)
 
-https://www.miel-direct.fr/bilan-annuel-colonie/ :
-
 - butineuse peut prélever 40 mg de nectar, 25 sorties pour remplir une cellule
 - Chaque abeille peut transporter une pelote de pollen sur chacune de ses pattes arrières (15 mg au total).
 - la production de miel représente 60 kg environ par colonie et par an. Il en faut 40 kg pour couvrir les besoins internes en nourriture des abeilles. Selon les périodes de l’année, leurs besoins ne sont pas les mêmes. Lors de la saison de production de la gelée royale, les nourricières ont besoin de - 500 g de miel par jour. Les 20 kg supplémentaires sont du surplus que l’apiculteur peut se permettre de prélever.
