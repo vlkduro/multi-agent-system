@@ -1,14 +1,14 @@
 # Server
-TPS: 10
-LogPerSecond: 60
+TPS: 20
+LogPerSecond: 50
 
 # Environment
-MapDimension: 30
+MapDimension: 25
 
 # Bees
-NumberBees: 20
+NumberBees: 10
 BeeAgentVisionRange: 4.0
-MaxNectar: 70 # in mg -> https://wildflowermeadows.com/2024/01/how-far-do-honeybees-fly/
+MaxNectar: 40 # in mg -> https://wildflowermeadows.com/2024/01/how-far-do-honeybees-fly/
 BeeCreationCost: 20
 
 # Hornets
@@ -16,7 +16,7 @@ NumberHornets: 1
 HornetAgentVisionRange: 4.0
 
 # Flowers
-NumberFlowers: 20
+NumberFlowers: 10
 NumberFlowerPatches: 3
 MaxNectarHeld: 80 # in mg, defined as this in the code
-ProducedNectarPerTurn: 6 # in mg -> https://www.miel-lerucherdelours.fr/en/content/67-the-sunflowers
+ProducedNectarPerTurn: 3 # in mg -> https://www.miel-lerucherdelours.fr/en/content/67-the-sunflowers

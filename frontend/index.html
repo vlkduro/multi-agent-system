@@ -142,6 +142,8 @@
                             sprite.height = cellSize * 1.5;
                             sprite.zIndex = 100;
                             // AD hornet row to table
+                            if(document.getElementById(elem.id) == null){
+
                             let tbody = document.getElementById('hornetBody');
                             let row = tbody.insertRow(-1);
                             row.id = elem.id;
@@ -149,7 +151,7 @@
                             let cell2 = row.insertCell(1);
                             cell1.innerHTML = elem.id;
                             cell2.innerHTML = 0;
-
+                            }
                             break;
                         case elem.id.startsWith('Flower'):
                             sprite = getSpriteFromFlower(elem, cellSize);
