@@ -30,10 +30,16 @@ func (p *Position) move(grid [][]interface{}, newX int, newY int, elem interface
 		if _, ok := grid[newX][newY].(IAgent); ok {
 			return false
 		}
-		if grid[p.X][p.Y] == elem {
-			grid[p.X][p.Y], grid[newX][newY] = nil, grid[p.X][p.Y]
+		if _, ok := grid[newX][newY].(IObject); ok {
+			if grid[p.X][p.Y] == elem {
+				grid[p.X][p.Y] = nil
+			}
 		} else {
-			grid[newX][newY] = elem
+			if grid[p.X][p.Y] == elem {
+				grid[p.X][p.Y], grid[newX][newY] = nil, grid[p.X][p.Y]
+			} else {
+				grid[newX][newY] = elem
+			}
 		}
 	}
 	// Not a simulation

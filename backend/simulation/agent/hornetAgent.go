@@ -79,11 +79,6 @@ func (h *HornetAgent) GetAllAgentCount() int {
 // true : hive
 func PriorityTarget(hornet HornetAgent) bool {
 	nbHornet := 0
-	// if a hornet killed at least half of the bees, he will seek for the hive
-	if hornet.killCount >= hornet.GetBeeAgentCount()/2 {
-		fmt.Printf("[%s] has killed most bees ! : [%d]/[%d] \n", hornet.ID(), hornet.killCount, hornet.GetBeeAgentCount())
-		return true
-	}
 	for _, seen := range hornet.seenElems {
 		switch elem := seen.Elem.(type) {
 		case *HornetAgent:
