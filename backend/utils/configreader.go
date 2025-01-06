@@ -53,6 +53,14 @@ func getStringAttributeFromConfigFile(attribute string) string {
 	return result[attribute]
 }
 
+func GetTPS() int {
+	return getIntAttributeFromConfigFile("TPS")
+}
+
+func GetLogPerSecond() int {
+	return getIntAttributeFromConfigFile("LogPerSecond")
+}
+
 func GetNumberBees() int {
 	return getIntAttributeFromConfigFile("NumberBees")
 }
