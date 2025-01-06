@@ -288,7 +288,7 @@ func (agt *Agent) wander() {
 			closestPosition := agt.pos.Copy()
 			minDistance := agt.pos.DistanceFrom(keepAwayFromBorderPos)
 			for _, pos := range surroundings {
-				if agt.env.GetAt(pos.X, pos.Y) != nil {
+				if _, ok := agt.env.GetAt(pos.X, pos.Y).(envpkg.AgentID); ok {
 					continue
 				}
 				distance := pos.DistanceFrom(keepAwayFromBorderPos)
