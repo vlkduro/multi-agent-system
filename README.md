@@ -8,11 +8,36 @@
 
 ## Sommaire
 
-- [Architecture actuelle](#architecture-actuelle)
+- [Installation](#installation)
+- [Architecture](#architecture)
 - [Conception](#conception)
 - [Sources](#sources)
 
-## Architecture actuelle
+## Installation
+
+Depuis un terminal effectuer les étapes suivantes.
+
+### Cloner le projet
+
+Avec HTTPS :
+
+```
+git clone https://gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux.git
+```
+
+ou avec SSH :
+
+```
+git clone git@gitlab.utc.fr:bidauxal/ai30_valakou_martins_chartier_bidaux.git
+```
+
+### Lancer la simulation depuis la racine du projet
+
+```
+go run .\cmd\launch-server.go
+```
+
+## Architecture
 
 `Agent` et `Object` sont des interfaces de même stabilité que l'environement. C'est à dire que lorsque une des interfaces change, `Environment` change également. Ils sont donc dans le même package pour l'instant
 
