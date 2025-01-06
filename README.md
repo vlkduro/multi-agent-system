@@ -17,13 +17,14 @@
 
 ## Résultat
 
-### Lien vers la présentation de la soutenance
+### Présentation de la soutenance
 
-[Google slides](https://docs.google.com/presentation/d/1iAHNwlmZweJUNYqqZqQWgXstjSIhNtLi2vJ8IsF_iug/edit?usp=sharing)
+[Présentation en pdf](/doc/Apis%20Mellifera%20vs%20Vespa%20crabo%20Soutenance.pdf)
 
-### Capture d'écran de la démo
+### Captures d'écran de la démo
 
-![Capture d'écran de la démo](/doc/)
+![Capture d'écran de la démo](/doc/img/Screenshot%202025-01-06%20at%2023-26-07%20AI30%20WebSocket.png)
+![Capture d'écran de la démo](/doc/img/Screenshot%202025-01-06%20at%2023-30-53%20AI30%20WebSocket.png)
 
 ## Installation
 
@@ -48,6 +49,10 @@ git clone git@gitlab.utc.fr:bidauxal/ai30_valakou_martins_chartier_bidaux.git
 ```
 go run .\cmd\launch-server.go
 ```
+
+### Ouvrir l'interface dans un navigateur
+
+http://localhost:8000/
 
 ## Conception
 
