@@ -31,12 +31,13 @@
     <div id="nectar-value">
         <p id="nectar"></p>
         <p id="honey"></p>
+        <div >
+            <p>Agents count: <span id="agentsCount"></span></p>
+        </div>
     </div>
     <div id="main">
         <div class="sidebar">
             <div class="ocean" id="ocean">
-                <div class="wave"></div>
-                <div class="wave"></div>
             </div>
         </div>
         <script type="module">
@@ -46,6 +47,7 @@
             const nectar = document.getElementById('nectar');
             const honey = document.getElementById('honey');
             const addBee = document.getElementById('add-bee');
+            const count = document.getElementById('agentsCount');
 
             const app = new PIXI.Application();
             await app.init({ background: '#ffffff', width: window.innerHeight * 0.9, height: window.innerHeight * 0.9 });
@@ -142,6 +144,8 @@
                             sprite.height = cellSize * 1.5;
                             sprite.zIndex = 100;
                             // AD hornet row to table
+                            if(document.getElementById(elem.id) == null){
+
                             let tbody = document.getElementById('hornetBody');
                             let row = tbody.insertRow(-1);
                             row.id = elem.id;
@@ -149,7 +153,7 @@
                             let cell2 = row.insertCell(1);
                             cell1.innerHTML = elem.id;
                             cell2.innerHTML = 0;
-
+                            }
                             break;
                         case elem.id.startsWith('Flower'):
                             sprite = getSpriteFromFlower(elem, cellSize);
@@ -297,12 +301,9 @@
 
             function drawSidebar(hive, agentsCount) {
                 if (ocean != null) {
-                    let quantity = hive.quantity_honey / agentsCount - 10;
+                    let quantity = hive.quantity_honey;
                     if (quantity < 0) {
                         quantity = 0;
-                    }
-                    if (quantity > 90) {
-                        quantity = 90;
                     }
                     ocean.style.height = `${quantity}%`;
                 }
@@ -325,6 +326,7 @@
                 drawGrid(data.objects, data.environment.mapDimension + 1);
                 drawSidebar(data.objects[0], data.agents.length);
                 cleanUnusedSprites(data.agents, data.objects);
+                count.textContent = data.agents.length;
             }
 
             ws.onerror = function (event) {
