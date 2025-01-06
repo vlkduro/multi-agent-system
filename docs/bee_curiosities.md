@@ -1,5 +1,13 @@
 # Curiosités sur les abeilles
 
+L'_Api Mellifera_ a un cycle de vie de 40 jours. Durant sa vie, elle change de métiers plusieurs fois, dans l'ordre : (nettoyeuse, nourice, architecte, faiseuse de miel, gardienne => METIERS DE RUCHE), butineuse.
+L'abeille vient au monde adulte, avant cela elle est à l'état de larve dans une alvéole.
+Les 28 premiers jours de sa vie, elle a un métier de ruche et passe les 12 derniers jours de sa vie en tant que butineuse (seul métier lui permettant de sortir de la ruche).
+Il faut une certaine quantité de miel par jour à la ruche pour survivre.
+La reine reste toujours dans la ruche. Une butineuse a une capacité de nectar et de pollen maximum qu'elle peut transporter jusqu'à la ruche.
+Une butineuse rentre à la ruche à partir d'un certain niveau de nectar.
+La production de miel nécessite une certaine quantité de nectar et un certain nombre d'abeilles d'intérieur.
+
 ### Notes
 
 #### _Apis Mellifera_
