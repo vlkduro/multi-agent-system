@@ -108,13 +108,13 @@ Améliorations possibles :
 - [« The Waggle Dance of the Honeybee »](https://www.youtube.com/watch?v=bFDGPgXtK-U), Georgia Tech College of Computing, 03/02/2011 (visionnée le 28/11/2024).
 - [« Bee Dance Language - the linguistics behind animal language »](https://www.youtube.com/watch?v=pb1lRI-YePU), NativLang, 20/12/2014 (visionnée le 28/11/2024)
 - [« Les moyens de communication impressionnants des abeilles »](https://www.nationalgeographic.fr/video/animaux/les-moyens-de-communication-impressionnants-des-abeilles), National Geographic, 14/09/2023 (visionnée le 28/11/2024)
-- https://www.youtube.com/watch?v=Cylim87fFgU (pas encore visionnée)
+- [« Honey bees perfect their waggle dances by learning from elders »](https://www.youtube.com/watch?v=Cylim87fFgU), Science Magazine, 25/04/2023 (à visionner).
 
 ### Généralités et apiculture
 
 - Podcast Le bruit de la ruche (Saison 1, épisodes 1 à 5 écoutés le 28/11/2024)
 - Documentaire « Des abeilles et des hommes - Et si les abeilles disparaissaient », Markus Imhoof, 2012 (visionné le 28/11/2024)
-- http://rucherecole68.thann.free.fr/Calendrier%20apicole/des_abeilles_des_chiffres.pdf (consulté le 02/12/2024)
+- Frédéric Schubnel, Robert Hummel, Maurice Feltin, [« Des abeilles et des chiffres »](http://rucherecole68.thann.free.fr/Calendrier%20apicole/des_abeilles_des_chiffres.pdf), Syndicat des apiculteurs de Thann et environs, 09/2019 (consulté le 02/12/2024).
 - https://bee2bee.com.au/the-different-job-titles-of-a-worker-bee/ (consulté le 02/12/2024)
 - https://www.miel-direct.fr/bilan-annuel-colonie/ (consulté le 02/12/2024)
 - https://www.theguardian.com/environment/2023/apr/02/bees-intelligence-minds-pollination (consulté le 28/11/2024)
@@ -137,3 +137,7 @@ Améliorations possibles :
 - [« Le redoutable système de défense de l'abeille japonaise face à un frelon »](https://www.youtube.com/watch?v=bDHWv8_-f4U), National Geographic Wild France, 21/11/2020 (visionnée le 28/11/2024)
 - [« Ce frelon n'aurait pas dû se frotter à ces abeilles »](https://www.youtube.com/watch?v=N_AO8XvAZgQ), National Geographic Wild France, 28/04/2021 (visionnée le 28/11/2024)
 - [« Comment les abeilles parviennent-elles à se défendre ? »](https://www.nationalgeographic.fr/video/animaux/comment-les-abeilles-parviennent-elles-a-se-defendre), National Geographic, 15/04/2023 (visionnée le 28/11/2024)
+
+### Implémentation vision et pathfinding
+
+-
