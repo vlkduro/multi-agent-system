@@ -71,29 +71,26 @@ La production de miel nécessite une certaine quantité de nectar et un certain 
 
 ### Règles
 
-- Une abeille vit dans une ruche
-- Une abeille vit 40 jours
-- Une abeille a trois métiers au cours de sa vie : ouvrière, gardienne et butineuse
-- Une abeille est ouvrière ou gardienne pendant 28 jours
-- Une abeille est butineuse jusqu'à 12 jours à la fin de sa vie, seul métier lui permettant de sortir de la ruche
-- Une butineuse trouve des fleurs à butiner
-- Une butineuse avec sa capacité de nectar au maximum rentre déposer le nectar et le pollen à la ruche
-- Une butineuse qui rencontre une fleur retient sa position
-- Une butineuse connaissant la position d’au moins une fleur partage ses connaissances aux autres butineuses
-- Une butineuse peut butiner une fleur à la fois et une fleur ne peut être butinée que par une butineuse à la fois
-- Une gardienne reste à la ruche et ne produit pas de miel
-- Une gardienne alerte toutes les abeilles de la ruche lors d'une attaque de frelon
-- Une ouvrière transforme le nectar en miel
-- Les abeilles fuient les frelons (mais défendent la colonie au prix de leur vie)
-- La ruche contient une reine qui produit des abeilles en consommant du miel
-- La ruche meurt si elle n’a pas suffisamment de miel par jour.
-- La ruche produit une quantité de miel proportionnelle à la quantité de miel amenée par les butineuses et le nombre d'abeilles d'intérieur.
-- Une ruche peut tuer un frelon si il y a suffisamment d’abeilles à l'intérieur (trouver le ratio en ligne)
-- Un frelon chasse les abeilles
-- Un frelon cherche les ruches d’abeilles
-- Suffisamment de frelons peuvent tuer la reine
-- Un frelon ayant tué suffisemment d'abeilles se dirigera vers la ruche
-- Un frelon peut environner des fleurs, suivre des abeilles ou environner la ruche
+- Une abeille vit dans une ruche.
+- Une abeille a trois métiers au cours de sa vie : ouvrière, gardienne, butineuse.
+- Une butineuse est la seule pouvant sortir de la ruche.
+- Une butineuse trouve des fleurs à butiner.
+- Une butineuse dépose le nectar à la ruche en fonction de la quantité qu’elle peut transporter.
+- Une butineuse qui rencontre une fleur retient sa position.
+- Une butineuse connaissant la position d’au moins une fleur partage ses connaissances aux autres butineuses.
+- Une butineuse peut butiner une fleur à la fois et une fleur ne peut être butinée que par une butineuse à la fois.
+- Une gardienne reste à la ruche et ne produit pas de miel.
+- Une gardienne alerte toutes les abeilles de la ruche lors d'une attaque de frelon.
+- Une ouvrière transforme le nectar en miel.
+- Les abeilles fuient les frelons (mais défendent la colonie au prix de leur vie).
+- La ruche contient une reine qui produit des abeilles en consommant du miel.
+- La ruche meurt si elle n’a plus de reine.
+- Une ruche peut tuer un frelon si il y a suffisamment d’abeilles à l'intérieur.
+- Un frelon chasse les abeilles.
+- Un frelon cherche les ruches d’abeilles.
+- Suffisamment de frelons peuvent tuer la reine.
+- Un frelon ayant tué suffisamment d'abeilles se dirigera vers la ruche.
+- Un frelon peut environner des fleurs, suivre des abeilles ou environner la ruche.
 
 On pourrait proposer à l'utilisateur de gérer la proportion d'abeilles productrices et exploratrices en temps réel (chaque abeille ayant un coût en miel pour la ruche).
 
