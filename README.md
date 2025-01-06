@@ -81,10 +81,6 @@ Pour répondre à cette problématique, il nous faut simuler des abeilles à mie
 - La ruche meurt si elle n’a plus de reine.
 - Une ruche peut tuer un frelon si il y a suffisamment d’abeilles à l'intérieur.
 - Un frelon chasse les abeilles.
-- Un frelon cherche les ruches d’abeilles.
-- Suffisamment de frelons peuvent tuer la reine.
-- Un frelon ayant tué suffisamment d'abeilles se dirigera vers la ruche.
-- Un frelon peut environner des fleurs, suivre des abeilles ou environner la ruche.
 
 On pourrait proposer à l'utilisateur de gérer la proportion d'abeilles productrices et exploratrices en temps réel (chaque abeille ayant un coût en miel pour la ruche).
 
