@@ -1,372 +1,407 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AI30 WebSocket</title>
     <script src="./utils/pixi.min.js"></script>
-    <link rel="stylesheet" href="css/main_style.css">
-</head>
+    <link rel="stylesheet" href="css/main_style.css" />
+  </head>
 
-<body>
+  <body>
     <h2 id="connection-state">Connection closed</h2>
     <div class="boutton-group">
-        <button id="start-simulation">Start simulation</button>
-        <button id="stop-simulation">Stop simulation</button>
-        <button id="new-simulation">New simulation</button>
-        <button id="add-bee">Add bee</button>
+      <button id="start-simulation">Start simulation</button>
+      <button id="stop-simulation">Stop simulation</button>
+      <button id="new-simulation">New simulation</button>
+      <button id="add-bee">Add bee</button>
     </div>
     <table id="hornet-table">
-        <thead>
-            <tr>
-                <th>Hornet ID</th>
-                <th>Kill Count</th>
-            </tr>
-        </thead>
-        <tbody id="hornetBody">
-        </tbody>
+      <thead>
+        <tr>
+          <th>Hornet ID</th>
+          <th>Kill Count</th>
+        </tr>
+      </thead>
+      <tbody id="hornetBody"></tbody>
     </table>
 
     <div id="nectar-value">
-        <p id="nectar"></p>
-        <p id="honey"></p>
-        <div >
-            <p>Agents count: <span id="agentsCount"></span></p>
-        </div>
+      <p id="nectar"></p>
+      <p id="honey"></p>
+      <div>
+        <p>Agents count: <span id="agentsCount"></span></p>
+      </div>
     </div>
     <div id="main">
-        <div class="sidebar">
-            <div class="ocean" id="ocean">
-            </div>
-        </div>
-        <script type="module">
-            const connectionState = document.getElementById('connection-state');
-            const errorsDiv = document.getElementById('errors');
-            const ocean = document.getElementById('ocean');
-            const nectar = document.getElementById('nectar');
-            const honey = document.getElementById('honey');
-            const addBee = document.getElementById('add-bee');
-            const count = document.getElementById('agentsCount');
+      <div class="sidebar">
+        <div class="ocean" id="ocean"></div>
+      </div>
+      <script type="module">
+        const connectionState = document.getElementById("connection-state");
+        const errorsDiv = document.getElementById("errors");
+        const ocean = document.getElementById("ocean");
+        const nectar = document.getElementById("nectar");
+        const honey = document.getElementById("honey");
+        const addBee = document.getElementById("add-bee");
+        const count = document.getElementById("agentsCount");
 
-            const app = new PIXI.Application();
-            await app.init({ background: '#ffffff', width: window.innerHeight * 0.9, height: window.innerHeight * 0.9 });
-            document.getElementById('main').appendChild(app.canvas);
-            app.canvas.style.margin = ' 0% 0% 0% 20%';
-            app.canvas.style.border = '1px solid black';
+        const app = new PIXI.Application();
+        await app.init({
+          background: "#ffffff",
+          width: window.innerHeight * 0.9,
+          height: window.innerHeight * 0.9,
+        });
+        document.getElementById("main").appendChild(app.canvas);
+        app.canvas.style.margin = " 0% 0% 0% 20%";
+        app.canvas.style.border = "1px solid black";
 
-            PIXI.Assets.add({ alias: 'beeWorker', src: './res/sprites/beeForager.png' });
-            PIXI.Assets.add({ alias: 'beeGuardian', src: './res/sprites/beeGuardian.png' });
-            PIXI.Assets.add({ alias: 'beeForager', src: './res/sprites/beeForager.png' });
-            PIXI.Assets.add({ alias: 'hornet', src: './res/sprites/hornet.png' });
-            PIXI.Assets.add({ alias: 'flowerMaleGood', src: './res/sprites/fleurMaleGood.png' });
-            PIXI.Assets.add({ alias: 'flowerMaleBad', src: './res/sprites/fleurMaleBad.png' });
-            PIXI.Assets.add({ alias: 'flowerFemaleGood', src: './res/sprites/fleurFemaleGood.png' });
-            PIXI.Assets.add({ alias: 'flowerFemaleBad', src: './res/sprites/fleurFemaleBad.png' });
-            PIXI.Assets.add({ alias: 'hiveEmpty', src: './res/sprites/hiveEmpty.png' });
-            PIXI.Assets.add({ alias: 'hiveMid', src: './res/sprites/hive2.png' });
-            PIXI.Assets.add({ alias: 'hiveFull', src: './res/sprites/hiveFull.png' });
+        PIXI.Assets.add({
+          alias: "beeWorker",
+          src: "./res/sprites/beeForager.png",
+        });
+        PIXI.Assets.add({
+          alias: "beeGuardian",
+          src: "./res/sprites/beeGuardian.png",
+        });
+        PIXI.Assets.add({
+          alias: "beeForager",
+          src: "./res/sprites/beeForager.png",
+        });
+        PIXI.Assets.add({ alias: "hornet", src: "./res/sprites/hornet.png" });
+        PIXI.Assets.add({
+          alias: "flowerMaleGood",
+          src: "./res/sprites/fleurMaleGood.png",
+        });
+        PIXI.Assets.add({
+          alias: "flowerMaleBad",
+          src: "./res/sprites/fleurMaleBad.png",
+        });
+        PIXI.Assets.add({
+          alias: "flowerFemaleGood",
+          src: "./res/sprites/fleurFemaleGood.png",
+        });
+        PIXI.Assets.add({
+          alias: "flowerFemaleBad",
+          src: "./res/sprites/fleurFemaleBad.png",
+        });
+        PIXI.Assets.add({
+          alias: "hiveEmpty",
+          src: "./res/sprites/hiveEmpty.png",
+        });
+        PIXI.Assets.add({ alias: "hiveMid", src: "./res/sprites/hive2.png" });
+        PIXI.Assets.add({
+          alias: "hiveFull",
+          src: "./res/sprites/hiveFull.png",
+        });
 
-            const beeWorkerTexture = await PIXI.Assets.load('beeWorker');
-            const beeGuardianTexture = await PIXI.Assets.load('beeGuardian');
-            const beeForagerTexture = await PIXI.Assets.load('beeForager');
-            const hiveEmptyTexture = await PIXI.Assets.load('hiveEmpty');
-            const hiveMidTexture = await PIXI.Assets.load('hiveMid');
-            const hiveFullTexture = await PIXI.Assets.load('hiveFull');
-            const flowerMaleBadTexture = await PIXI.Assets.load('flowerMaleBad');
-            const flowerMaleGoodTexture = await PIXI.Assets.load('flowerMaleGood');
-            const flowerFemaleBadTexture = await PIXI.Assets.load('flowerFemaleBad');
-            const flowerFemaleGoodTexture = await PIXI.Assets.load('flowerFemaleGood');
-            const hornetTexture = await PIXI.Assets.load('hornet');
+        const beeWorkerTexture = await PIXI.Assets.load("beeWorker");
+        const beeGuardianTexture = await PIXI.Assets.load("beeGuardian");
+        const beeForagerTexture = await PIXI.Assets.load("beeForager");
+        const hiveEmptyTexture = await PIXI.Assets.load("hiveEmpty");
+        const hiveMidTexture = await PIXI.Assets.load("hiveMid");
+        const hiveFullTexture = await PIXI.Assets.load("hiveFull");
+        const flowerMaleBadTexture = await PIXI.Assets.load("flowerMaleBad");
+        const flowerMaleGoodTexture = await PIXI.Assets.load("flowerMaleGood");
+        const flowerFemaleBadTexture = await PIXI.Assets.load(
+          "flowerFemaleBad"
+        );
+        const flowerFemaleGoodTexture = await PIXI.Assets.load(
+          "flowerFemaleGood"
+        );
+        const hornetTexture = await PIXI.Assets.load("hornet");
 
-            const spritesMap = new Map(); // Map pour stocker les sprites par 
+        const spritesMap = new Map(); // Map pour stocker les sprites par
 
-            function drawGrid(grid, gridSize) {
-                const cellSize = app.screen.height / gridSize; // Taille de chaque cellule
+        function drawGrid(grid, gridSize) {
+          const cellSize = app.screen.height / gridSize; // Taille de chaque cellule
 
-                // Supprimer les éléments précédemment dessinés
-                // Parcours de la grille et dessin des objets
-                for (let elem of grid) {
-                    drawAgent(elem, elem.position, cellSize);
+          // Supprimer les éléments précédemment dessinés
+          // Parcours de la grille et dessin des objets
+          for (let elem of grid) {
+            drawAgent(elem, elem.position, cellSize);
+          }
+        }
+
+        function drawAgent(elem, position, cellSize) {
+          if (!elem || !elem.position) {
+            return;
+          }
+          if (elem.id && spritesMap.has(elem.id)) {
+            // Si le sprite existe déjà, on met à jour sa position et ses propriétés
+            const sprite = spritesMap.get(elem.id);
+            if (position) {
+              sprite.x = position.x * cellSize;
+              sprite.y = position.y * cellSize;
+            }
+            if (elem.orientation) {
+              changeOrientation(sprite, elem.orientation);
+            }
+            if (elem.id.startsWith("Flower")) {
+              if (elem.gender == "female") {
+                if (
+                  elem.nectar < 20 &&
+                  sprite.texture != flowerFemaleBadTexture
+                ) {
+                  sprite.texture = flowerFemaleBadTexture;
+                } else if (
+                  elem.nectar > 20 &&
+                  sprite.texture != flowerFemaleGoodTexture
+                ) {
+                  sprite.texture = flowerFemaleGoodTexture;
                 }
-            }
-
-            function drawAgent(elem, position, cellSize) {
-                if (!elem || !elem.position) {
-                    return;
+              } else {
+                if (
+                  elem.nectar < 20 &&
+                  sprite.texture != flowerMaleBadTexture
+                ) {
+                  sprite.texture = flowerMaleBadTexture;
+                } else if (
+                  elem.nectar > 20 &&
+                  sprite.texture != flowerMaleGoodTexture
+                ) {
+                  sprite.texture = flowerMaleGoodTexture;
                 }
-                if (elem.id && spritesMap.has(elem.id)) {
-                    // Si le sprite existe déjà, on met à jour sa position et ses propriétés
-                    const sprite = spritesMap.get(elem.id);
-                    if (position) {
-                        sprite.x = position.x * cellSize;
-                        sprite.y = position.y * cellSize;
-                    }
-                    if (elem.orientation) {
-                        changeOrientation(sprite, elem.orientation);
-                    }
-                    if (elem.id.startsWith('Flower')) {
-                        if (elem.gender == "female") {
-                            if (elem.nectar < 20 && sprite.texture != flowerFemaleBadTexture) {
-                                sprite.texture = flowerFemaleBadTexture;
-
-                            } else if (elem.nectar > 20 && sprite.texture != flowerFemaleGoodTexture) {
-                                sprite.texture = flowerFemaleGoodTexture;
-                            }
-                        } else {
-                            if (elem.nectar < 20 && sprite.texture != flowerMaleBadTexture) {
-                                sprite.texture = flowerMaleBadTexture;
-                            } else if (elem.nectar > 20 && sprite.texture != flowerMaleGoodTexture) {
-                                sprite.texture = flowerMaleGoodTexture;
-                            }
-                        }
-                    }
-                    if (elem.id.startsWith('Hornet')) {
-                        if (elem.killCount && elem.killCount > 0) {
-                            let table = document.getElementById('hornet-table');
-                            let row = table.rows.namedItem(elem.id);
-                            if (row) {
-                                row.cells[1].textContent = elem.killCount;
-                            }
-                        }
-                    }
-                } else {
-                    let sprite;
-                    switch (true) {
-                        case elem.id.startsWith('Bee'):
-                            sprite = getSpriteFromBee(elem, cellSize);
-                            break;
-                        case elem.id.startsWith('Hornet'):
-                            sprite = PIXI.Sprite.from(hornetTexture);
-                            changeOrientation(sprite, elem.orientation);
-                            //Hornet un peu plus grand
-                            sprite.width = cellSize * 1.5;
-                            sprite.height = cellSize * 1.5;
-                            sprite.zIndex = 100;
-                            // AD hornet row to table
-                            if(document.getElementById(elem.id) == null){
-
-                            let tbody = document.getElementById('hornetBody');
-                            let row = tbody.insertRow(-1);
-                            row.id = elem.id;
-                            let cell1 = row.insertCell(0);
-                            let cell2 = row.insertCell(1);
-                            cell1.innerHTML = elem.id;
-                            cell2.innerHTML = 0;
-                            }
-                            break;
-                        case elem.id.startsWith('Flower'):
-                            sprite = getSpriteFromFlower(elem, cellSize);
-                            break;
-                        case elem.id.startsWith('Hive'):
-                            sprite = getSpriteFromHive(elem, cellSize);
-                            break;
-                        default:
-                            console.log('Unknown element type:', elem.id);
-                    }
-                    sprite.x = position.x * cellSize;
-                    sprite.y = position.y * cellSize;
-
-                    spritesMap.set(elem.id, sprite);
-                    app.stage.addChild(sprite);
-
+              }
+            }
+            if (elem.id.startsWith("Hornet")) {
+              if (elem.killCount && elem.killCount > 0) {
+                let table = document.getElementById("hornet-table");
+                let row = table.rows.namedItem(elem.id);
+                if (row) {
+                  row.cells[1].textContent = elem.killCount;
                 }
+              }
             }
-
-            function changeOrientation(sprite, orientation) {
-                switch (orientation) {
-                    case 'N':
-                        sprite.rotation = 0;
-                        break;
-                    case 'NE':
-                        sprite.rotation = Math.PI / 4;
-                        break;
-                    case 'E':
-                        sprite.rotation = Math.PI / 2;
-                        break;
-                    case 'SE':
-                        sprite.rotation = 3 * Math.PI / 4;
-                        break;
-                    case 'S':
-                        sprite.rotation = Math.PI;
-                        break;
-                    case 'SW':
-                        sprite.rotation = 5 * Math.PI / 4;
-                        break;
-                    case 'W':
-                        sprite.rotation = 3 * Math.PI / 2;
-                        break;
-                    case 'NW':
-                        sprite.rotation = 7 * Math.PI / 4;
-                        break;
+          } else {
+            let sprite;
+            switch (true) {
+              case elem.id.startsWith("Bee"):
+                sprite = getSpriteFromBee(elem, cellSize);
+                break;
+              case elem.id.startsWith("Hornet"):
+                sprite = PIXI.Sprite.from(hornetTexture);
+                changeOrientation(sprite, elem.orientation);
+                //Hornet un peu plus grand
+                sprite.width = cellSize * 1.5;
+                sprite.height = cellSize * 1.5;
+                sprite.zIndex = 100;
+                // AD hornet row to table
+                if (document.getElementById(elem.id) == null) {
+                  let tbody = document.getElementById("hornetBody");
+                  let row = tbody.insertRow(-1);
+                  row.id = elem.id;
+                  let cell1 = row.insertCell(0);
+                  let cell2 = row.insertCell(1);
+                  cell1.innerHTML = elem.id;
+                  cell2.innerHTML = 0;
                 }
+                break;
+              case elem.id.startsWith("Flower"):
+                sprite = getSpriteFromFlower(elem, cellSize);
+                break;
+              case elem.id.startsWith("Hive"):
+                sprite = getSpriteFromHive(elem, cellSize);
+                break;
+              default:
+                console.log("Unknown element type:", elem.id);
             }
+            sprite.x = position.x * cellSize;
+            sprite.y = position.y * cellSize;
 
-            function getSpriteFromBee(bee, cellSize) {
-                let sprite;
-                switch (bee.job) {
-                    case 2:
-                        sprite = PIXI.Sprite.from(beeWorkerTexture);
-                        break;
-                    case 1:
-                        sprite = PIXI.Sprite.from(beeGuardianTexture);
-                        break;
-                    default:
-                        sprite = PIXI.Sprite.from(beeForagerTexture);
-                        break;
-                }
-                sprite.width = cellSize;
-                sprite.height = cellSize;
-                changeOrientation(sprite, bee.orientation);
-                return sprite
+            spritesMap.set(elem.id, sprite);
+            app.stage.addChild(sprite);
+          }
+        }
+
+        function changeOrientation(sprite, orientation) {
+          switch (orientation) {
+            case "N":
+              sprite.rotation = 0;
+              break;
+            case "NE":
+              sprite.rotation = Math.PI / 4;
+              break;
+            case "E":
+              sprite.rotation = Math.PI / 2;
+              break;
+            case "SE":
+              sprite.rotation = (3 * Math.PI) / 4;
+              break;
+            case "S":
+              sprite.rotation = Math.PI;
+              break;
+            case "SW":
+              sprite.rotation = (5 * Math.PI) / 4;
+              break;
+            case "W":
+              sprite.rotation = (3 * Math.PI) / 2;
+              break;
+            case "NW":
+              sprite.rotation = (7 * Math.PI) / 4;
+              break;
+          }
+        }
+
+        function getSpriteFromBee(bee, cellSize) {
+          let sprite;
+          switch (bee.job) {
+            case 2:
+              sprite = PIXI.Sprite.from(beeWorkerTexture);
+              break;
+            case 1:
+              sprite = PIXI.Sprite.from(beeGuardianTexture);
+              break;
+            default:
+              sprite = PIXI.Sprite.from(beeForagerTexture);
+              break;
+          }
+          sprite.width = cellSize;
+          sprite.height = cellSize;
+          changeOrientation(sprite, bee.orientation);
+          return sprite;
+        }
+
+        function getSpriteFromHive(hive, cellSize) {
+          let sprite = PIXI.Sprite.from(hiveEmptyTexture);
+          //Ruche plus grande et devant
+          sprite.zIndex = 2;
+          //center the sprite
+          sprite.anchor.set(0.5);
+          sprite.x = hive.position.x * cellSize + cellSize / 2;
+          sprite.y = hive.position.y * cellSize + cellSize / 2;
+
+          sprite.width = cellSize * 4;
+          sprite.height = cellSize * 4;
+
+          sprite.interactive = true;
+          sprite.buttonMode = true;
+          const hitPadding = 20;
+          sprite.hitArea = new PIXI.Rectangle(
+            -sprite.width / 2 - hitPadding,
+            -sprite.height / 2 - hitPadding,
+            sprite.width + hitPadding * 2,
+            sprite.height + hitPadding * 2
+          );
+
+          //clic hold on hive
+          sprite.on("pointerdown", (event) => {
+            sprite.visible = false;
+          });
+          sprite.on("pointerout", () => {
+            sprite.visible = true;
+          });
+
+          return sprite;
+        }
+
+        function getSpriteFromFlower(flower, cellSize) {
+          let sprite;
+          switch (true) {
+            case flower.gender === "female":
+              if (flower.nectar == 0) {
+                sprite = PIXI.Sprite.from(flowerFemaleBadTexture);
+                break;
+              } else {
+                sprite = PIXI.Sprite.from(flowerFemaleGoodTexture);
+                break;
+              }
+            default:
+              if (flower.nectar == 0) {
+                sprite = PIXI.Sprite.from(flowerMaleBadTexture);
+                break;
+              } else {
+                sprite = PIXI.Sprite.from(flowerMaleGoodTexture);
+                break;
+              }
+              break;
+          }
+          sprite.width = cellSize;
+          sprite.height = cellSize;
+          return sprite;
+        }
+
+        // Fonction pour nettoyer les sprites qui ne sont plus dans la grille
+        function cleanUnusedSprites(agent, objects) {
+          const existingIds = new Set();
+          for (let elem of agent.concat(objects)) {
+            if (elem) {
+              existingIds.add(elem.id);
             }
-
-            function getSpriteFromHive(hive, cellSize) {
-                let sprite = PIXI.Sprite.from(hiveEmptyTexture);
-                //Ruche plus grande et devant
-                sprite.zIndex = 2;
-                //center the sprite
-                sprite.anchor.set(0.5);
-                sprite.x = hive.position.x * cellSize + cellSize / 2;
-                sprite.y = hive.position.y * cellSize + cellSize / 2;
-
-                sprite.width = cellSize * 4;
-                sprite.height = cellSize * 4;
-
-
-                sprite.interactive = true;
-                sprite.buttonMode = true;
-                const hitPadding = 20;
-                sprite.hitArea = new PIXI.Rectangle(
-                    -sprite.width / 2 - hitPadding,
-                    -sprite.height / 2 - hitPadding,
-                    sprite.width + hitPadding * 2,
-                    sprite.height + hitPadding * 2
-                );
-
-                //clic hold on hive
-                sprite.on('pointerdown', (event) => {
-                    sprite.visible = false;
-                });
-                sprite.on('pointerout', () => {
-                    sprite.visible = true;
-                });
-
-                return sprite;
+          }
+          for (let id of spritesMap.keys()) {
+            if (!existingIds.has(id)) {
+              const sprite = spritesMap.get(id);
+              app.stage.removeChild(sprite);
+              spritesMap.delete(id); // Supprimer le sprite de la map
             }
+          }
+        }
 
-            function getSpriteFromFlower(flower, cellSize) {
-                let sprite;
-                switch (true) {
-                    case flower.gender === "female":
-                        if (flower.nectar == 0) {
-                            sprite = PIXI.Sprite.from(flowerFemaleBadTexture);
-                            break;
-                        } else {
-                            sprite = PIXI.Sprite.from(flowerFemaleGoodTexture);
-                            break;
-                        }
-                    default:
-                        if (flower.nectar == 0) {
-                            sprite = PIXI.Sprite.from(flowerMaleBadTexture);
-                            break;
-                        } else {
-                            sprite = PIXI.Sprite.from(flowerMaleGoodTexture);
-                            break;
-                        }
-                        break;
-                }
-                sprite.width = cellSize;
-                sprite.height = cellSize;
-                return sprite;
+        function drawSidebar(hive, agentsCount) {
+          if (ocean != null) {
+            let quantity = hive.quantity_honey;
+            if (quantity < 0) {
+              quantity = 0;
             }
+            ocean.style.height = `${quantity}%`;
+          }
+          if (nectar != null) {
+            nectar.textContent = `Nectar: ${hive.quantity_nectar}`;
+          }
+          if (honey != null) {
+            honey.textContent = `Honey: ${hive.quantity_honey}`;
+          }
+        }
 
-            // Fonction pour nettoyer les sprites qui ne sont plus dans la grille
-            function cleanUnusedSprites(agent, objects) {
-                const existingIds = new Set();
-                for (let elem of agent.concat(objects)) {
-                    if (elem) {
-                        existingIds.add(elem.id);
+        const ws = new WebSocket("ws://localhost:8080/ws/");
 
-                    }
-                }
-                for (let id of spritesMap.keys()) {
-                    if (!existingIds.has(id)) {
-                        const sprite = spritesMap.get(id);
-                        app.stage.removeChild(sprite);
-                        spritesMap.delete(id); // Supprimer le sprite de la map
-                    }
-                }
-            }
+        //Function trigered when data are reiceve from websocket
+        ws.onmessage = function (event) {
+          const data = JSON.parse(event.data);
+          console.log(data);
+          drawGrid(data.agents, data.environment.mapDimension + 1);
+          drawGrid(data.objects, data.environment.mapDimension + 1);
+          drawSidebar(data.objects[0], data.agents.length);
+          cleanUnusedSprites(data.agents, data.objects);
+          count.textContent = data.agents.length;
+        };
 
-            function drawSidebar(hive, agentsCount) {
-                if (ocean != null) {
-                    let quantity = hive.quantity_honey;
-                    if (quantity < 0) {
-                        quantity = 0;
-                    }
-                    ocean.style.height = `${quantity}%`;
-                }
-                if (nectar != null) {
-                    nectar.textContent = `Nectar: ${hive.quantity_nectar}`;
-                }
-                if (honey != null) {
-                    honey.textContent = `Honey: ${hive.quantity_honey}`;
-                }
-            }
+        ws.onerror = function (event) {
+          errorsDiv.innerHTML += "<p>Error: " + event.message + "</p>";
+        };
 
+        ws.onclose = function (event) {
+          connectionState.textContent = "Connection closed";
+          ws.close(1, "bye");
+        };
 
-            const ws = new WebSocket('ws://localhost:8080/ws/');
+        ws.onopen = function (event) {
+          connectionState.textContent = "Connected";
+        };
 
-            //Function trigered when data are reiceve from websocket
-            ws.onmessage = function (event) {
-                const data = JSON.parse(event.data);
-                console.log(data);
-                drawGrid(data.agents, data.environment.mapDimension + 1);
-                drawGrid(data.objects, data.environment.mapDimension + 1);
-                drawSidebar(data.objects[0], data.agents.length);
-                cleanUnusedSprites(data.agents, data.objects);
-                count.textContent = data.agents.length;
-            }
+        document.getElementById("start-simulation").onclick = () => {
+          ws.send("start");
+        };
 
-            ws.onerror = function (event) {
-                errorsDiv.innerHTML += '<p>Error: ' + event.message + '</p>';
-            };
+        document.getElementById("stop-simulation").onclick = () => {
+          ws.send("stop");
+        };
 
-            ws.onclose = function (event) {
-                connectionState.textContent = 'Connection closed';
-                ws.close(1, "bye")
-            };
-
-            ws.onopen = function (event) {
-                connectionState.textContent = 'Connected'
-            }
-
-
-
-            document.getElementById('start-simulation').onclick = () => {
-                ws.send('start');
-            }
-
-            document.getElementById('stop-simulation').onclick = () => {
-                ws.send('stop');
-            }
-
-            document.getElementById('new-simulation').onclick = () => {
-                spritesMap.clear();
-                app.stage.removeChildren();
-                let tBody = document.getElementById('hornetBody');
-                while (tBody.firstChild) {
-                    tBody.removeChild(tBody.firstChild);
-                }
-                ws.send('new');
-            }
-            document.getElementById('add-bee').onclick = () => {
-                ws.send('addBee');
-            }
-        </script>
+        document.getElementById("new-simulation").onclick = () => {
+          spritesMap.clear();
+          app.stage.removeChildren();
+          let tBody = document.getElementById("hornetBody");
+          while (tBody.firstChild) {
+            tBody.removeChild(tBody.firstChild);
+          }
+          ws.send("new");
+        };
+        document.getElementById("add-bee").onclick = () => {
+          ws.send("addBee");
+        };
+      </script>
     </div>
     <div id="errors"></div>
-</body>
-
+  </body>
 </html>

@@ -23,7 +23,7 @@
 
 ### Capture d'écran de la démo
 
-![Capture d'écran de la démo](/docs/)
+![Capture d'écran de la démo](/doc/)
 
 ## Installation
 
@@ -90,7 +90,7 @@ Améliorations possibles :
 
 ### Modélisation UML
 
-![](/docs/conception/simu_bees_uml_v2.png "Modélisation du projet en UML")
+![](/doc/conception/simu_bees_uml_v2.png "Modélisation du projet en UML")
 
 ## Architecture
 

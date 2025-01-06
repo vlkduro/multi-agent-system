@@ -244,32 +244,22 @@ func (agt *BeeAgent) workerPerception() {
 }
 
 func (agt *BeeAgent) workerDeliberation() {
-	fmt.Printf("[%s] Worker bee deliberating...\n", agt.id)
 	var closestHornet *HornetAgent = nil
-	fmt.Printf("[%s] Hornet ? %v\n", agt.id, closestHornet)
-	fmt.Printf("[%s] seen elems : %v\n", agt.id, agt.seenElems)
 	for _, seen := range agt.seenElems {
 		if seen.Elem != nil {
 			switch elem := (seen.Elem).(type) {
 			case *HornetAgent:
 				closestHornet = elem
 			case *obj.Hive:
-				fmt.Printf("[%s] Hive seen : %v\n", agt.id, elem)
-
 				beehivepos := agt.hive.GetPosition()
 				hiveseenpos := elem.GetPosition()
 
-				fmt.Printf("[%s] Hive seen (position) : %v\n", agt.id, hiveseenpos)
-				fmt.Printf("[%s] agt.hive (position) : %v\n", agt.id, beehivepos)
-
 				// check if bee is home
 				if hiveseenpos.Equal(&beehivepos) {
-					fmt.Println("equal true")
-					fmt.Printf("[%s] I work from home ! %v\n", agt.id, beehivepos)
+					// fmt.Printf("[%s] I work from home ! %v\n", agt.id, beehivepos)
 
 					// check hive nectar quantity
 					qNectarHive := agt.hive.GetQNectar()
-					fmt.Printf("[%s] qNectar : %d\n", agt.id, qNectarHive)
 					if qNectarHive >= 4 {
 						fmt.Printf("[%s] Objective set to ProduceHoney\n", agt.id)
 						agt.objective.Type = ProduceHoney
@@ -289,11 +279,10 @@ func (agt *BeeAgent) workerDeliberation() {
 // bee types to avoid agmenting the complexity of the structure
 // Perhaps inheriting a job component entirely could be a good idea
 func (agt *BeeAgent) workerAction() {
-	fmt.Printf("[%s] Worker bee acting...\n", agt.id)
 	objf := &agt.objective
 	fmt.Printf("[%s] Objective : %s\n", agt.id, objf.Type)
 	// TODO: move to deliberating
-	chancesToBecomeForager := rand.Intn(100)
+	chancesToBecomeForager := rand.Intn(1000)
 	if chancesToBecomeForager == 0 {
 		agt.job = Forager
 		xFactor := rand.Intn(2)
@@ -315,11 +304,11 @@ func (agt *BeeAgent) workerAction() {
 		if agt.objective.Type != None {
 			switch typeObj := objf.Type; typeObj {
 			case ProduceHoney:
-				fmt.Printf("[%s] Producing honey in hive : %v\n", agt.id, agt.hive)
-				if agt.hive.GetQNectar() > 4 {
+				// fmt.Printf("[%s] Producing honey in hive\n", agt.id)
+				/*if agt.hive.GetQNectar() > 4 {
 					agt.hive.GetNectar(4)
 					agt.hive.StoreHoney(1)
-				}
+				}*/
 			}
 		}
 		// produit 180mg de miel pour 600mg de nectar

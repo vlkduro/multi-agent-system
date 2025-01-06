@@ -80,14 +80,14 @@ func (h *Hive) Become(h_alt interface{}) {
 }
 
 func (h *Hive) Update() {
-	h.qNectar -= h.env.GetNumberAgent() - utils.GetNumberHornets()
-	if h.qNectar < 0 {
-		h.qNectar = 0
-	}
-	if h.qNectar > 0 {
+	nb_bees := h.env.GetNumberAgent() - utils.GetNumberHornets()
+	if h.qNectar > nb_bees {
+		h.qNectar -= nb_bees / 2
+		h.qNectar -= 4
 		h.qHoney += 1
-		h.qNectar -= 1
-	}
+	} /*else {
+		h.Die()
+	}*/
 	// Compter les abeilles de la ruche pour débiter du miel
 	// Ou si autre mieux, le faire
 }
@@ -113,11 +113,11 @@ func (h *Hive) StoreNectar(nectar int) {
 	h.qNectar += nectar
 }
 
-func (h Hive) GetNectar(nectar int) {
+func (h *Hive) GetNectar(nectar int) {
 	h.qNectar -= nectar
 }
 
-func (h Hive) StoreHoney(honey int) {
+func (h *Hive) StoreHoney(honey int) {
 	h.qHoney += honey
 }
 

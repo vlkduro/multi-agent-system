@@ -1,99 +1,98 @@
-
 .sidebar {
-    width: 15%;
-    overflow: hidden;
-    height: 80%;
-    position: absolute;
-    border: 1px solid #000;
+  width: 15%;
+  overflow: hidden;
+  height: 80%;
+  position: absolute;
+  border: 1px solid #000;
 }
 
-.boutton-group{
-    border-radius: 20%;
-    width: 100%;
-    height: 50px;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    text-align: center;
-    display: flex;
-    justify-content: space-around;
+.boutton-group {
+  border-radius: 20%;
+  width: 100%;
+  height: 50px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  text-align: center;
+  display: flex;
+  justify-content: space-around;
 }
 
-.boutton-group button{
-    width: 10%;
-    height: 100%;
-    border-radius: 20%;
-    border: 1px solid #000;
+.boutton-group button {
+  width: 10%;
+  height: 100%;
+  border-radius: 20%;
+  border: 1px solid #000;
 }
 
-.boutton-group button:hover{
-    background-color: #f0d87f;
+.boutton-group button:hover {
+  background-color: #f0d87f;
 }
 
-.boutton-group .active{
-    background-color: #f0d87f;
+.boutton-group .active {
+  background-color: #f0d87f;
 }
 
-.boutton-group .inactive{
-    background-color: #838280;
+.boutton-group .inactive {
+  background-color: #838280;
 }
 
-.nectar-value{
-    position: absolute;
+.nectar-value {
+  position: absolute;
   width: 15%;
   height: 50px;
 }
 
-.ocean { 
-    width:100%;
-    position:absolute;
-    bottom:0;
-    left:0;
-    background: #e4bc49;
-  }
-  
+.ocean {
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  background: #e4bc49;
+}
 
 #hornet-table {
-    min-width: 200px;
-    max-width: 250px;
-    width: auto;
-    border-collapse: collapse;
-    font-family: Arial, sans-serif;
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  min-width: 200px;
+  max-width: 250px;
+  width: auto;
+  border-collapse: collapse;
+  font-family: Arial, sans-serif;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 #hornet-table th {
-    background-color: #cfa50e;
-    color: white;
-    padding: 8px;
-    text-align: left;
-    font-size: 14px;
-    white-space: nowrap;
+  background-color: #cfa50e;
+  color: white;
+  padding: 8px;
+  text-align: left;
+  font-size: 14px;
+  white-space: nowrap;
 }
 
 #hornet-table td {
-    padding: 6px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-    font-size: 12px;
-    white-space: nowrap;
+  padding: 6px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  font-size: 12px;
+  white-space: nowrap;
 }
 
 #hornet-table tr:nth-child(even) {
-    background-color: #f2f2f2;
+  background-color: #f2f2f2;
 }
 
 #hornet-table tr:hover {
-    background-color: #e0e0e0;
+  background-color: #e0e0e0;
 }
 
 #hornet-table td:first-child {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 #hornet-table td:last-child {
-    border-right: none;
+  border-right: none;
+}

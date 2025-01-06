@@ -3,10 +3,10 @@ TPS: 20
 LogPerSecond: 50
 
 # Environment
-MapDimension: 25
+MapDimension: 60
 
 # Bees
-NumberBees: 10
+NumberBees: 150
 BeeAgentVisionRange: 4.0
 MaxNectar: 40 # in mg -> https://wildflowermeadows.com/2024/01/how-far-do-honeybees-fly/
 BeeCreationCost: 20
@@ -16,7 +16,7 @@ NumberHornets: 1
 HornetAgentVisionRange: 4.0
 
 # Flowers
-NumberFlowers: 10
-NumberFlowerPatches: 3
+NumberFlowers: 30
+NumberFlowerPatches: 4
 MaxNectarHeld: 80 # in mg, defined as this in the code
 ProducedNectarPerTurn: 3 # in mg -> https://www.miel-lerucherdelours.fr/en/content/67-the-sunflowers
