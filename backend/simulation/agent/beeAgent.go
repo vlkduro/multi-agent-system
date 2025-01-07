@@ -251,15 +251,15 @@ func (agt *BeeAgent) workerDeliberation() {
 			case *HornetAgent:
 				closestHornet = elem
 			case *obj.Hive:
-				beehivepos := agt.hive.GetPosition()
-				hiveseenpos := elem.GetPosition()
+				beehivepos := agt.hive.Position()
+				hiveseenpos := elem.Position()
 
 				// check if bee is home
-				if hiveseenpos.Equal(&beehivepos) {
+				if hiveseenpos.Equal(beehivepos) {
 					// fmt.Printf("[%s] I work from home ! %v\n", agt.id, beehivepos)
 
 					// check hive nectar quantity
-					qNectarHive := agt.hive.GetQNectar()
+					qNectarHive := agt.hive.GetNectar()
 					if qNectarHive >= 4 {
 						fmt.Printf("[%s] Objective set to ProduceHoney\n", agt.id)
 						agt.objective.Type = ProduceHoney

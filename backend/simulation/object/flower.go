@@ -110,14 +110,6 @@ func (f Flower) ToJsonObj() interface{} {
 	}
 }
 
-func (f *Flower) Occupy() {
-	f.occupied = true
-}
-
-func (f *Flower) Pollinate() {
-	f.pollinated = true
-}
-
 func (f *Flower) RetreiveNectar(nectar int) int {
 	if f.nectar < nectar {
 		nectar = f.nectar
