@@ -9,11 +9,50 @@
 
 ## Sommaire
 
+- [Projet](#projet)
 - [Résultat](#résultat)
 - [Installation](#installation)
 - [Conception](#conception)
-- [Architecture](#architecture)
 - [Sources](#sources)
+
+## Projet
+
+### Problématique
+
+**_Apis Mellifera_ vs _Vespa crabo_**
+
+Quelles proportions d'abeilles à miel faut-il à une colonie pour prospérer face au danger des frelons ?
+
+Notre simulation permet d'observer si une colonie d'abeille survit ou non grâce aux butineuse qui butinent les fleurs pour récupérer le nectar et aux ouvrières qui transforment le nectar en miel au sein de la ruche. Nous effectuons des simulations afin d'observer si la colonie est capable de survivre face à un ou plusieurs frelon(s) et en fonction des différents paramètres implémentés (taille de la carte, nombre de frelons et d'abeilles au départ, nombre de fleur, quantité de nectar maximum par abeille, etc.).
+
+Nous pouvons imaginer une ouverture avec l'intégration d'un prédateur plus agressif et contre lequel les _Apis mellifera_ savent moins se défendre : le _Vespa velutina_ (frelon asiatique).
+
+### Règles
+
+Pour répondre à cette problématique, il nous faut simuler des abeilles à miel _Apis Mellifera_ et des frelons européens _Vespa crabo_. Les abeilles à miel vivent en colonies installées dans une ruche.
+
+- Une abeille vit dans une ruche.
+- Une abeille a trois métiers au cours de sa vie : ouvrière, gardienne, butineuse.
+- Une butineuse est la seule pouvant sortir de la ruche.
+- Une butineuse trouve des fleurs à butiner.
+- Une butineuse dépose le nectar à la ruche en fonction de la quantité qu'elle peut transporter.
+- Une butineuse qui rencontre une fleur retient sa position.
+- Une butineuse connaissant la position d'au moins une fleur partage ses connaissances aux autres butineuses.
+- Une butineuse peut butiner une fleur à la fois et une fleur ne peut être butinée que par une butineuse à la fois.
+- Une gardienne reste à la ruche et ne produit pas de miel.
+- Une gardienne alerte toutes les abeilles de la ruche lors d'une attaque de frelon.
+- Une ouvrière transforme le nectar en miel.
+- Les abeilles fuient les frelons (mais défendent la colonie au prix de leur vie).
+- La ruche contient une reine qui produit des abeilles en consommant du miel.
+- La ruche meurt si elle n'a plus de reine.
+- Une ruche peut tuer un frelon si il y a suffisamment d'abeilles à l'intérieur.
+- Un frelon chasse les abeilles.
+
+L'utilisateur joue le rôle de la reine, il gère la production d'abeilles dans la ruche (chaque abeille ayant un coût en miel pour la ruche).
+
+Améliorations possibles :
+
+- La ruche peut être déplacée contre une grosse quantité de miel (proportionnel au nombre d’habitants)
 
 ## Résultat
 
@@ -25,6 +64,12 @@
 
 ![Capture d'écran de la démo](/doc/img/Screenshot%202025-01-06%20at%2023-26-07%20AI30%20WebSocket.png)
 ![Capture d'écran de la démo](/doc/img/Screenshot%202025-01-06%20at%2023-30-53%20AI30%20WebSocket.png)
+
+Nous pouvons distinguer sur ces captures d'écran et la simulation 3 émergences principales :
+
+- des chemins d'abeilles butineuses émergent vers les groupes de fleurs. Cela fonctionne grâce à leur communication au sein de la ruche pour partager la position des fleurs contenant du nectar.
+- les frelons se regroupent vers les lignes d'abeilles.
+- les abeilles changent d'objectif lorsqu'elles croisent un frelon et cela crée de nouvelles lignes vers d'autre fleurs. Elle ne communique plus aux autres butineuses les chemins perturbés par des frelons.
 
 ## Installation
 
@@ -56,53 +101,9 @@ http://localhost:8000/
 
 ## Conception
 
-### Problématique
-
-**_Apis Mellifera_ vs _Vespa crabo_**
-
-Quelles proportions d’abeilles à miel faut-il à une colonie pour prospérer face au danger des frelons ?
-
-Ouverture avec _Vespa velutina_ (frelons asiatiques)
-
-### Courte description
-
-Pour répondre à cette problématique, il nous faut simuler des abeilles à miel _Apis Mellifera_ et des frelons européens _Vespa crabo_. Les abeilles à miel vivent en colonies installées dans une ruche.
-
-### Règles
-
-- Une abeille vit dans une ruche.
-- Une abeille a trois métiers au cours de sa vie : ouvrière, gardienne, butineuse.
-- Une butineuse est la seule pouvant sortir de la ruche.
-- Une butineuse trouve des fleurs à butiner.
-- Une butineuse dépose le nectar à la ruche en fonction de la quantité qu’elle peut transporter.
-- Une butineuse qui rencontre une fleur retient sa position.
-- Une butineuse connaissant la position d’au moins une fleur partage ses connaissances aux autres butineuses.
-- Une butineuse peut butiner une fleur à la fois et une fleur ne peut être butinée que par une butineuse à la fois.
-- Une gardienne reste à la ruche et ne produit pas de miel.
-- Une gardienne alerte toutes les abeilles de la ruche lors d'une attaque de frelon.
-- Une ouvrière transforme le nectar en miel.
-- Les abeilles fuient les frelons (mais défendent la colonie au prix de leur vie).
-- La ruche contient une reine qui produit des abeilles en consommant du miel.
-- La ruche meurt si elle n’a plus de reine.
-- Une ruche peut tuer un frelon si il y a suffisamment d’abeilles à l'intérieur.
-- Un frelon chasse les abeilles.
-
-On pourrait proposer à l'utilisateur de gérer la proportion d'abeilles productrices et exploratrices en temps réel (chaque abeille ayant un coût en miel pour la ruche).
-
-Améliorations possibles :
-
-- La ruche peut être déplacée contre une grosse quantité de miel (proportionnel au nombre d’habitants)
-
 ### Modélisation UML
 
 ![](/doc/conception/simu_bees_uml_v3.png "Modélisation du projet en UML")
-
-## Architecture
-
-`Agent` et `Object` sont des interfaces de même stabilité que l'environement. C'est à dire que lorsque une des interfaces change, `Environment` change également. Ils sont donc dans le même package pour l'instant
-
-> Remarque : mettre `Agent` (i.e `Object`) dans le package `agent` (i.e `object`) crée une boucle de dépendance :
-> `Agent` appelle le package `environment` et `Environment` appelle le package `agent`, par défaut le compilateur interdit les dépendances cycliques
 
 ## Sources
 
@@ -150,4 +151,3 @@ Améliorations possibles :
 - https://www.geeksforgeeks.org/check-whether-a-given-point-lies-inside-a-triangle-or-not/
 - https://stackoverflow.com/questions/27516387/what-is-the-correct-way-to-find-the-min-between-two-integers-in-go
 - https://dev.to/natamacm/round-numbers-in-go-5c01
--
