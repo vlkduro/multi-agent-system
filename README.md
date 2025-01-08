@@ -119,22 +119,22 @@ http://localhost:8000/
 - Podcast Le bruit de la ruche (Saison 1, épisodes 1 à 5 écoutés le 28/11/2024)
 - Documentaire « Des abeilles et des hommes - Et si les abeilles disparaissaient », Markus Imhoof, 2012 (visionné le 28/11/2024)
 - Frédéric Schubnel, Robert Hummel, Maurice Feltin, [« Des abeilles et des chiffres »](http://rucherecole68.thann.free.fr/Calendrier%20apicole/des_abeilles_des_chiffres.pdf), Syndicat des apiculteurs de Thann et environs, 09/2019 (consulté le 02/12/2024).
-- https://bee2bee.com.au/the-different-job-titles-of-a-worker-bee/ (consulté le 02/12/2024)
-- https://www.miel-direct.fr/bilan-annuel-colonie/ (consulté le 02/12/2024)
-- https://www.theguardian.com/environment/2023/apr/02/bees-intelligence-minds-pollination (consulté le 28/11/2024)
-- https://www.theguardian.com/environment/2020/jan/07/honeybees-deaths-almonds-hives-aoe (consulté le 28/11/2024)
-- https://fr.wikipedia.org/wiki/Apis_mellifera (consulté le 29/11/2024)
+- [« The Different Job Titles of a Worker Bee»](https://bee2bee.com.au/the-different-job-titles-of-a-worker-bee/) (consulté le 02/12/2024)
+- [« Les impressionnants chiffres de la ruche : bilan annuel de la colonie »](https://www.miel-direct.fr/bilan-annuel-colonie/) (consulté le 02/12/2024)
+- [« ‘Bees are sentient’: inside the stunning brains of nature’s hardest workers »](https://www.theguardian.com/environment/2023/apr/02/bees-intelligence-minds-pollination) (consulté le 28/11/2024)
+- [« 'Like sending bees to war': the deadly truth behind your almond milk obsession »](https://www.theguardian.com/environment/2020/jan/07/honeybees-deaths-almonds-hives-aoe) (consulté le 28/11/2024)
+- [« Apis mellifera - Abeille européenne, Avette, Mouche à miel »](https://fr.wikipedia.org/wiki/Apis_mellifera) (consulté le 29/11/2024)
 
 ### Prédateurs des abeilles
 
-- https://www.apiculteurs-occitanie.fr/informations/predateurs/ (consulté le 28/11/2024) : prédateurs des abeilles
-- https://www.theguardian.com/environment/article/2024/aug/30/colony-invasive-red-dwarf-honeybee-first-time-europe (consulté le 28/11/2024)
-- https://www.theguardian.com/environment/article/2024/jun/03/asian-hornets-overwintered-uk-first-time-dna-testing (consulté le 28/11/2024)
-- https://www.apiculture.net/blog/savoir-differencier-le-frelon-asiatique-de-l-europeen-n181 (consulté le 29/11/2024)
-- https://www.apiculture.net/blog/frelon-europeen-n104 (consulté le 29/11/2024)
-- https://www.pollinis.org/publications/le-frelon-asiatique-un-fleau-redoutable-pour-nos-colonies-d-abeilles-locales/ (consulté le 29/11/2024)
-- https://neature.fr/especes/frelon-europeen/ (consulté le 02/12/2024)
-- https://fr.wikipedia.org/wiki/Vespa_(insecte)#Ph%C3%A9romone_de_reconnaissance_et_de_d%C3%A9fense_group%C3%A9e (consulté le 29/11/2024)
+- [« Prédateurs »](https://www.apiculteurs-occitanie.fr/informations/predateurs/) (consulté le 28/11/2024) : prédateurs des abeilles
+- [« Colony of invasive red dwarf honeybee found for first time in Europe »](https://www.theguardian.com/environment/article/2024/aug/30/colony-invasive-red-dwarf-honeybee-first-time-europe) (consulté le 28/11/2024)
+- [« Asian hornets overwintered in UK for first time, DNA testing shows »](https://www.theguardian.com/environment/article/2024/jun/03/asian-hornets-overwintered-uk-first-time-dna-testing) (consulté le 28/11/2024)
+- [« Savoir différencier le frelon asiatique de l'européen »](https://www.apiculture.net/blog/savoir-differencier-le-frelon-asiatique-de-l-europeen-n181) (consulté le 29/11/2024)
+- [« Mieux connaître le frelon européen »](https://www.apiculture.net/blog/frelon-europeen-n104) (consulté le 29/11/2024)
+- [« Le frelon asiatique, un fléau redoutable pour nos colonies d’abeilles locales »](https://www.pollinis.org/publications/le-frelon-asiatique-un-fleau-redoutable-pour-nos-colonies-d-abeilles-locales/) (consulté le 29/11/2024)
+- [« Neature et le frelon européen. »](https://neature.fr/especes/frelon-europeen/) (consulté le 02/12/2024)
+- [« Vespa (insecte) - Frelon »](<https://fr.wikipedia.org/wiki/Vespa_(insecte)#Ph%C3%A9romone_de_reconnaissance_et_de_d%C3%A9fense_group%C3%A9e>) (consulté le 29/11/2024)
 
 ### Défense contre les prédateurs
 
@@ -144,10 +144,10 @@ http://localhost:8000/
 
 ### Autres
 
-- https://wildflowermeadows.com/2024/01/how-far-do-honeybees-fly/
-- https://www.miel-lerucherdelours.fr/en/content/67-the-sunflowers
-- https://web.archive.org/web/20171022224528/http://www.policyalmanac.org:80/games/aStarTutorial.htm
-- https://www.youtube.com/watch?v=PSlWb90JJx4
-- https://www.geeksforgeeks.org/check-whether-a-given-point-lies-inside-a-triangle-or-not/
-- https://stackoverflow.com/questions/27516387/what-is-the-correct-way-to-find-the-min-between-two-integers-in-go
-- https://dev.to/natamacm/round-numbers-in-go-5c01
+- [« How Far do Honeybees Fly? »](https://wildflowermeadows.com/2024/01/how-far-do-honeybees-fly/)
+- [« The Sunflowers »](https://www.miel-lerucherdelours.fr/en/content/67-the-sunflowers)
+- [« Pathfinding for Beginners »](https://web.archive.org/web/20171022224528/http://www.policyalmanac.org:80/games/aStarTutorial.htm)
+- [« How to Find the Intersection Points of Two Circles with Different Centres and Radiuses »](https://www.youtube.com/watch?v=PSlWb90JJx4)
+- [« Check whether a given point lies inside a triangle or not »](https://www.geeksforgeeks.org/check-whether-a-given-point-lies-inside-a-triangle-or-not/)
+- [« What is the correct way to find the min between two integers in Go? »](https://stackoverflow.com/questions/27516387/what-is-the-correct-way-to-find-the-min-between-two-integers-in-go)
+- [« Round numbers in Go »](https://dev.to/natamacm/round-numbers-in-go-5c01)
