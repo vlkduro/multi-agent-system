@@ -82,12 +82,12 @@ From a terminal, perform the following steps:
 
 With HTTPS:
 ```bash
-git clone https://gitlab.utc.fr/bidauxal/ai30_valakou_martins_chartier_bidaux.git
+git clone https://github.com/vlkduro/multi-agent-system.git
 ```
 
 With SSH:
 ```bash
-git clone git@gitlab.utc.fr:bidauxal/ai30_valakou_martins_chartier_bidaux.git
+git clone git@github.com:vlkduro/multi-agent-system.git
 ```
 
 ### Launch the simulation from the project root
